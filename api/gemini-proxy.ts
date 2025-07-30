@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI, Type } from "@google/genai";
-import type { Script, Trend, EnhancedTopic, VideoDeconstruction, ViralScoreBreakdown } from '../../types';
+import type { Script, Trend, EnhancedTopic, VideoDeconstruction, ViralScoreBreakdown } from '../../types.ts';
 
 // Schemas are identical to the old geminiService.ts file
 const scriptResponseSchema = { type: Type.ARRAY, items: { type: Type.OBJECT, properties: { title: { type: Type.STRING, description: "A catchy, viral-style title for the video. Should be short and intriguing.", }, hook: { type: Type.STRING, description: "A 1-3 second hook to grab the viewer's attention immediately. This is the most crucial part.", }, script: { type: Type.STRING, description: "The full script, formatted with clear sections like '[SCENE]', 'VOICEOVER:', or 'ON-SCREEN TEXT:' for easy readability and production. Must include specific visual cues and action descriptions.", }, }, required: ["title", "hook", "script"], }, };
