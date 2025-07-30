@@ -1,0 +1,9 @@
+{
+  "name": "vidscripthub-netlify",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@google/genai": "^1.11.0",
+    "@types/node": "^20.14.9"
+  }
+}
