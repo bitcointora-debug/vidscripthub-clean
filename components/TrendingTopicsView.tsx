@@ -1,11 +1,12 @@
 
 
+
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { TrendCard } from './TrendCard';
-import type { Trend } from '../types';
-import { fetchTrendingTopics, QUOTA_ERROR_MESSAGE } from '../services/geminiService';
+import { TrendCard } from './TrendCard.tsx';
+import type { Trend } from '../types.ts';
+import { fetchTrendingTopics, QUOTA_ERROR_MESSAGE } from '../services/geminiService.ts';
 import { formatDistanceToNow } from 'date-fns';
-import { DashboardContext } from '../context/DashboardContext';
+import { DashboardContext } from '../context/DashboardContext.tsx';
 
 interface TrendingTopicsViewProps {
     onGenerateForTrend: (topic: string) => void;

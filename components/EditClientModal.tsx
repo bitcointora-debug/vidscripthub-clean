@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { Client } from '../types';
+import type { Client } from '../types.ts';
 
 interface EditClientModalProps {
   isOpen: boolean;

@@ -37,7 +37,7 @@ export interface Client {
   email: string;
   status: 'Active' | 'Pending' | 'Inactive';
   created_at?: string;
-  avatar?: string;
+  avatar?: string | null;
 }
 
 export interface Trend {
@@ -61,7 +61,7 @@ export interface User {
     id: string;
     name: string;
     email: string;
-    avatar_url: string;
+    avatar_url: string | null;
     primary_niche?: string;
     platforms?: ('tiktok' | 'instagram' | 'youtube')[];
     preferred_tone?: string;

@@ -1,6 +1,7 @@
 
+
 import React, { useState, useEffect } from 'react';
-import type { Script, Folder } from '../types';
+import type { Script, Folder } from '../types.ts';
 
 interface SaveScriptModalProps {
   isOpen: boolean;

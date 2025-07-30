@@ -1,6 +1,6 @@
 import React, { useMemo, useContext } from 'react';
-import type { Client } from '../types';
-import { DashboardContext } from '../context/DashboardContext';
+import type { Client } from '../types.ts';
+import { DashboardContext } from '../context/DashboardContext.tsx';
 
 interface AgencyViewProps {
     clients: Client[];

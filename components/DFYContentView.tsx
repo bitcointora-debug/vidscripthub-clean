@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import type { Script } from '../types';
-import { ScriptCard } from './ScriptCard';
-import { RemixScriptModal } from './RemixScriptModal';
-import { generateBonusPdf } from '../services/pdfService';
+import type { Script } from '../types.ts';
+import { ScriptCard } from './ScriptCard.tsx';
+import { RemixScriptModal } from './RemixScriptModal.tsx';
+import { generateBonusPdf } from '../services/pdfService.ts';
 
 export const mockDfyScripts: Script[] = [
     { id: 'dfy-1', title: "3 'Healthy' Foods That Are Actually Scams", hook: "You won't believe what's hiding in your 'healthy' snacks...", script: "VOICEOVER: You think you're eating healthy? Think again.\n[SCENE]: A vibrant, colorful shot of a fruit yogurt parfait. Looks delicious.\n[SOUND EFFECT: record scratch]\nON-SCREEN TEXT: High in Sugar!\nVOICEOVER: This is packed with more sugar than a candy bar. The 'fruit' is basically jam.\n[SCENE]: A hand grabbing a handful of granola from a bag.\nON-SCREEN TEXT: Mostly Processed Oats & Oil!\nVOICEOVER: And this 'wholesome' granola? It's basically dessert, coated in oil and sugar.\n[SCENE]: A bag of veggie chips next to actual vegetables.\nVOICEOVER: Don't even get me started on these. They're just potato chips in disguise with a sprinkle of vegetable powder. \nON-SCREEN TEXT: Follow for more health truths.", tone: 'Shocking', niche: 'Weight Loss', isNew: true },

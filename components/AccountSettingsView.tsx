@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import type { User } from '../types';
-import { supabase } from '../services/supabaseClient';
+import type { User } from '../types.ts';
+import { supabase } from '../services/supabaseClient.ts';
 
 interface AccountSettingsViewProps {
   user: User;

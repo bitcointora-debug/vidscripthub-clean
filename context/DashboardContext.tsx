@@ -1,9 +1,9 @@
 
 
 import React, { createContext, useReducer, useEffect, ReactNode, useCallback } from 'react';
-import type { Session, User, Script, Folder, Notification, WatchedTrend, Client, Trend } from '../types';
-import { supabase } from '../services/supabaseClient';
-import type { Json } from '../services/database.types';
+import type { Session, User, Script, Folder, Notification, WatchedTrend, Client, Trend } from '../types.ts';
+import { supabase } from '../services/supabaseClient.ts';
+import type { Json } from '../services/database.types.ts';
 
 // --- STATE AND INITIAL VALUES ---
 interface DashboardState {
@@ -85,7 +85,7 @@ type RequestAction =
     | { type: 'ADD_FOLDER_REQUEST'; payload: { folder: Folder } }
     | { type: 'RENAME_FOLDER_REQUEST'; payload: { folderId: string; newName: string } }
     | { type: 'DELETE_FOLDER_REQUEST'; payload: { folderId: string } }
-    | { type: 'ADD_CLIENT_REQUEST'; payload: { clientData: Omit<Client, 'id'|'status'> } }
+    | { type: 'ADD_CLIENT_REQUEST'; payload: { clientData: Omit<Client, 'id'|'status'|'agency_owner_id'|'created_at'|'avatar'> } }
     | { type: 'UPDATE_CLIENT_REQUEST'; payload: { updatedClient: Client } }
     | { type: 'DELETE_CLIENT_REQUEST'; payload: { clientId: string } }
     | { type: 'ADD_WATCHED_TREND_REQUEST'; payload: { trend: Trend } }
@@ -155,8 +155,18 @@ export const DashboardProvider: React.FC<{ children: ReactNode; session: Session
                         .single();
 
                     if (profileError) throw profileError;
+                    if (!profileData) throw new Error(`User profile not found for ID: ${session.user.id}`);
                     
-                    const user: User = { ...profileData, isPersonalized: !!profileData.primary_niche };
+                    const user: User = { 
+                        id: profileData.id,
+                        name: profileData.name,
+                        email: profileData.email,
+                        avatar_url: profileData.avatar_url,
+                        primary_niche: profileData.primary_niche ?? undefined,
+                        platforms: profileData.platforms ?? undefined,
+                        preferred_tone: profileData.preferred_tone ?? undefined,
+                        isPersonalized: !!profileData.primary_niche 
+                    };
                     
                     const [scriptsRes, foldersRes, notificationsRes, watchedTrendsRes, clientsRes] = await Promise.all([
                         supabase.from('scripts').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false }),
@@ -174,11 +184,11 @@ export const DashboardProvider: React.FC<{ children: ReactNode; session: Session
                     
                     dispatch({ type: 'FETCH_DATA_SUCCESS', payload: {
                         user,
-                        savedScripts: scriptsRes.data,
-                        folders: [{ id: 'all', name: 'All Scripts' }, ...foldersRes.data],
-                        notifications: notificationsRes.data,
-                        watchedTrends: watchedTrendsRes.data,
-                        clients: clientsRes.data
+                        savedScripts: (scriptsRes.data || []) as Script[],
+                        folders: [{ id: 'all', name: 'All Scripts' }, ...((foldersRes.data || []) as Folder[])],
+                        notifications: (notificationsRes.data || []) as Notification[],
+                        watchedTrends: (watchedTrendsRes.data || []) as WatchedTrend[],
+                        clients: (clientsRes.data || []) as Client[]
                     }});
 
                 } catch (error: any) {
@@ -200,11 +210,11 @@ export const DashboardProvider: React.FC<{ children: ReactNode; session: Session
                 case 'ADD_NOTIFICATION_REQUEST': {
                     const { data, error } = await supabase.from('notifications').insert({ message: action.payload.message, user_id: userId }).select().single();
                     if (error) throw error;
-                    dispatch({ type: 'ADD_NOTIFICATION_SUCCESS', payload: data });
+                    if (data) dispatch({ type: 'ADD_NOTIFICATION_SUCCESS', payload: data as Notification });
                     break;
                 }
                 case 'MARK_ALL_NOTIFICATIONS_READ_REQUEST': {
-                     const { data, error } = await supabase.from('notifications').update({ read: true }).eq('user_id', userId).eq('read', false).select();
+                     const { error } = await supabase.from('notifications').update({ read: true }).eq('user_id', userId).eq('read', false);
                      if (error) throw error;
                      const updatedNotifications = state.notifications.map(n => ({...n, read: true}));
                      dispatch({ type: 'MARK_ALL_NOTIFICATIONS_READ_SUCCESS', payload: updatedNotifications });
@@ -213,14 +223,16 @@ export const DashboardProvider: React.FC<{ children: ReactNode; session: Session
                 case 'COMPLETE_PERSONALIZATION_REQUEST': {
                     const { data, error } = await supabase.from('profiles').update({ primary_niche: action.payload.niche, platforms: action.payload.platforms, preferred_tone: action.payload.tone }).eq('id', userId).select().single();
                     if (error) throw error;
-                    dispatch({ type: 'COMPLETE_PERSONALIZATION_SUCCESS', payload: { primary_niche: data.primary_niche, platforms: data.platforms, preferred_tone: data.preferred_tone }});
+                    if (data) {
+                        dispatch({ type: 'COMPLETE_PERSONALIZATION_SUCCESS', payload: { primary_niche: data.primary_niche ?? undefined, platforms: data.platforms ?? undefined, preferred_tone: data.preferred_tone ?? undefined }});
+                    }
                     break;
                 }
                 case 'ADD_SAVED_SCRIPT_REQUEST': {
                     const { isNew, ...scriptToInsert } = action.payload.script;
                     const { data, error } = await supabase.from('scripts').insert({ ...scriptToInsert, user_id: userId }).select().single();
                     if (error) throw error;
-                    dispatch({ type: 'ADD_SAVED_SCRIPT_SUCCESS', payload: data });
+                    if (data) dispatch({ type: 'ADD_SAVED_SCRIPT_SUCCESS', payload: data as Script });
                     break;
                 }
                 case 'UNSAVE_SCRIPT_REQUEST': {
@@ -238,7 +250,7 @@ export const DashboardProvider: React.FC<{ children: ReactNode; session: Session
                 case 'ADD_FOLDER_REQUEST': {
                     const { data, error } = await supabase.from('folders').insert({ ...action.payload.folder, user_id: userId }).select().single();
                     if (error) throw error;
-                    dispatch({ type: 'ADD_FOLDER_SUCCESS', payload: data });
+                    if (data) dispatch({ type: 'ADD_FOLDER_SUCCESS', payload: data as Folder });
                     break;
                 }
                 case 'RENAME_FOLDER_REQUEST': {
@@ -272,14 +284,14 @@ export const DashboardProvider: React.FC<{ children: ReactNode; session: Session
                 case 'ADD_CLIENT_REQUEST': {
                     const { data, error } = await supabase.from('clients').insert({ ...action.payload.clientData, agency_owner_id: userId, status: 'Pending' }).select().single();
                     if (error) throw error;
-                    dispatch({ type: 'ADD_CLIENT_SUCCESS', payload: data });
+                    if (data) dispatch({ type: 'ADD_CLIENT_SUCCESS', payload: data as Client });
                     break;
                 }
                 case 'UPDATE_CLIENT_REQUEST': {
                     const { updatedClient } = action.payload;
                     const { data, error } = await supabase.from('clients').update({ name: updatedClient.name, email: updatedClient.email, status: updatedClient.status }).eq('id', updatedClient.id).eq('agency_owner_id', userId).select().single();
                     if (error) throw error;
-                    dispatch({ type: 'UPDATE_CLIENT_SUCCESS', payload: { updatedClient: data } });
+                    if (data) dispatch({ type: 'UPDATE_CLIENT_SUCCESS', payload: { updatedClient: data as Client } });
                     break;
                 }
                 case 'DELETE_CLIENT_REQUEST': {
@@ -291,7 +303,7 @@ export const DashboardProvider: React.FC<{ children: ReactNode; session: Session
                 case 'ADD_WATCHED_TREND_REQUEST': {
                     const { data, error } = await supabase.from('watched_trends').insert({ user_id: userId, trend_data: action.payload.trend as unknown as Json }).select().single();
                     if (error) throw error;
-                    dispatch({ type: 'ADD_WATCHED_TREND_SUCCESS', payload: data });
+                    if (data) dispatch({ type: 'ADD_WATCHED_TREND_SUCCESS', payload: data as WatchedTrend });
                     break;
                 }
                 case 'REMOVE_WATCHED_TREND_REQUEST': {

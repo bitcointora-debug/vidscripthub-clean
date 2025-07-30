@@ -1,7 +1,8 @@
 
+
 import React from 'react';
-import type { Script } from '../types';
-import { ScriptCard } from './ScriptCard';
+import type { Script } from '../types.ts';
+import { ScriptCard } from './ScriptCard.tsx';
 
 interface ScriptDisplayProps {
   scripts: Script[];

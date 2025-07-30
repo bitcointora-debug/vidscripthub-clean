@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { EnhancedTopic } from '../types';
+import type { EnhancedTopic } from '../types.ts';
 
 interface InputFormProps {
   onGenerate: (topic: string, tone: string, length: number) => void;

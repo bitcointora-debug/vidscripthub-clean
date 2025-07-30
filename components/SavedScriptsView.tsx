@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { ScriptCard } from './ScriptCard';
-import type { Script, Folder } from '../types';
+import { ScriptCard } from './ScriptCard.tsx';
+import type { Script, Folder } from '../types.ts';
 
 interface SavedScriptsViewProps {
     savedScripts: Script[];

@@ -1,6 +1,7 @@
 
+
 import React from 'react';
-import { CheckCircleIcon } from './icons/CheckCircleIcon';
+import { CheckCircleIcon } from './icons/CheckCircleIcon.tsx';
 
 interface Oto1PageProps {
     onNavigateToNextStep: () => void;

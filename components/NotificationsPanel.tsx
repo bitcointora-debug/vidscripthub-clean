@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import type { Notification } from '../types';
+import type { Notification } from '../types.ts';
 import { formatDistanceToNow } from 'date-fns';
 
 interface NotificationsPanelProps {

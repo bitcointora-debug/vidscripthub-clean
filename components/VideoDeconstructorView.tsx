@@ -1,10 +1,11 @@
 
 
+
 import React, { useState, useContext } from 'react';
-import { deconstructVideo, QUOTA_ERROR_MESSAGE } from '../services/geminiService';
-import type { VideoDeconstruction, Script } from '../types';
-import { ScriptCard } from './ScriptCard';
-import { DashboardContext } from '../context/DashboardContext';
+import { deconstructVideo, QUOTA_ERROR_MESSAGE } from '../services/geminiService.ts';
+import type { VideoDeconstruction, Script } from '../types.ts';
+import { ScriptCard } from './ScriptCard.tsx';
+import { DashboardContext } from '../context/DashboardContext.tsx';
 
 interface VideoDeconstructorViewProps {
     addNotification: (message: string) => void;
