@@ -1,18 +1,84 @@
-
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI, Type } from "@google/genai";
 import { createClient } from '@supabase/supabase-js';
 import { supabaseUrl } from '../services/supabaseClient.ts';
 import type { Database } from '../services/database.types.ts';
-import type { Script, Trend, EnhancedTopic, VideoDeconstruction, ViralScoreBreakdown } from '../types.ts';
+import type { Script, Trend, EnhancedTopic, VideoDeconstruction, ViralScoreBreakdown, OptimizationStep } from '../types.ts';
 
-// Schemas are identical to the old geminiService.ts file
-const scriptResponseSchema = { type: Type.ARRAY, items: { type: Type.OBJECT, properties: { title: { type: Type.STRING, description: "A catchy, viral-style title for the video. Should be short and intriguing.", }, hook: { type: Type.STRING, description: "A 1-3 second hook to grab the viewer's attention immediately. This is the most crucial part.", }, script: { type: Type.STRING, description: "The full script, formatted with clear sections like '[SCENE]', 'VOICEOVER:', or 'ON-SCREEN TEXT:' for easy readability and production. Must include specific visual cues and action descriptions.", }, }, required: ["title", "hook", "script"], }, };
-const singleScriptResponseSchema = { type: Type.OBJECT, properties: { title: { type: Type.STRING, description: "A catchy, viral-style title for the video, adapted for the new topic.", }, hook: { type: Type.STRING, description: "A 1-3 second hook for the new topic, preserving the style of the original hook.", }, script: { type: Type.STRING, description: "The full script for the new topic, preserving the structure, pacing, and formatting (including visual cues) of the original.", }, }, required: ["title", "hook", "script"], };
+// Schemas
 const viralityAnalysisSchema = { type: Type.OBJECT, properties: { overallScore: { type: Type.NUMBER, description: "A score from 1-100 for overall viral potential." }, hookAnalysis: { type: Type.STRING, description: "1-sentence analysis of the hook's strength and attention-grabbing power." }, pacingAnalysis: { type: Type.STRING, description: "1-sentence analysis of the script's pacing, flow, and ability to hold attention." }, valueAnalysis: { type: Type.STRING, description: "1-sentence analysis of the value (entertainment, education, emotion) delivered to the viewer." }, ctaAnalysis: { type: Type.STRING, description: "1-sentence analysis of the call-to-action's effectiveness and clarity." }, finalVerdict: { type: Type.STRING, description: "A concluding one-sentence rationale for the overall score, summarizing the script's strongest and weakest points." } }, required: ["overallScore", "hookAnalysis", "pacingAnalysis", "valueAnalysis", "ctaAnalysis", "finalVerdict"] };
 const topicEnhancementSchema = { type: Type.ARRAY, items: { type: Type.OBJECT, properties: { angle: { type: Type.STRING, description: "A specific, more viral-friendly angle for the original topic. It should spark curiosity, controversy, or a strong emotion." }, rationale: { type: Type.STRING, description: "A short, one-sentence explanation of why this angle is psychologically compelling for social media." } }, required: ["angle", "rationale"], } };
+const singleScriptResponseSchema = { type: Type.OBJECT, properties: { title: { type: Type.STRING, description: "A catchy, viral-style title for the video, adapted for the new topic.", }, hook: { type: Type.STRING, description: "A 1-3 second hook for the new topic, preserving the style of the original hook.", }, script: { type: Type.STRING, description: "The full script for the new topic, preserving the structure, pacing, and formatting (including visual cues) of the original.", }, }, required: ["title", "hook", "script"], };
+const optimizationTraceSchema = {
+    type: Type.OBJECT,
+    properties: {
+        steps: {
+            type: Type.ARRAY,
+            description: "An array of optimization steps.",
+            items: {
+                type: Type.OBJECT,
+                properties: {
+                    log: { type: Type.STRING, description: "A short, user-facing log of what this step is improving." },
+                    score: { type: Type.NUMBER, description: "The new virality score (1-100) after this step." },
+                    script: {
+                        type: Type.OBJECT,
+                        properties: {
+                            title: { type: Type.STRING },
+                            hook: { type: Type.STRING },
+                            script: { type: Type.STRING }
+                        },
+                        required: ["title", "hook", "script"]
+                    }
+                },
+                required: ["log", "score", "script"]
+            }
+        }
+    },
+    required: ["steps"]
+};
 
 export const QUOTA_ERROR_MESSAGE = "API quota exceeded for the 'gemini-2.5-flash' model. Your Google Cloud project has paid limits, but they might not be applied to this specific model. Please go to the Quotas page in your Google Cloud Console, filter for the 'generativelanguage.googleapis.com' service, and request a quota increase for the 'gemini-2.5-flash' model.";
+
+function getOptimizationPrompt(task: any): string {
+    if (task.mode === 'generate') {
+        const { topic, tone, lengthInSeconds } = task.data;
+        return `
+You are a script optimization AI. Your task is to generate a script about "${topic}" with a "${tone}" tone, approximately ${lengthInSeconds} seconds long, and then show how you improve it step-by-step.
+
+The output MUST be a single JSON object that strictly adheres to the schema provided. The object must contain a key "steps" which is an array of 5 optimization step objects.
+
+The 5 steps are:
+1.  **First Draft**: Create a decent first draft. The "log" should be "Generating first draft...". The "score" must be between 40-60.
+2.  **Hook Refinement**: Substantially rewrite the hook for better impact and curiosity. The "log" should be "Refining hook for maximum impact.". The "score" must be between 65-75. The script body can have minor changes to align with the new hook.
+3.  **Structure & Pacing**: Improve the flow, transitions, and pacing of the script body. Make it snappier. The "log" should be "Improving structure and pacing.". The "score" must be between 78-88.
+4.  **Value & CTA**: Enhance the core value proposition and add or improve the Call to Action. The "log" should be "Enhancing value and call to action.". The "score" must be between 90-97.
+5.  **Final Polish**: Perform a final polish of the entire script for clarity, word choice, and power. The "log" should be "Performing final polish.". The "score" MUST be 100.
+
+Return only the JSON object.
+`;
+    } else { // optimize mode
+        const { title, hook, script } = task.data;
+        return `
+You are a script optimization AI. Your task is to take an existing script and improve it step-by-step.
+Here is the user's script:
+Title: "${title}"
+Hook: "${hook}"
+Script: "${script}"
+
+The output MUST be a single JSON object that strictly adheres to the schema provided. The object must contain a key "steps" which is an array of 5 optimization step objects.
+
+The 5 steps are:
+1.  **Initial Analysis**: Analyze the provided script. Do NOT change it. The "log" should be "Analyzing user-provided script...". The "score" must be your honest assessment of the original script's potential (between 10-60).
+2.  **Hook Refinement**: Substantially rewrite the hook for better impact and curiosity. The "log" should be "Refining hook for maximum impact.". The "score" must be between 65-75. The script body can have minor changes to align with the new hook.
+3.  **Structure & Pacing**: Improve the flow, transitions, and pacing of the script body. Make it snappier. The "log" should be "Improving structure and pacing.". The "score" must be between 78-88.
+4.  **Value & CTA**: Enhance the core value proposition and add or improve the Call to Action. The "log" should be "Enhancing value and call to action.". The "score" must be between 90-97.
+5.  **Final Polish**: Perform a final polish of the entire script for clarity, word choice, and power. The "log" should be "Performing final polish.". The "score" MUST be 100.
+
+Return only the JSON object.
+`;
+    }
+}
+
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== 'POST') {
@@ -21,30 +87,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const { action, payload } = req.body;
 
-    if (action !== 'sendClientInvite' && action !== 'createBillingPortalSession' && !process.env.API_KEY) {
+    if (action !== 'sendClientInvite' && !process.env.API_KEY) {
         return res.status(500).json({ message: "API_KEY environment variable is not set on the server." });
     }
     
-    // Defer AI client initialization until it's needed
     let ai: GoogleGenAI | undefined;
-    if (action !== 'sendClientInvite' && action !== 'createBillingPortalSession') {
+    if (action !== 'sendClientInvite') {
         ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
     }
     
     try {
         switch (action) {
-            case 'generateScripts': {
-                const { topic, tone, lengthInSeconds, platforms } = payload;
-                let platformInstruction = "for platforms like TikTok, Instagram Reels, and YouTube Shorts.";
-                if (platforms && platforms.length > 0) {
-                    const platformNames = platforms.map((p: string) => p.charAt(0).toUpperCase() + p.slice(1)).join(', ');
-                    platformInstruction = `specifically for ${platformNames}.`;
+            case 'getOptimizationTrace': {
+                const { task } = payload;
+                const prompt = getOptimizationPrompt(task);
+                const response = await ai!.models.generateContent({
+                    model: "gemini-2.5-flash",
+                    contents: prompt,
+                    config: {
+                        responseMimeType: "application/json",
+                        responseSchema: optimizationTraceSchema,
+                    },
+                });
+
+                const trace: { steps: OptimizationStep[] } = JSON.parse(response.text);
+
+                // Add a tone property to the final script for saving later
+                if (trace.steps.length > 0) {
+                    const finalStep = trace.steps[trace.steps.length - 1];
+                    (finalStep.script as any).tone = task.mode === 'generate' ? task.data.tone : 'Optimized';
                 }
-                const prompt = `You are an expert viral video scriptwriter. Your goal is to create 5 unique video script ideas. The topic is: "${topic}". The desired tone is: "${tone}". The target video length is approximately ${lengthInSeconds} seconds. Tailor the scripts ${platformInstruction}. Follow a strict Hook, Pacing, On-Screen Text, Story, and CTA framework. The output must be a valid JSON array of script objects.`;
-                const response = await ai!.models.generateContent({ model: "gemini-2.5-flash", contents: prompt, config: { responseMimeType: "application/json", responseSchema: scriptResponseSchema, }, });
-                const parsedScripts: Omit<Script, 'tone' | 'id'>[] = JSON.parse(response.text);
-                const scriptsWithToneAndId: Script[] = parsedScripts.map(script => ({ ...script, id: crypto.randomUUID(), tone: tone, }));
-                return res.status(200).json(scriptsWithToneAndId);
+
+                return res.status(200).json(trace);
             }
             case 'fetchTrendingTopics': {
                 const { niche } = payload;
@@ -168,12 +242,6 @@ The JSON object MUST be the only thing in your response, wrapped in a single JSO
                 }
                 
                 return res.status(200).json({ message: "Invitation sent successfully.", data });
-            }
-            case 'createBillingPortalSession': {
-                // For WarriorPlus, there isn't a direct customer portal API.
-                // The standard practice is to direct users to their purchase history.
-                const wplusPurchaseHistoryUrl = 'https://warriorplus.com/account/purchases';
-                return res.status(200).json({ url: wplusPurchaseHistoryUrl });
             }
             default:
                 return res.status(400).json({ message: "Invalid action" });

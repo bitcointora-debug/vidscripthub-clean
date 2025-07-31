@@ -1,8 +1,5 @@
-
-import React, { useState, useCallback, useRef, useEffect, useContext } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import type { Script, Folder } from '../types.ts';
-import { AuthContext } from '../context/AuthContext.tsx';
-import { UIContext } from '../context/UIContext.tsx';
 
 interface ScriptCardProps {
   script: Script;
@@ -46,10 +43,6 @@ export const ScriptCard: React.FC<ScriptCardProps> = ({
   folders = [], onMoveScriptToFolder, addNotification, onVisualize, isVisualizing = false,
   onRemix, onToggleSpeech, isSpeaking = false, isSelectable = false, isSelected = false, onToggleSelect
 }) => {
-  const { state: { user } } = useContext(AuthContext);
-  const { dispatch: uiDispatch } = useContext(UIContext);
-  const isUnlimited = user?.plan_level === 'unlimited';
-
   const [copied, setCopied] = useState(false);
   const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
   const actionsMenuRef = useRef<HTMLDivElement>(null);
@@ -57,7 +50,6 @@ export const ScriptCard: React.FC<ScriptCardProps> = ({
   const [visualsExpanded, setVisualsExpanded] = useState(false);
   const [analysisExpanded, setAnalysisExpanded] = useState(false);
   const [showArtStylePicker, setShowArtStylePicker] = useState(false);
-  const [isAnimatingSave, setIsAnimatingSave] = useState(false);
 
   const fullScriptText = `Title: ${script.title}\n\nHook: ${script.hook}\n\nScript:\n${script.script}`;
 
@@ -73,8 +65,6 @@ export const ScriptCard: React.FC<ScriptCardProps> = ({
   const handleSaveClick = (e: React.MouseEvent) => { 
     e.stopPropagation();
     isSaved ? onUnsave(script.id) : onOpenSaveModal(script); 
-    setIsAnimatingSave(true);
-    setTimeout(() => setIsAnimatingSave(false), 300);
   };
   
   const handleVisualizeClick = () => {
@@ -101,15 +91,6 @@ export const ScriptCard: React.FC<ScriptCardProps> = ({
   const handleRemixClick = () => { if (onRemix) { onRemix(script); setActionsMenuOpen(false); } };
   const handleToggleSpeechClick = () => { if (onToggleSpeech) { onToggleSpeech(script); setActionsMenuOpen(false); } };
   
-  const handlePremiumVoicesClick = () => {
-    if (!isUnlimited) {
-      uiDispatch({ type: 'OPEN_UPGRADE_MODAL', payload: 'unlimited' });
-    } else if (addNotification) {
-      addNotification("Premium AI voices from ElevenLabs are coming soon!");
-    }
-    setActionsMenuOpen(false);
-  };
-  
   const handleCardClick = () => {
     if (isSelectable && onToggleSelect) {
       onToggleSelect(script.id);
@@ -128,11 +109,10 @@ export const ScriptCard: React.FC<ScriptCardProps> = ({
 
   const emoji = toneEmojis[script.tone] || '📄';
   
-  const ActionMenuItem: React.FC<{onClick: (e: React.MouseEvent) => void, icon: string, label: string, disabled?: boolean, destructive?: boolean, children?: React.ReactNode, premium?: boolean}> = ({onClick, icon, label, disabled, destructive, premium, children}) => (
+  const ActionMenuItem: React.FC<{onClick: (e: React.MouseEvent) => void, icon: string, label: string, disabled?: boolean, destructive?: boolean, children?: React.ReactNode}> = ({onClick, icon, label, disabled, destructive, children}) => (
       <button onClick={onClick} disabled={disabled} className={`w-full text-left flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors duration-150 ${destructive ? 'text-red-400 hover:bg-red-900/50' : 'text-purple-200 hover:bg-[#4A3F7A]/50 hover:text-white'} disabled:opacity-50 disabled:cursor-not-allowed`}>
-          <i className={`${icon} w-4 text-center ${premium && 'text-yellow-400'}`}></i>
+          <i className={`${icon} w-4 text-center`}></i>
           <span>{label}</span>
-          {premium && !isUnlimited && <i className="fa-solid fa-lock text-xs ml-auto text-yellow-500"></i>}
           {children}
       </button>
   );
@@ -160,7 +140,7 @@ export const ScriptCard: React.FC<ScriptCardProps> = ({
             {copied ? <i className="fa-solid fa-check text-green-400"></i> : <i className="fa-solid fa-copy"></i>}
           </button>
            <button onClick={handleSaveClick} disabled={isScoring} className={`transition-colors duration-200 p-2 rounded-full bg-[#1A0F3C]/50 hover:bg-[#1A0F3C] disabled:cursor-not-allowed ${isSaved ? 'text-[#DAFF00]' : 'text-purple-300 hover:text-[#DAFF00]'}`} title={isSaved ? "Unsave Script" : "Save to Favorites"}>
-            {isScoring ? (<svg className="animate-spin h-4 w-4 text-[#DAFF00]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>) : (<i className={`fa-bookmark ${isSaved ? 'fa-solid' : 'fa-regular'} ${isAnimatingSave ? 'animate-pop-in' : ''}`}></i>)}
+            {isScoring ? (<svg className="animate-spin h-4 w-4 text-[#DAFF00]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>) : (<i className={`fa-bookmark ${isSaved ? 'fa-solid' : 'fa-regular'}`}></i>)}
           </button>
           
           {/* Kebab Menu */}
@@ -173,7 +153,6 @@ export const ScriptCard: React.FC<ScriptCardProps> = ({
                     {onVisualize && <ActionMenuItem onClick={(e) => {e.stopPropagation(); handleVisualizeClick();}} icon="fa-solid fa-palette" label="Visualize Script" disabled={isVisualizing} />}
                     {onRemix && <ActionMenuItem onClick={(e) => {e.stopPropagation(); handleRemixClick();}} icon="fa-solid fa-arrows-spin" label="Remix This Script" />}
                     {onToggleSpeech && <ActionMenuItem onClick={(e) => {e.stopPropagation(); handleToggleSpeechClick();}} icon={isSpeaking ? "fa-solid fa-stop" : "fa-solid fa-volume-high"} label={isSpeaking ? "Stop Voiceover" : "Listen to Script"} />}
-                    <ActionMenuItem onClick={(e) => {e.stopPropagation(); handlePremiumVoicesClick();}} icon="fa-solid fa-waveform" label="Premium Voices" premium />
                     {isSavedView && <div className="border-t border-[#4A3F7A]/50 my-1 !mx-2"></div>}
                     {isSavedView && onMoveScriptToFolder && (
                         <div className="relative group/move">

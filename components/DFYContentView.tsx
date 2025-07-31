@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useCallback, useEffect, useContext } from 'react';
 import type { Script } from '../types.ts';
 import { ScriptCard } from './ScriptCard.tsx';
@@ -6,7 +7,6 @@ import { RemixScriptModal } from './RemixScriptModal.tsx';
 import { generateBonusPdf } from '../services/pdfService.ts';
 import { DataContext } from '../context/DataContext.tsx';
 import { AuthContext } from '../context/AuthContext.tsx';
-import { UIContext } from '../context/UIContext.tsx';
 
 const niches = ['All', 'Weight Loss', 'Make Money', 'Fitness', 'Productivity', 'Tech', 'DIY', 'Cooking', 'Pets', 'Travel', 'Real Estate', 'Psychology', 'Personal Finance', 'Gaming', 'Parenting', 'Car Detailing', 'Relationships', 'Philosophy', 'History', 'Career'];
 
@@ -64,9 +64,9 @@ const viralHooks = {
 };
 
 const bonuses = [
-    { title: "The 34,092 Buyers List CASE STUDY", description: "Learn how to turn viral views into a massive, profitable email list.", icon: "fa-solid fa-file-invoice-dollar" },
-    { title: "The Affiliate Profits Club", description: "Get access to our private community and learn how to monetize with affiliate marketing.", icon: "fa-solid fa-users" },
-    { title: "The Traffic Accelerator Training", description: "A video masterclass on advanced strategies to drive traffic from your viral content.", icon: "fa-solid fa-video" },
+    { title: "Profit Niches Exposed", description: "Our secret list of 20+ underexploited niches where you can go viral fast.", icon: "fa-solid fa-lightbulb" },
+    { title: "The 60-Second Video Toolkit", description: "A simple checklist for shooting high-quality viral videos with just your smartphone.", icon: "fa-solid fa-camera" },
+    { title: "The Viral Monetization Blueprint", description: "Learn 5 easy ways to turn your newfound views into actual, spendable cash.", icon: "fa-solid fa-sack-dollar" },
 ];
 
 type Tab = 'Scripts' | 'Hooks' | 'Audio' | 'Bonuses';
@@ -90,9 +90,6 @@ export const DFYContentView: React.FC<DFYContentViewProps> = ({
 }) => {
     const { state: { user } } = useContext(AuthContext);
     const { dispatch: dataDispatch } = useContext(DataContext);
-    const { dispatch: uiDispatch } = useContext(UIContext);
-    const hasDfyVault = user?.has_dfy_vault ?? false;
-
     const [activeTab, setActiveTab] = useState<Tab>('Scripts');
     const [activeNiche, setActiveNiche] = useState('All');
     const [activeTone, setActiveTone] = useState('All');
@@ -170,19 +167,10 @@ export const DFYContentView: React.FC<DFYContentViewProps> = ({
         }
     };
 
-    const handleTabClick = (tabName: Tab, isLocked: boolean) => {
-        if (isLocked) {
-            uiDispatch({ type: 'OPEN_UPGRADE_MODAL', payload: 'dfy' });
-        } else {
-            setActiveTab(tabName);
-        }
-    };
-
-    const TabButton: React.FC<{tabName: Tab, currentTab: Tab, children: React.ReactNode, icon: string, locked?: boolean}> = ({ tabName, currentTab, children, icon, locked=false }) => (
-        <button onClick={() => handleTabClick(tabName, locked)} className={`flex-1 group flex items-center justify-center gap-2 px-3 py-3 text-sm font-bold rounded-t-lg transition-all duration-200 border-b-4 ${locked ? 'text-purple-300/30 cursor-pointer' : currentTab === tabName ? 'text-[#DAFF00] border-[#DAFF00]' : 'text-purple-300 border-transparent hover:text-white hover:bg-[#4A3F7A]/30'}`}>
-            <i className={`${icon} transition-colors duration-200 ${locked ? 'text-purple-300/30' : currentTab === tabName ? 'text-[#DAFF00]' : 'text-purple-300/70 group-hover:text-white'}`}></i>
+    const TabButton: React.FC<{tabName: Tab, currentTab: Tab, children: React.ReactNode, icon: string}> = ({ tabName, currentTab, children, icon }) => (
+        <button onClick={() => setActiveTab(tabName)} className={`flex-1 group flex items-center justify-center gap-2 px-3 py-3 text-sm font-bold rounded-t-lg transition-all duration-200 border-b-4 ${currentTab === tabName ? 'text-[#DAFF00] border-[#DAFF00]' : 'text-purple-300 border-transparent hover:text-white hover:bg-[#4A3F7A]/30'}`}>
+            <i className={`${icon} transition-colors duration-200 ${currentTab === tabName ? 'text-[#DAFF00]' : 'text-purple-300/70 group-hover:text-white'}`}></i>
             {children}
-            {locked && <i className="fa-solid fa-lock text-xs text-yellow-400/50"></i>}
         </button>
     );
 
@@ -198,12 +186,6 @@ export const DFYContentView: React.FC<DFYContentViewProps> = ({
             case 'Scripts':
                 return (
                     <>
-                        {!hasDfyVault && (
-                            <button onClick={() => uiDispatch({type: 'OPEN_UPGRADE_MODAL', payload: 'dfy'})} className="w-full text-center p-4 mb-6 bg-yellow-900/20 border border-yellow-500/30 rounded-lg group hover:bg-yellow-900/30">
-                                 <h3 className="font-bold text-yellow-300"><i className="fa-solid fa-lock mr-2"></i>Upgrade to Unlock Premium Content</h3>
-                                 <p className="text-xs text-yellow-200/70 mt-1">Get instant access to the Viral Hooks Swipe File, Audio Masterclass, and Exclusive Bonuses!</p>
-                            </button>
-                        )}
                         <div className="flex flex-col md:flex-row gap-4 mb-6">
                             <div className="relative flex-grow">
                                 <i className="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-purple-300/50"></i>
@@ -317,13 +299,13 @@ export const DFYContentView: React.FC<DFYContentViewProps> = ({
                      <div className="bg-[#2A1A5E]/50 rounded-xl border border-[#4A3F7A]/30 p-6 md:p-8 space-y-8">
                         <div className="text-center">
                             <i className="fa-solid fa-gift text-4xl text-[#DAFF00] mb-3"></i>
-                            <h2 className="text-3xl font-bold text-white mb-2">Your UNLIMITED Bonus Vault</h2>
-                            <p className="text-purple-200 max-w-2xl mx-auto">Thank you for upgrading! Here are the special bonuses included with your Unlimited plan.</p>
+                            <h2 className="text-3xl font-bold text-white mb-2">Your Launch Bonuses</h2>
+                            <p className="text-purple-200 max-w-2xl mx-auto">Thank you for your purchase! Here are the special bonuses included with your order.</p>
                         </div>
                         <div className="space-y-6 max-w-3xl mx-auto">
                             {bonuses.map(bonus => (
                                 <div key={bonus.title} className="bg-[#1A0F3C] rounded-lg p-5 flex flex-col md:flex-row items-center justify-between gap-4">
-                                    <div className="flex items-center gap-4 text-center md:text-left">
+                                    <div className="flex items-center gap-4">
                                         <i className={`${bonus.icon} text-2xl text-[#DAFF00] w-8 text-center`}></i>
                                         <div>
                                             <h3 className="font-bold text-white">{bonus.title}</h3>
@@ -331,7 +313,7 @@ export const DFYContentView: React.FC<DFYContentViewProps> = ({
                                         </div>
                                     </div>
                                     <button onClick={() => handleDownloadBonus(bonus.title)} className="w-full md:w-auto flex-shrink-0 bg-[#DAFF00] text-[#1A0F3C] font-bold py-2 px-4 rounded-md text-sm hover:bg-opacity-90 transition-all">
-                                        <i className="fa-solid fa-download mr-2"></i>Download Now
+                                        <i className="fa-solid fa-download mr-2"></i>Download PDF
                                     </button>
                                 </div>
                             ))}
@@ -359,9 +341,9 @@ export const DFYContentView: React.FC<DFYContentViewProps> = ({
             <div className="border-b border-[#4A3F7A]/30 mb-6">
                 <div className="flex -mb-px">
                     <TabButton tabName="Scripts" currentTab={activeTab} icon="fa-solid fa-scroll">DFY Scripts</TabButton>
-                    <TabButton tabName="Hooks" currentTab={activeTab} icon="fa-solid fa-fish-fins" locked={!hasDfyVault}>Viral Hooks</TabButton>
-                    <TabButton tabName="Audio" currentTab={activeTab} icon="fa-solid fa-headphones-simple" locked={!hasDfyVault}>Audio Masterclass</TabButton>
-                    <TabButton tabName="Bonuses" currentTab={activeTab} icon="fa-solid fa-gift" locked={!hasDfyVault}>Bonuses</TabButton>
+                    <TabButton tabName="Hooks" currentTab={activeTab} icon="fa-solid fa-fish-fins">Viral Hooks</TabButton>
+                    <TabButton tabName="Audio" currentTab={activeTab} icon="fa-solid fa-headphones-simple">Audio Masterclass</TabButton>
+                    <TabButton tabName="Bonuses" currentTab={activeTab} icon="fa-solid fa-gift">Bonuses</TabButton>
                 </div>
             </div>
             {renderContent()}

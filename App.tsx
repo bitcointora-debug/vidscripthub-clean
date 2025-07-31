@@ -1,23 +1,16 @@
 
 import React, { useState, useEffect } from 'react';
-import { Dashboard } from './components/Dashboard.tsx';
-import type { Client, Session } from './types.ts';
 import { AuthProvider } from './context/AuthContext.tsx';
 import { DataProvider } from './context/DataContext.tsx';
 import { UIProvider } from './context/UIContext.tsx';
 import { supabase } from './services/supabaseClient.ts';
-import { AuthPage } from './components/AuthPage.tsx';
-import { SalesPage } from './components/SalesPage.tsx';
-import { Oto1Page } from './components/Oto1Page.tsx';
-import { Oto2Page } from './components/Oto2Page.tsx';
-import { Oto3Page } from './components/Oto3Page.tsx';
+import { AppRouter } from './components/AppRouter.tsx';
+import type { Session } from './types.ts';
+
 
 const App: React.FC = () => {
   const [session, setSession] = useState<Session | null>(null);
-  const [impersonatingClient, setImpersonatingClient] = useState<Client | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [flowState, setFlowState] = useState<'sales' | 'oto1' | 'oto2' | 'oto3' | 'app'>('sales');
-  const [cameFromApp, setCameFromApp] = useState(false);
 
   useEffect(() => {
     const getSession = async () => {
@@ -34,34 +27,6 @@ const App: React.FC = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleLoginAsClient = (client: Client) => {
-    setImpersonatingClient(client);
-    window.scrollTo(0, 0);
-  };
-
-  const handleLogoutClientView = () => {
-    setImpersonatingClient(null);
-  };
-  
-  const handleInitiateUpgrade = (targetFlow: 'oto1' | 'oto2' | 'oto3') => {
-    setCameFromApp(true);
-    setFlowState(targetFlow);
-  };
-
-  if (flowState === 'sales') {
-    return <SalesPage onPurchaseClick={() => setFlowState('oto1')} onDashboardClick={() => setFlowState('app')} />;
-  }
-  if (flowState === 'oto1') {
-      const nextStep = cameFromApp ? 'app' : 'oto2';
-      return <Oto1Page onNavigateToNextStep={() => { setFlowState(nextStep); if(cameFromApp) setCameFromApp(false); }} />;
-  }
-  if (flowState === 'oto2') {
-      const nextStep = cameFromApp ? 'app' : 'oto3';
-      return <Oto2Page onNavigateToNextStep={() => { setFlowState(nextStep); if(cameFromApp) setCameFromApp(false); }} />;
-  }
-  if (flowState === 'oto3') {
-      return <Oto3Page onNavigateToDashboard={() => { setFlowState('app'); if(cameFromApp) setCameFromApp(false); }} />;
-  }
 
   if (isLoading) {
     return (
@@ -74,20 +39,13 @@ const App: React.FC = () => {
     );
   }
 
-  if (!session) {
-    return <AuthPage />;
-  }
-  
+  // AuthProvider and other providers now wrap the entire application flow.
+  // AppRouter handles all routing logic based on auth state.
   return (
     <AuthProvider session={session}>
         <UIProvider>
             <DataProvider>
-                <Dashboard 
-                    impersonatingClient={impersonatingClient} 
-                    onLoginAsClient={handleLoginAsClient} 
-                    onLogoutClientView={handleLogoutClientView}
-                    onInitiateUpgrade={handleInitiateUpgrade}
-                />
+                <AppRouter />
             </DataProvider>
         </UIProvider>
     </AuthProvider>

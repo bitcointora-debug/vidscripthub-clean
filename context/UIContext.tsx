@@ -7,10 +7,6 @@ export interface UIState {
     isNewDfyAvailable: boolean;
     quotaError: string | null;
     runTour: boolean;
-    upgradeModalState: {
-        isOpen: boolean;
-        plan: 'unlimited' | 'dfy' | 'agency' | null;
-    };
 }
 
 const initialState: UIState = {
@@ -18,10 +14,6 @@ const initialState: UIState = {
     isNewDfyAvailable: true,
     quotaError: null,
     runTour: false,
-    upgradeModalState: {
-        isOpen: false,
-        plan: null,
-    }
 };
 
 // --- ACTIONS ---
@@ -31,9 +23,7 @@ export type UIAction =
     | { type: 'SET_QUOTA_ERROR'; payload: string | null }
     | { type: 'CLEAR_QUOTA_ERROR' }
     | { type: 'START_TOUR' }
-    | { type: 'STOP_TOUR' }
-    | { type: 'OPEN_UPGRADE_MODAL'; payload: 'unlimited' | 'dfy' | 'agency' }
-    | { type: 'CLOSE_UPGRADE_MODAL' };
+    | { type: 'STOP_TOUR' };
 
 // --- REDUCER ---
 const uiReducer = (state: UIState, action: UIAction): UIState => {
@@ -44,8 +34,6 @@ const uiReducer = (state: UIState, action: UIAction): UIState => {
         case 'CLEAR_QUOTA_ERROR': return { ...state, quotaError: null };
         case 'START_TOUR': return { ...state, runTour: true };
         case 'STOP_TOUR': return { ...state, runTour: false };
-        case 'OPEN_UPGRADE_MODAL': return { ...state, upgradeModalState: { isOpen: true, plan: action.payload } };
-        case 'CLOSE_UPGRADE_MODAL': return { ...state, upgradeModalState: { isOpen: false, plan: null } };
         default: return state;
     }
 };

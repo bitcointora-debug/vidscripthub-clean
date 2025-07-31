@@ -1,11 +1,9 @@
-
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import type { Script } from '../types.ts';
 import { ScriptCard } from './ScriptCard.tsx';
 
 interface ScriptDisplayProps {
-  scripts: Script[];
+  script: Script | null;
   isLoading: boolean;
   error: string | null;
   onOpenSaveModal: (script: Script) => void;
@@ -24,35 +22,28 @@ const EmptyState: React.FC = () => (
       <svg className="mx-auto h-12 w-12 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
         <path vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.5 14h.01M12 14h.01M8.5 14h.01M4.5 18H2v-4.5l6.45-6.45a6.002 6.002 0 018.49 0l2.65 2.65a6 6 0 010 8.49L18 18h-4.5m-3 0h3" />
       </svg>
-      <h3 className="mt-2 text-lg font-medium text-[#F0F0F0]">No scripts generated yet</h3>
+      <h3 className="mt-2 text-lg font-medium text-[#F0F0F0]">No script generated yet</h3>
       <p className="mt-1 text-sm text-purple-200/80">Use the form above to create your first viral video script.</p>
     </div>
 );
 
-const LoadingState: React.FC = () => (
-    <div className="text-center py-16 px-6 bg-[#2A1A5E] rounded-lg border border-[#4A3F7A]">
-        <div className="flex justify-center items-center">
-            <svg className="animate-spin -ml-1 mr-3 h-6 w-6 text-[#DAFF00]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <h3 className="text-lg font-medium text-[#F0F0F0]">
-                <span className="animate-pulse">🧠 Our AI is writing... Please wait a moment.</span>
-            </h3>
-        </div>
-    </div>
-);
-
-
-export const ScriptDisplay: React.FC<ScriptDisplayProps> = ({ scripts, isLoading, error, onOpenSaveModal, onUnsaveScript, isScriptSaved, scoringScriptId, onVisualize, visualizingScriptId, onToggleSpeech, speakingScriptId }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [scripts]);
+export const ScriptDisplay: React.FC<ScriptDisplayProps> = ({ 
+  script, 
+  isLoading, 
+  error, 
+  onOpenSaveModal, 
+  onUnsaveScript, 
+  isScriptSaved, 
+  scoringScriptId, 
+  onVisualize, 
+  visualizingScriptId, 
+  onToggleSpeech, 
+  speakingScriptId 
+}) => {
 
   if (isLoading) {
-    return <LoadingState />;
+    // The loading state is now handled by the AIOptimizerView, so this is a fallback.
+    return null;
   }
 
   if (error) {
@@ -64,53 +55,27 @@ export const ScriptDisplay: React.FC<ScriptDisplayProps> = ({ scripts, isLoading
     );
   }
 
-  if (scripts.length === 0) {
+  if (!script) {
     return <EmptyState />;
   }
   
-  const activeScript = scripts[activeIndex];
-
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-[#F0F0F0]">Your Generated Scripts</h2>
+      <h2 className="text-2xl font-bold text-[#F0F0F0]">Your Optimized Script</h2>
       
-      {/* Tab Navigation */}
-      <div className="border-b border-[#4A3F7A]/30">
-          <div className="flex -mb-px space-x-4" aria-label="Tabs">
-              {scripts.map((script, index) => (
-                  <button
-                      key={script.id}
-                      onClick={() => setActiveIndex(index)}
-                      className={`group inline-flex items-center py-3 px-1 border-b-2 font-medium text-sm transition-all duration-200
-                          ${activeIndex === index
-                              ? 'border-[#DAFF00] text-[#DAFF00]'
-                              : 'border-transparent text-purple-300 hover:text-white hover:border-purple-300'
-                          }`
-                      }
-                  >
-                      <i className="fa-regular fa-file-lines mr-2"></i>
-                      <span>Script {index + 1}</span>
-                  </button>
-              ))}
-          </div>
+      <div key={script.id}>
+         <ScriptCard 
+            script={script} 
+            onOpenSaveModal={onOpenSaveModal} 
+            onUnsave={onUnsaveScript} 
+            isSaved={isScriptSaved(script)} 
+            isScoring={scoringScriptId === script.id} 
+            onVisualize={onVisualize}
+            isVisualizing={visualizingScriptId === script.id}
+            onToggleSpeech={onToggleSpeech}
+            isSpeaking={speakingScriptId === script.id}
+         />
       </div>
-
-      {/* Active Script Card */}
-       {activeScript && (
-          <div key={activeScript.id}>
-             <ScriptCard 
-                script={activeScript} 
-                onOpenSaveModal={onOpenSaveModal} 
-                onUnsave={onUnsaveScript} 
-                isSaved={isScriptSaved(activeScript)} 
-                isScoring={scoringScriptId === activeScript.id} 
-                onVisualize={onVisualize}
-                isVisualizing={visualizingScriptId === activeScript.id}
-                onToggleSpeech={onToggleSpeech}
-                isSpeaking={speakingScriptId === activeScript.id}
-             />
-          </div>
-       )}
     </div>
   );
 };

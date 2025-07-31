@@ -1,6 +1,11 @@
 
+
+
+
+
+
 import React, { createContext, useReducer, useEffect, ReactNode, useCallback, useContext } from 'react';
-import type { Script, Folder, WatchedTrend, Client, Trend, Notification, ViralScoreBreakdown } from '../types.ts';
+import type { Script, Folder, WatchedTrend, Client, Trend, Notification } from '../types.ts';
 import { supabase } from '../services/supabaseClient.ts';
 import type { Json, Database } from '../services/database.types.ts';
 import { AuthContext } from './AuthContext.tsx';
@@ -54,10 +59,10 @@ type RequestAction =
     | { type: 'UNSAVE_SCRIPT_REQUEST'; payload: { scriptId: string } }
     | { type: 'UPDATE_SAVED_SCRIPT_VISUALS_REQUEST'; payload: { scriptId: string; visuals: string[] } }
     | { type: 'MOVE_SCRIPT_TO_FOLDER_REQUEST'; payload: { scriptId: string; folderId: string | null } }
-    | { type: 'ADD_FOLDER_REQUEST'; payload: { folder: Omit<Folder, 'id' | 'user_id'> & { id?: string } } }
+    | { type: 'ADD_FOLDER_REQUEST'; payload: { folder: Omit<Folder, 'id'> & { id?: string } } }
     | { type: 'RENAME_FOLDER_REQUEST'; payload: { folderId: string; newName: string } }
     | { type: 'DELETE_FOLDER_REQUEST'; payload: { folderId: string } }
-    | { type: 'ADD_CLIENT_REQUEST'; payload: { clientData: Omit<Client, 'id' | 'status' | 'avatar' | 'agency_owner_id'> } }
+    | { type: 'ADD_CLIENT_REQUEST'; payload: { clientData: Omit<Client, 'id' | 'status'> } }
     | { type: 'UPDATE_CLIENT_REQUEST'; payload: { updatedClient: Client } }
     | { type: 'DELETE_CLIENT_REQUEST'; payload: { clientId: string } }
     | { type: 'ADD_WATCHED_TREND_REQUEST'; payload: { trend: Trend } }
@@ -68,11 +73,6 @@ type RequestAction =
     | { type: 'MARK_ALL_NOTIFICATIONS_READ_REQUEST'; payload: { userId: string } };
 
 export type DataDispatchableAction = Action | RequestAction;
-
-// Type guard to differentiate between sync and async (request) actions
-function isRequestAction(action: DataDispatchableAction): action is RequestAction {
-    return action.type.endsWith('_REQUEST');
-}
 
 // --- REDUCER ---
 const dataReducer = (state: DataState, action: Action): DataState => {
@@ -119,52 +119,37 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [state, dispatch] = useReducer(dataReducer, initialState);
 
     useEffect(() => {
-        if (!user) return;
+        if (!user) {
+            // Clear data if user logs out
+            dispatch({ type: 'FETCH_DATA_SUCCESS', payload: {
+                folders: [], clients: [], savedScripts: [], watchedTrends: [], notifications: []
+            }});
+            return;
+        }
 
         const fetchData = async () => {
             dispatch({ type: 'FETCH_DATA_START' });
             try {
-                const foldersRes = await supabase.from('folders').select('*').eq('user_id', user.id).order('created_at', { ascending: true });
+                const [foldersRes, clientsRes, scriptsRes, watchedTrendsRes, notificationsRes] = await Promise.all([
+                    supabase.from('folders').select('*').eq('user_id', user.id).order('created_at', { ascending: true }),
+                    supabase.from('clients').select('*').eq('agency_owner_id', user.id).order('created_at', { ascending: false }),
+                    supabase.from('scripts').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+                    supabase.from('watched_trends').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+                    supabase.from('notifications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20),
+                ]);
+
                 if (foldersRes.error) throw foldersRes.error;
-                
-                const clientsRes = await supabase.from('clients').select('*').eq('agency_owner_id', user.id).order('created_at', { ascending: false });
                 if (clientsRes.error) throw clientsRes.error;
-
-                const scriptsRes = await supabase.from('scripts').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
                 if (scriptsRes.error) throw scriptsRes.error;
-
-                const watchedTrendsRes = await supabase.from('watched_trends').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
                 if (watchedTrendsRes.error) throw watchedTrendsRes.error;
-
-                const notificationsRes = await supabase.from('notifications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20);
                 if (notificationsRes.error) throw notificationsRes.error;
                 
-                const fetchedScripts: Script[] = (scriptsRes.data || []).map(s => ({
-                    id: s.id,
-                    user_id: s.user_id,
-                    folder_id: s.folder_id,
-                    title: s.title,
-                    hook: s.hook,
-                    script: s.script,
-                    tone: s.tone,
-                    viral_score_breakdown: s.viral_score_breakdown as ViralScoreBreakdown | undefined,
-                    visuals: s.visuals ?? undefined,
-                    niche: s.niche ?? undefined,
-                    created_at: s.created_at,
-                }));
-                const fetchedWatchedTrends: WatchedTrend[] = (watchedTrendsRes.data || []).map(wt => ({
-                    id: wt.id,
-                    user_id: wt.user_id,
-                    created_at: wt.created_at,
-                    trend_data: wt.trend_data as unknown as Trend,
-                }));
-
                 dispatch({ type: 'FETCH_DATA_SUCCESS', payload: {
-                    folders: [{ id: 'all', name: 'All Scripts', user_id: user.id, created_at: new Date().toISOString() }, ...(foldersRes.data || [])],
-                    clients: (clientsRes.data || []),
-                    savedScripts: fetchedScripts,
-                    watchedTrends: fetchedWatchedTrends,
-                    notifications: (notificationsRes.data || []),
+                    folders: [{ id: 'all', name: 'All Scripts' }, ...(foldersRes.data || [])] as Folder[],
+                    clients: (clientsRes.data || []) as unknown as Client[],
+                    savedScripts: (scriptsRes.data || []) as unknown as Script[],
+                    watchedTrends: (watchedTrendsRes.data || []) as unknown as WatchedTrend[],
+                    notifications: (notificationsRes.data || []) as unknown as Notification[],
                 }});
             } catch (error: any) {
                 dispatch({ type: 'FETCH_DATA_ERROR', payload: error.message });
@@ -182,29 +167,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         try {
             switch(action.type) {
                 case 'ADD_SAVED_SCRIPT_REQUEST': {
-                    const { script: scriptToAction } = action.payload;
-                    const payload: Database['public']['Tables']['scripts']['Insert'] = {
-                        id: scriptToAction.id,
-                        user_id: userId,
-                        folder_id: scriptToAction.folder_id,
-                        title: scriptToAction.title,
-                        hook: scriptToAction.hook,
-                        script: scriptToAction.script,
-                        tone: scriptToAction.tone,
-                        viral_score_breakdown: scriptToAction.viral_score_breakdown as Json | undefined,
-                        visuals: scriptToAction.visuals,
-                        niche: scriptToAction.niche,
-                        created_at: scriptToAction.created_at
-                    };
-                    const { data, error } = await supabase.from('scripts').insert(payload).select().single();
+                    const { isNew, ...scriptToInsert } = action.payload.script;
+                    const payload = { ...scriptToInsert, user_id: userId, viral_score_breakdown: scriptToInsert.viral_score_breakdown as unknown as Json ?? null };
+                    const { data, error } = await supabase.from('scripts').insert([payload] as any).select().single();
                     if (error) throw error;
-                    if (data) {
-                        const newScript: Script = {
-                            ...data,
-                            viral_score_breakdown: data.viral_score_breakdown as ViralScoreBreakdown | undefined,
-                        };
-                        dispatch({ type: 'ADD_SAVED_SCRIPT_SUCCESS', payload: newScript });
-                    }
+                    if (data) dispatch({ type: 'ADD_SAVED_SCRIPT_SUCCESS', payload: data as unknown as Script });
                     break;
                 }
                 case 'UNSAVE_SCRIPT_REQUEST': {
@@ -214,47 +181,43 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     break;
                 }
                  case 'MOVE_SCRIPT_TO_FOLDER_REQUEST': {
-                    const { error } = await supabase.from('scripts').update({ folder_id: action.payload.folderId }).eq('id', action.payload.scriptId);
+                    const { error } = await supabase.from('scripts').update({ folder_id: action.payload.folderId } as any).eq('id', action.payload.scriptId);
                     if (error) throw error;
                     dispatch({ type: 'MOVE_SCRIPT_TO_FOLDER_SUCCESS', payload: action.payload });
                     break;
                 }
                 case 'ADD_FOLDER_REQUEST': {
-                    const payload: Database['public']['Tables']['folders']['Insert'] = { user_id: userId, name: action.payload.folder.name || 'New Folder' };
-                    const { data, error } = await supabase.from('folders').insert(payload).select().single();
+                    const payload = { ...action.payload.folder, user_id: userId };
+                    const { data, error } = await supabase.from('folders').insert([payload] as any).select().single();
                     if (error) throw error;
-                    if (data) dispatch({ type: 'ADD_FOLDER_SUCCESS', payload: data });
+                    if (data) dispatch({ type: 'ADD_FOLDER_SUCCESS', payload: data as unknown as Folder });
                     break;
                 }
                 case 'RENAME_FOLDER_REQUEST': {
-                    const { error } = await supabase.from('folders').update({ name: action.payload.newName }).eq('id', action.payload.folderId);
+                    const { error } = await supabase.from('folders').update({ name: action.payload.newName } as any).eq('id', action.payload.folderId);
                     if (error) throw error;
                     dispatch({ type: 'RENAME_FOLDER_SUCCESS', payload: action.payload });
                     break;
                 }
                 case 'DELETE_FOLDER_REQUEST': {
-                    await supabase.from('scripts').update({ folder_id: null }).eq('user_id', userId).eq('folder_id', action.payload.folderId);
+                    await supabase.from('scripts').update({ folder_id: null } as any).eq('user_id', userId).eq('folder_id', action.payload.folderId);
                     await supabase.from('folders').delete().eq('id', action.payload.folderId).eq('user_id', userId);
                     dispatch({ type: 'DELETE_FOLDER_SUCCESS', payload: action.payload });
                     break;
                 }
                 case 'ADD_CLIENT_REQUEST': {
-                    const payload: Database['public']['Tables']['clients']['Insert'] = { ...action.payload.clientData, agency_owner_id: userId, status: 'Pending', avatar: '' };
-                    const { data, error } = await supabase.from('clients').insert(payload).select().single();
+                    const payload = { ...action.payload.clientData, agency_owner_id: userId, status: 'Pending' as const };
+                    const { data, error } = await supabase.from('clients').insert([payload] as any).select().single();
                     if (error) throw error;
-                    if (data) dispatch({ type: 'ADD_CLIENT_SUCCESS', payload: data });
+                    if (data) dispatch({ type: 'ADD_CLIENT_SUCCESS', payload: data as unknown as Client });
                     break;
                 }
                 case 'UPDATE_CLIENT_REQUEST': {
                     const { updatedClient } = action.payload;
-                    const payload: Database['public']['Tables']['clients']['Update'] = {
-                        name: updatedClient.name,
-                        email: updatedClient.email,
-                        status: updatedClient.status
-                    };
-                    const { data, error } = await supabase.from('clients').update(payload).eq('id', updatedClient.id).eq('agency_owner_id', userId).select().single();
+                    const payload = { name: updatedClient.name, email: updatedClient.email, status: updatedClient.status };
+                    const { data, error } = await supabase.from('clients').update(payload as any).eq('id', updatedClient.id).eq('agency_owner_id', userId).select().single();
                     if (error) throw error;
-                    if (data) dispatch({ type: 'UPDATE_CLIENT_SUCCESS', payload: { updatedClient: data } });
+                    if (data) dispatch({ type: 'UPDATE_CLIENT_SUCCESS', payload: { updatedClient: data as unknown as Client } });
                     break;
                 }
                 case 'DELETE_CLIENT_REQUEST': {
@@ -264,21 +227,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     break;
                 }
                 case 'ADD_WATCHED_TREND_REQUEST': {
-                    const payload: Database['public']['Tables']['watched_trends']['Insert'] = {
-                        user_id: userId,
-                        trend_data: action.payload.trend as unknown as Json
-                    };
-                    const { data, error } = await supabase.from('watched_trends').insert(payload).select().single();
+                    const payload = { user_id: userId, trend_data: action.payload.trend as unknown as Json };
+                    const { data, error } = await supabase.from('watched_trends').insert([payload] as any).select().single();
                     if (error) throw error;
-                    if (data) {
-                        const newTrend: WatchedTrend = {
-                            id: data.id,
-                            user_id: data.user_id,
-                            created_at: data.created_at,
-                            trend_data: data.trend_data as unknown as Trend
-                        };
-                        dispatch({ type: 'ADD_WATCHED_TREND_SUCCESS', payload: newTrend });
-                    }
+                    if (data) dispatch({ type: 'ADD_WATCHED_TREND_SUCCESS', payload: data as unknown as WatchedTrend });
                     break;
                 }
                 case 'REMOVE_WATCHED_TREND_REQUEST': {
@@ -288,7 +240,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     break;
                 }
                 case 'UPDATE_SAVED_SCRIPT_VISUALS_REQUEST': {
-                    const { error } = await supabase.from('scripts').update({ visuals: action.payload.visuals }).eq('id', action.payload.scriptId);
+                    const { error } = await supabase.from('scripts').update({ visuals: action.payload.visuals } as any).eq('id', action.payload.scriptId);
                     if(error) throw error;
                     dispatch({ type: 'UPDATE_SAVED_SCRIPT_VISUALS_SUCCESS', payload: action.payload });
                     break;
@@ -300,20 +252,20 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     break;
                 }
                 case 'BATCH_MOVE_SCRIPTS_REQUEST': {
-                    const { error } = await supabase.from('scripts').update({ folder_id: action.payload.folderId }).in('id', action.payload.scriptIds);
+                    const { error } = await supabase.from('scripts').update({ folder_id: action.payload.folderId } as any).in('id', action.payload.scriptIds);
                     if (error) throw error;
                     dispatch({ type: 'BATCH_MOVE_SCRIPTS_SUCCESS', payload: action.payload });
                     break;
                 }
                 case 'ADD_NOTIFICATION_REQUEST': {
-                    const payload: Database['public']['Tables']['notifications']['Insert'] = { message: action.payload.message, user_id: userId };
-                    const { data, error } = await supabase.from('notifications').insert(payload).select().single();
+                    const payload = { message: action.payload.message, user_id: userId };
+                    const { data, error } = await supabase.from('notifications').insert([payload] as any).select().single();
                     if (error) throw error;
-                    if (data) dispatch({ type: 'ADD_NOTIFICATION_SUCCESS', payload: data });
+                    if (data) dispatch({ type: 'ADD_NOTIFICATION_SUCCESS', payload: data as unknown as Notification });
                     break;
                 }
                 case 'MARK_ALL_NOTIFICATIONS_READ_REQUEST': {
-                     const { error } = await supabase.from('notifications').update({ read: true }).eq('user_id', userId).eq('read', false);
+                     const { error } = await supabase.from('notifications').update({ read: true } as any).eq('user_id', userId).eq('read', false);
                      if (error) throw error;
                      const updatedNotifications = state.notifications.map(n => ({...n, read: true}));
                      dispatch({ type: 'MARK_ALL_NOTIFICATIONS_READ_SUCCESS', payload: updatedNotifications });
@@ -326,12 +278,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [user, dispatch, state.notifications]);
 
     const enhancedDispatch = useCallback((action: DataDispatchableAction) => {
-        if (isRequestAction(action)) {
-            handleAsyncAction(action);
+        if (action.type.endsWith('_REQUEST')) {
+            handleAsyncAction(action as RequestAction);
         } else {
             dispatch(action as Action);
         }
-    }, [handleAsyncAction]);
+    }, [handleAsyncAction, dispatch]);
 
     return (
         <DataContext.Provider value={{ state, dispatch: enhancedDispatch }}>

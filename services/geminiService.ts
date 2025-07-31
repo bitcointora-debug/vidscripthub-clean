@@ -1,5 +1,4 @@
-
-import type { Script, Trend, EnhancedTopic, VideoDeconstruction, ViralScoreBreakdown } from '../types.ts';
+import type { Script, Trend, EnhancedTopic, VideoDeconstruction, ViralScoreBreakdown, OptimizationStep } from '../types.ts';
 
 export const QUOTA_ERROR_MESSAGE = "API quota exceeded for the 'gemini-2.5-flash' model. Your Google Cloud project has paid limits, but they might not be applied to this specific model. Please go to the Quotas page in your Google Cloud Console, filter for the 'generativelanguage.googleapis.com' service, and request a quota increase for the 'gemini-2.5-flash' model.";
 
@@ -21,8 +20,8 @@ async function callApi(action: string, payload: any) {
     return response.json();
 }
 
-export const generateScripts = (topic: string, tone: string, lengthInSeconds: number, platforms?: ('tiktok' | 'instagram' | 'youtube')[]): Promise<Script[]> => {
-    return callApi('generateScripts', { topic, tone, lengthInSeconds, platforms });
+export const getOptimizationTrace = (task: { mode: 'generate', data: { topic: string, tone: string, lengthInSeconds: number } } | { mode: 'optimize', data: { title: string, hook: string, script: string } }): Promise<{ steps: OptimizationStep[] }> => {
+    return callApi('getOptimizationTrace', { task });
 };
 
 export const fetchTrendingTopics = (niche?: string): Promise<{ trends: Trend[], sources: { uri: string; title: string }[] }> => {
@@ -51,8 +50,4 @@ export const remixScript = (baseScript: Script, newTopic: string): Promise<Scrip
 
 export const sendClientInvite = (email: string): Promise<any> => {
     return callApi('sendClientInvite', { email });
-};
-
-export const createBillingPortalSession = (): Promise<{ url: string }> => {
-    return callApi('createBillingPortalSession', {});
 };

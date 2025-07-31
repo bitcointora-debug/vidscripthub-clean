@@ -1,13 +1,12 @@
 
 
-import React, { useState, useMemo, useRef, useContext, useCallback } from 'react';
+import React, { useState, useMemo, useRef, useContext, useCallback, useEffect } from 'react';
 import { ScriptCard } from './ScriptCard.tsx';
 import type { Script, Folder } from '../types.ts';
 import { DataContext } from '../context/DataContext.tsx';
 import { UIContext } from '../context/UIContext.tsx';
 
 interface SavedScriptsViewProps {
-    onNavigate?: (view: string) => void;
     onAddNewFolder: (folderName: string) => void;
     onOpenSaveModal: (script: Script) => void;
     onUnsaveScript: (scriptId: string) => void;
@@ -24,7 +23,7 @@ interface SavedScriptsViewProps {
 }
 
 export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({ 
-    onNavigate, onAddNewFolder, onOpenSaveModal, onUnsaveScript, onDeleteScript,
+    onAddNewFolder, onOpenSaveModal, onUnsaveScript, onDeleteScript,
     isScriptSaved, scoringScriptId, onMoveScriptToFolder, onRenameFolder, onDeleteFolder,
     onVisualize, visualizingScriptId, onToggleSpeech, speakingScriptId
 }) => {
@@ -43,6 +42,8 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
     const [selectedScriptIds, setSelectedScriptIds] = useState<string[]>([]);
     const [isBatchMoveOpen, setIsBatchMoveOpen] = useState(false);
     const batchMoveButtonRef = useRef<HTMLButtonElement>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
 
     const isSelectionMode = selectedScriptIds.length > 0;
 
@@ -71,11 +72,16 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
             return dateB - dateA;
         });
     }, [savedScripts, searchTerm, sortBy, activeFolderId]);
+
+    const totalPages = Math.ceil(filteredAndSortedScripts.length / itemsPerPage);
+    const paginatedScripts = useMemo(() => {
+        return filteredAndSortedScripts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    }, [filteredAndSortedScripts, currentPage, itemsPerPage]);
     
     const allVisibleScriptsSelected = useMemo(() => {
-        const visibleIds = filteredAndSortedScripts.map(s => s.id);
+        const visibleIds = paginatedScripts.map(s => s.id);
         return visibleIds.length > 0 && visibleIds.every(id => selectedScriptIds.includes(id));
-    }, [selectedScriptIds, filteredAndSortedScripts]);
+    }, [selectedScriptIds, paginatedScripts]);
     
     const handleAddNewFolderClick = () => {
         const newFolderName = prompt("Enter new folder name:");
@@ -100,7 +106,7 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
         setRenamingFolderId(null);
     };
     
-    const getEmptyStateContent = () => {
+    const renderEmptyState = () => {
         if (searchTerm && filteredAndSortedScripts.length === 0) {
             return { title: 'No Results Found', message: `Your search for "${searchTerm}" did not match any scripts.` };
         }
@@ -108,11 +114,7 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
             return { title: 'This Folder is Empty', message: 'You can drag and drop scripts here.' };
         }
         if (savedScripts.length === 0) {
-            return { 
-                title: 'Your Library is Empty', 
-                message: 'Generate some scripts and click the bookmark icon to save them here.',
-                showCta: true
-            };
+            return { title: 'Your Library is Empty', message: 'Generate some scripts and click the bookmark icon to save them here.' };
         }
         return { title: 'No Scripts Found', message: 'Try adjusting your search or filter criteria.' };
     };
@@ -158,9 +160,10 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
     
     const handleToggleSelectAll = () => {
         if (allVisibleScriptsSelected) {
-            setSelectedScriptIds([]);
+            const visibleIds = paginatedScripts.map(s => s.id);
+            setSelectedScriptIds(prev => prev.filter(id => !visibleIds.includes(id)));
         } else {
-            setSelectedScriptIds(filteredAndSortedScripts.map(s => s.id));
+            setSelectedScriptIds(prev => [...new Set([...prev, ...paginatedScripts.map(s => s.id)])]);
         }
     };
     
@@ -180,7 +183,16 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
         setIsBatchMoveOpen(false);
     };
 
-    const emptyStateContent = getEmptyStateContent();
+    const handlePageChange = (newPage: number) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setCurrentPage(newPage);
+        }
+    };
+
+    useEffect(() => {
+        setCurrentPage(1); // Reset to first page when filters change
+    }, [activeFolderId, sortBy, searchTerm]);
+
 
     return (
         <div className="flex flex-col md:flex-row gap-8 h-full">
@@ -236,7 +248,7 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
                             className="h-5 w-5 rounded-md bg-[#1A0F3C] border-[#4A3F7A] text-[#DAFF00] focus:ring-offset-[#1A0F3C] focus:ring-[#DAFF00]"
                             checked={allVisibleScriptsSelected}
                             onChange={handleToggleSelectAll}
-                            title="Select all visible"
+                            title="Select all on this page"
                          />
                         <span className="text-sm text-purple-300">Sort by:</span>
                         <button onClick={() => setSortBy('dateSaved')} className={`px-3 py-1.5 text-sm font-semibold rounded-md transition-colors duration-200 ${sortBy === 'dateSaved' ? 'bg-[#DAFF00] text-[#1A0F3C]' : 'bg-[#2A1A5E] hover:bg-[#4A3F7A]/80'}`}>Date Saved</button>
@@ -245,8 +257,8 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
                 </div>
 
                 <div className="space-y-6">
-                    {filteredAndSortedScripts.length > 0 ? (
-                        filteredAndSortedScripts.map((script) => (
+                    {paginatedScripts.length > 0 ? (
+                        paginatedScripts.map((script) => (
                             <div key={script.id} draggable={!isSelectionMode} onDragStart={(e) => handleDragStart(e, script.id)} onDragEnd={handleDragEnd}>
                                 <ScriptCard
                                     script={script} 
@@ -273,20 +285,25 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
                     ) : (
                          <div className="text-center py-16 px-6 bg-[#1A0F3C]/50 rounded-lg border-2 border-dashed border-[#4A3F7A]">
                             <i className="fa-regular fa-face-sad-tear text-4xl text-purple-300 mb-4"></i>
-                            <h3 className="mt-2 text-lg font-medium text-[#F0F0F0]">{emptyStateContent.title}</h3>
-                            <p className="mt-1 text-sm text-purple-200/80">{emptyStateContent.message}</p>
-                            {emptyStateContent.showCta && onNavigate && (
-                                <button
-                                    onClick={() => onNavigate('Script Generator')}
-                                    className="mt-6 bg-[#DAFF00] text-[#1A0F3C] font-bold py-2.5 px-5 rounded-md hover:bg-opacity-90 transition-all duration-200"
-                                >
-                                    <i className="fa-solid fa-wand-magic-sparkles mr-2"></i>
-                                    Generate Your First Script
-                                </button>
-                            )}
+                            <h3 className="mt-2 text-lg font-medium text-[#F0F0F0]">{renderEmptyState().title}</h3>
+                            <p className="mt-1 text-sm text-purple-200/80">{renderEmptyState().message}</p>
                         </div>
                     )}
                 </div>
+
+                {totalPages > 1 && (
+                    <div className="flex justify-between items-center mt-8">
+                        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="px-4 py-2 text-sm font-semibold bg-[#2A1A5E] text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#4A3F7A]">
+                            <i className="fa-solid fa-arrow-left mr-2"></i> Previous
+                        </button>
+                        <span className="text-sm text-purple-300">
+                            Page {currentPage} of {totalPages}
+                        </span>
+                        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="px-4 py-2 text-sm font-semibold bg-[#2A1A5E] text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#4A3F7A]">
+                            Next <i className="fa-solid fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                )}
             </main>
             
              {isSelectionMode && (

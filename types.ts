@@ -5,8 +5,6 @@ import type { AuthSession as Session } from '@supabase/supabase-js';
 export interface Folder {
   id: string;
   name: string;
-  user_id?: string;
-  created_at?: string;
 }
 
 export interface ViralScoreBreakdown {
@@ -60,18 +58,18 @@ export interface WatchedTrend {
     created_at?: string;
 }
 
+export type Plan = 'basic' | 'unlimited' | 'dfy' | 'agency';
+
 export interface User {
     id: string;
     name: string;
     email: string;
     avatar_url: string | null;
-    primary_niche?: string;
-    platforms?: ('tiktok' | 'instagram' | 'youtube')[];
-    preferred_tone?: string;
+    primary_niche: string | null;
+    platforms: ('tiktok' | 'instagram' | 'youtube')[] | null;
+    preferred_tone: string | null;
     isPersonalized: boolean;
-    plan_level: 'standard' | 'unlimited';
-    has_dfy_vault: boolean;
-    is_agency: boolean;
+    plan: Plan;
 }
 
 export interface Notification {
@@ -103,6 +101,12 @@ export interface VideoDeconstruction {
         }[];
     };
     generatedScripts: Script[];
+}
+
+export interface OptimizationStep {
+    log: string;
+    score: number;
+    script: Pick<Script, 'title' | 'hook' | 'script'>;
 }
 
 // Add Supabase Session type

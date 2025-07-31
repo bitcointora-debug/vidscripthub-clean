@@ -62,25 +62,6 @@ export const AgencyView: React.FC<AgencyViewProps> = ({ onRemoveClient, onOpenAd
         }
     }
 
-    const EmptyState = () => (
-        <tr>
-            <td colSpan={4}>
-                <div className="text-center py-16 px-6">
-                    <i className="fa-solid fa-users-slash text-5xl text-purple-300/50 mb-4"></i>
-                    <h3 className="text-lg font-medium text-white">No Clients Yet</h3>
-                    <p className="text-sm text-purple-200/80 max-w-xs mx-auto mt-1 mb-6">Add your first client to start managing their scripts and providing massive value.</p>
-                    <button 
-                        onClick={onOpenAddClientModal}
-                        className="bg-[#DAFF00] text-[#1A0F3C] font-bold py-2.5 px-5 rounded-md hover:bg-opacity-90 transition-all duration-200"
-                    >
-                        <i className="fa-solid fa-plus mr-2"></i>
-                        Add Your First Client
-                    </button>
-                </div>
-            </td>
-        </tr>
-    );
-
     return (
         <div>
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
@@ -125,7 +106,7 @@ export const AgencyView: React.FC<AgencyViewProps> = ({ onRemoveClient, onOpenAd
                                         </div>
                                     </td>
                                 </tr>
-                            )) : <EmptyState />}
+                            )) : (<tr><td colSpan={4} className="text-center py-10 px-6 text-purple-300">No clients found. Click "Add New Client" to get started.</td></tr>)}
                         </tbody>
                     </table>
                 </div>

@@ -1,3 +1,4 @@
+
 export type Json =
   | string
   | number
@@ -24,7 +25,7 @@ export type Database = {
           agency_owner_id: string
           name: string
           email: string
-          status: "Active" | "Pending" | "Inactive"
+          status?: "Active" | "Pending" | "Inactive"
           created_at?: string
           avatar: string
         }
@@ -118,9 +119,7 @@ export type Database = {
           platforms: ("tiktok" | "instagram" | "youtube")[] | null
           preferred_tone: string | null
           isPersonalized: boolean
-          plan_level: "standard" | "unlimited"
-          has_dfy_vault: boolean
-          is_agency: boolean
+          plan: "basic" | "unlimited" | "dfy" | "agency"
         }
         Insert: {
           id: string
@@ -131,9 +130,7 @@ export type Database = {
           platforms?: ("tiktok" | "instagram" | "youtube")[] | null
           preferred_tone?: string | null
           isPersonalized?: boolean
-          plan_level?: "standard" | "unlimited"
-          has_dfy_vault?: boolean
-          is_agency?: boolean
+          plan?: "basic" | "unlimited" | "dfy" | "agency"
         }
         Update: {
           id?: string
@@ -144,9 +141,7 @@ export type Database = {
           platforms?: ("tiktok" | "instagram" | "youtube")[] | null
           preferred_tone?: string | null
           isPersonalized?: boolean
-          plan_level?: "standard" | "unlimited"
-          has_dfy_vault?: boolean
-          is_agency?: boolean
+          plan?: "basic" | "unlimited" | "dfy" | "agency"
         }
         Relationships: []
       }

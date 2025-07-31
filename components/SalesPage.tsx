@@ -5,7 +5,6 @@ import { CheckCircleIcon } from './icons/CheckCircleIcon.tsx';
 import { PlusIcon } from './icons/PlusIcon.tsx';
 import { MinusIcon } from './icons/MinusIcon.tsx';
 import { TestimonialCard } from './TestimonialCard.tsx';
-import { ExitIntentPopup } from './ExitIntentPopup.tsx';
 
 const CountdownUnit = ({ value, label }: { value: string; label: string }) => (
     <div className="flex flex-col items-center leading-none">
@@ -40,7 +39,6 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
 
     const [secondsLeft, setSecondsLeft] = useState(getInitialSeconds);
     const [openFaq, setOpenFaq] = useState<number | null>(0);
-    const [showExitPopup, setShowExitPopup] = useState(false);
     
     // State for dynamic social proof
     const [salesCount, setSalesCount] = useState(() => parseInt(localStorage.getItem('vsh_sales_count') || '17', 10));
@@ -78,25 +76,6 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
         }, 20000); // Update every 20 seconds
 
         return () => clearInterval(socialProofInterval);
-    }, []);
-
-    // Effect for exit-intent popup
-    useEffect(() => {
-        const handleMouseLeave = (e: MouseEvent) => {
-            if (e.clientY <= 0) {
-                const popupShown = sessionStorage.getItem('vsh_popup_shown');
-                if (!popupShown) {
-                    setShowExitPopup(true);
-                    sessionStorage.setItem('vsh_popup_shown', 'true');
-                }
-            }
-        };
-
-        document.documentElement.addEventListener('mouseleave', handleMouseLeave);
-
-        return () => {
-            document.documentElement.removeEventListener('mouseleave', handleMouseLeave);
-        };
     }, []);
 
     const formatTime = (totalSeconds: number) => {
@@ -160,8 +139,8 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
             label: "STEP 3",
             icon: "images/step-icon-03-scripts.png",
             alt: "Script icon",
-            title: "Get Your Scripts",
-            text: "Receive 5 unique, high-converting video scripts complete with hooks, main points, and calls to action. Just read the lines and post!"
+            title: "Get Your Perfect Script",
+            text: "Watch as our AI crafts and perfects a single, high-virality script for you in real-time, taking it from a rough idea to a 100% optimized masterpiece."
         }
     ];
     
@@ -226,24 +205,19 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
 
     return (
         <div className="bg-[#1A0F3C] text-[#F0F0F0] antialiased relative">
-            <ExitIntentPopup 
-                isOpen={showExitPopup} 
-                onClose={() => setShowExitPopup(false)}
-                onAcceptOffer={onPurchaseClick}
-             />
              <button
                 onClick={onDashboardClick}
-                className="absolute top-4 right-4 z-50 border-2 border-[#DAFF00] text-[#DAFF00] font-bold py-2 px-4 text-xs md:text-sm rounded-full hover:bg-[#DAFF00] hover:text-[#1A0F3C] transition-all duration-300"
+                className="absolute top-5 right-5 z-50 border-2 border-[#DAFF00] text-[#DAFF00] font-bold py-2 px-5 rounded-full text-sm hover:bg-[#DAFF00] hover:text-[#1A0F3C] transition-all duration-300"
             >
                 Dashboard Login
             </button>
             {/* Top Scarcity Bar */}
-            <div className="bg-red-600 text-white p-2 text-center sticky top-0 z-40">
-                <div className="container mx-auto flex flex-col md:flex-row justify-center items-center font-bold text-xs md:text-base">
-                    <p className="uppercase tracking-wide mb-2 md:mb-0 md:mr-6 text-center">
-                        ATTENTION: PRICE DOUBLES PERMANENTLY WHEN TIMER HITS ZERO!
+            <div className="bg-red-600 text-white p-2.5 text-center sticky top-0 z-40">
+                <div className="container mx-auto flex flex-col md:flex-row justify-center items-center font-bold text-sm md:text-base">
+                    <p className="uppercase tracking-wide mb-2 md:mb-0 md:mr-6">
+                        ATTENTION: PRICE DOUBLES PERMANENTLY WHEN THE TIMER HITS ZERO!
                     </p>
-                    <div className="flex items-center space-x-2 md:space-x-4 bg-red-700/50 px-3 py-1 rounded-md">
+                    <div className="flex items-center space-x-3 md:space-x-4 bg-red-700/50 px-4 py-1 rounded-md">
                         <CountdownUnit value={days} label="Days" />
                         <span className="text-xl md:text-2xl font-bold animate-pulse">:</span>
                         <CountdownUnit value={hours} label="Hours" />
@@ -267,11 +241,11 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
 
                     <div className="container mx-auto max-w-6xl px-4 relative z-10">
                         {/* Headline & Sub-headline */}
-                        <div className="text-center mb-10">
+                        <div className="text-center mb-12">
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight mb-4" style={{ fontFamily: "'Poppins', sans-serif", lineHeight: 1.2 }}>
                             Leaked 'Viral Clone' A.I. Ethically Hijacks Top-Ranking Videos... And Writes You A <span className="text-[#DAFF00]">Unique Viral Script From Scratch</span> in 37 Seconds.
                             </h1>
-                            <p className="max-w-4xl mx-auto text-base md:text-xl text-purple-200/80">
+                            <p className="max-w-4xl mx-auto text-lg md:text-xl text-purple-200/80">
                                 Finally, You Can Command The Algorithm To Make YOU Go Viral... Starting In The Next 5 Minutes.
                             </p>
                         </div>
@@ -280,11 +254,11 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center mb-12">
                             {/* Left Column: VSL */}
                             <div className="w-full">
-                                <p className="text-center text-xs md:text-sm uppercase tracking-widest text-purple-300 mb-2 font-semibold">WATCH THIS 2-MINUTE DEMO TO SEE IT IN ACTION...</p>
+                                <p className="text-center text-sm uppercase tracking-widest text-purple-300 mb-2 font-semibold">WATCH THIS 2-MINUTE DEMO TO SEE IT IN ACTION...</p>
                                 <div className="aspect-video bg-[#2A1A5E] rounded-lg shadow-2xl overflow-hidden border-2 border-[#4A3F7A] flex items-center justify-center">
                                     <div className="text-center">
-                                        <p className="text-xl md:text-2xl font-bold text-white">Video Sales Letter (VSL)</p>
-                                        <i className="fas fa-play-circle text-5xl md:text-6xl text-[#DAFF00] mt-4"></i>
+                                        <p className="text-2xl font-bold text-white">Video Sales Letter (VSL)</p>
+                                        <i className="fas fa-play-circle text-6xl text-[#DAFF00] mt-4"></i>
                                     </div>
                                 </div>
                             </div>
@@ -294,31 +268,31 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                                 {benefits.map((benefit, index) => (
                                     <div key={index} className="flex items-start space-x-3 bg-[#2A1A5E]/50 p-4 rounded-lg border border-[#4A3F7A]/50">
                                         <CheckCircleIcon className="w-7 h-7 text-[#DAFF00] flex-shrink-0 mt-0.5" />
-                                        <span className="text-[#F0F0F0] text-base md:text-lg font-medium">{benefit}</span>
+                                        <span className="text-[#F0F0F0] text-lg font-medium">{benefit}</span>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
                         {/* CTA Block */}
-                        <div className="bg-gradient-to-b from-[#2A1A5E] to-[#2A1A5E]/80 border border-[#4A3F7A] rounded-xl p-6 md:p-12 text-center max-w-3xl mx-auto">
+                        <div className="bg-gradient-to-b from-[#2A1A5E] to-[#2A1A5E]/80 border border-[#4A3F7A] rounded-xl p-8 md:p-12 text-center max-w-3xl mx-auto">
                             <button
                                 onClick={onPurchaseClick}
-                                className="block w-full bg-[#DAFF00] text-[#1A0F3C] font-bold text-lg md:text-2xl uppercase py-4 px-5 rounded-lg shadow-[0_5px_0px_0px_#a8c400] hover:translate-y-1 hover:shadow-[0_4px_0px_0px_#a8c400] transition-all duration-150 ease-in-out"
+                                className="block w-full bg-[#DAFF00] text-[#1A0F3C] font-bold text-xl md:text-2xl uppercase py-5 px-6 rounded-lg shadow-[0_5px_0px_0px_#a8c400] hover:translate-y-1 hover:shadow-[0_4px_0px_0px_#a8c400] transition-all duration-150 ease-in-out"
                             >
                                 GET INSTANT ACCESS TO VID SCRIPT HUB NOW &raquo;
                             </button>
-                            <p className="mt-4 text-purple-200 font-semibold text-sm md:text-base">(Limited Time Launch Price: Just $17)</p>
+                            <p className="mt-4 text-purple-200 font-semibold">(Limited Time Launch Price: Just $17)</p>
 
                             {/* Trust Badges */}
-                            <div className="mt-6">
+                            <div className="mt-8">
                                 <div className="flex justify-center items-center space-x-4 flex-wrap">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-5 md:h-6 filter grayscale opacity-75" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4 md:h-5 filter grayscale opacity-75" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6 md:h-7 filter grayscale opacity-75" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f3/American_Express_logo.svg" alt="American Express" className="h-6 md:h-7 filter grayscale opacity-75" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-6 filter grayscale opacity-75" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-5 filter grayscale opacity-75" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-7 filter grayscale opacity-75" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f3/American_Express_logo.svg" alt="American Express" className="h-7 filter grayscale opacity-75" />
                                 </div>
-                                <div className="mt-6 inline-flex items-center space-x-2 bg-[#2A1A5E] text-purple-200 text-xs md:text-sm px-4 py-2 rounded-full border border-[#4A3F7A]">
+                                <div className="mt-6 inline-flex items-center space-x-2 bg-[#2A1A5E] text-purple-200 text-sm px-4 py-2 rounded-full border border-[#4A3F7A]">
                                     <svg className="w-5 h-5 text-[#DAFF00]" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>
                                     <span className="font-semibold">30-Day Money-Back Guarantee</span>
                                 </div>
@@ -326,7 +300,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                         </div>
 
                         {/* Dynamic Social Proof */}
-                        <div className="mt-8 text-center text-xs md:text-base text-purple-300">
+                        <div className="mt-8 text-center text-purple-300">
                             <p>🔥 {salesCount} Copies Sold In The Last Hour... <span className="text-purple-400/80">(Updated {lastUpdate} minutes ago in {lastSaleLocation})</span></p>
                         </div>
                     </div>
@@ -336,10 +310,10 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                 <section className="py-16 md:py-24 bg-[#1A0F3C]">
                     <div className="container mx-auto max-w-5xl px-4 text-center">
                         <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                            See The Vid Script Hub A.I. In Action
+                            See The 'Viral Clone' A.I. In Action
                         </h2>
-                        <p className="mt-4 text-base md:text-xl text-purple-200/80 max-w-3xl mx-auto">
-                            Watch how our A.I. turns one simple keyword into five unique, ready-to-shoot viral video scripts in under 60 seconds.
+                        <p className="mt-4 text-lg md:text-xl text-purple-200/80 max-w-3xl mx-auto">
+                            Watch us turn one simple keyword into a perfectly optimized, ready-to-shoot viral video script in under 60 seconds.
                         </p>
                         <div className="mt-12 max-w-4xl mx-auto">
                             {/* Video Player Placeholder */}
@@ -350,7 +324,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                                     <div className="w-20 h-20 md:w-24 md:h-24 bg-white/10 rounded-full flex items-center justify-center border-2 border-white/20 backdrop-blur-sm group-hover:scale-110 group-hover:bg-white/20 transition-transform duration-300">
                                         <i className="fas fa-play text-4xl md:text-5xl text-white ml-2"></i>
                                     </div>
-                                    <p className="mt-4 text-white font-bold text-base md:text-lg tracking-wider">WATCH THE DEMO</p>
+                                    <p className="mt-4 text-white font-bold text-lg tracking-wider">WATCH THE DEMO</p>
                                 </div>
                             </div>
                         </div>
@@ -374,14 +348,14 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                                         <img src={point.image} alt={point.alt} className="rounded-lg shadow-xl mx-auto max-w-full h-auto"/>
                                     </div>
                                     <div className={point.imagePosition === 'right' ? 'md:order-1' : ''}>
-                                        <h3 className="text-2xl md:text-3xl font-bold text-[#1A1A1A] mb-4 text-center md:text-left" style={{ fontFamily: "'Poppins', sans-serif" }}>{point.title}</h3>
-                                        <p className="text-base md:text-lg text-gray-700 leading-relaxed text-center md:text-left">{point.text}</p>
+                                        <h3 className="text-3xl font-bold text-[#1A1A1A] mb-4 text-center md:text-left" style={{ fontFamily: "'Poppins', sans-serif" }}>{point.title}</h3>
+                                        <p className="text-lg text-gray-700 leading-relaxed text-center md:text-left">{point.text}</p>
                                     </div>
                                 </div>
                             ))}
                         </div>
                         <div className="mt-20 md:mt-24 text-center">
-                            <p className="text-lg md:text-2xl text-gray-800 italic max-w-4xl mx-auto leading-relaxed">
+                            <p className="text-xl md:text-2xl text-gray-800 italic max-w-4xl mx-auto leading-relaxed">
                                 "It's enough to make you want to give up entirely. But what if the game wasn't just fair... what if it was finally <span className="text-[#1A0F3C] font-semibold not-italic">rigged in YOUR favor?</span>"
                             </p>
                         </div>
@@ -395,16 +369,16 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                      <img src="images/shape-sparkle-5.png" alt="abstract sparkle shape" className="absolute top-1/2 -right-4 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '3s'}}/>
                     
                     <div className="container mx-auto max-w-6xl px-4 relative z-10">
-                        <div className="bg-[#2A1A5E] rounded-2xl p-6 md:p-12 lg:p-16 shadow-2xl shadow-[#DAFF00]/5 border border-[#4A3F7A]/50">
+                        <div className="bg-[#2A1A5E] rounded-2xl p-8 md:p-12 lg:p-16 shadow-2xl shadow-[#DAFF00]/5 border border-[#4A3F7A]/50">
                             {/* Reveal Headline */}
                             <div className="text-center mb-12">
-                                <p className="text-base md:text-lg text-purple-200/90 italic mb-4">
+                                <p className="text-lg text-purple-200/90 italic mb-4">
                                     It's Enough To Make You Want To Quit... But It Doesn't Have To Be This Way.
                                 </p>
                                 <h2 className="text-4xl md:text-5xl lg:text-7xl font-extrabold text-center text-[#F0F0F0] mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>
                                     Introducing... Vid Script Hub
                                 </h2>
-                                <p className="text-lg md:text-2xl font-bold text-[#DAFF00] text-center max-w-4xl mx-auto leading-relaxed">
+                                <p className="text-xl md:text-2xl font-bold text-[#DAFF00] text-center max-w-4xl mx-auto leading-relaxed">
                                     The World's First 'Viral Clone' App That Uses Google's AI To Write Profit-Pulling Video Scripts For You In Seconds!
                                 </p>
                             </div>
@@ -416,18 +390,18 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                             
                             {/* The "3 Simple Steps" Structure */}
                             <div className="mt-16 md:mt-24">
-                                <h3 className="text-2xl md:text-4xl font-bold text-center text-[#F0F0F0] mb-12" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                                <h3 className="text-3xl md:text-4xl font-bold text-center text-[#F0F0F0] mb-12" style={{ fontFamily: "'Poppins', sans-serif" }}>
                                     Get Ready To Dominate Your Niche In Just 3 Simple Steps...
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                                     {steps.map((step, index) => (
                                         <div key={index} className="bg-[#1A0F3C] p-8 rounded-xl border-2 border-[#4A3F7A] text-center flex flex-col items-center transition-all duration-300 hover:border-[#DAFF00]/80 hover:-translate-y-2">
-                                            <p className="text-sm md:text-base font-bold text-[#DAFF00]/80 tracking-widest mb-4">{step.label}</p>
-                                            <div className="w-16 h-16 md:w-20 md:h-20 mb-6 rounded-full bg-[#2A1A5E] flex items-center justify-center">
-                                                <img src={step.icon} alt={step.alt} className="w-12 h-12 md:w-16 md:h-16"/>
+                                            <p className="text-base font-bold text-[#DAFF00]/80 tracking-widest mb-4">{step.label}</p>
+                                            <div className="w-20 h-20 mb-6 rounded-full bg-[#2A1A5E] flex items-center justify-center">
+                                                <img src={step.icon} alt={step.alt} className="w-16 h-16"/>
                                             </div>
-                                            <h4 className="text-xl md:text-2xl font-bold text-white mb-3" style={{ fontFamily: "'Poppins', sans-serif" }}>{step.title}</h4>
-                                            <p className="text-purple-200/80 leading-relaxed text-sm md:text-base">{step.text}</p>
+                                            <h4 className="text-2xl font-bold text-white mb-3" style={{ fontFamily: "'Poppins', sans-serif" }}>{step.title}</h4>
+                                            <p className="text-purple-200/80 leading-relaxed">{step.text}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -446,8 +420,8 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                             <img src="images/character-pointing.png" alt="Character pointing to the features" className="hidden lg:block absolute -bottom-24 left-0 w-48 h-auto z-20" />
                             <img src="images/character-amazed.png" alt="Character amazed by the features" className="hidden lg:block absolute -bottom-24 right-0 w-48 h-auto z-20" />
 
-                            <div className="relative z-10 max-w-3xl mx-auto bg-white text-[#1A1A1A] rounded-2xl shadow-2xl p-6 md:p-12 lg:p-16 border border-gray-200">
-                                <h2 className="text-2xl md:text-4xl font-extrabold text-center mb-8" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                            <div className="relative z-10 max-w-3xl mx-auto bg-white text-[#1A1A1A] rounded-2xl shadow-2xl p-8 md:p-12 lg:p-16 border border-gray-200">
+                                <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-8" style={{ fontFamily: "'Poppins', sans-serif" }}>
                                     VidScriptHub Is The ONLY Software On The Market That...
                                 </h2>
                                 <ul className="space-y-4">
@@ -459,7 +433,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                                         "Explodes your list with viral energy by getting you more views.",
                                         "Gives you the confidence to post content consistently."
                                     ].map((benefit, index) => (
-                                        <li key={index} className="flex items-start text-base md:text-lg">
+                                        <li key={index} className="flex items-start text-lg">
                                             <span className="text-2xl mr-4">⭐</span>
                                             <span className="text-gray-800 leading-relaxed pt-0.5">{benefit}</span>
                                         </li>
@@ -482,7 +456,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                             <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#F0F0F0]" style={{ fontFamily: "'Poppins', sans-serif", lineHeight: 1.3 }}>
                                PROOF: See How Regular People Are Turning A Single Keyword Into 10,000+ Views... <span className="text-[#DAFF00]">In Their First 24 Hours.</span>
                             </h2>
-                            <p className="mt-4 text-base md:text-xl text-purple-200/80 max-w-3xl mx-auto">
+                            <p className="mt-4 text-lg md:text-xl text-purple-200/80 max-w-3xl mx-auto">
                                 This isn't theory. This is what our members are posting right now.
                             </p>
                         </div>
@@ -508,7 +482,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                 <section className="py-16 md:py-24 bg-[#1A0F3C] text-[#F0F0F0] relative overflow-hidden">
                     <div className="container mx-auto max-w-6xl px-4 relative z-10">
                         <div className="text-center mb-16 md:mb-20">
-                            <h2 className="text-3xl md:text-5xl font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                            <h2 className="text-4xl md:text-5xl font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>
                                 Let's Break Down Exactly How You'll Win.
                             </h2>
                         </div>
@@ -517,10 +491,10 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                             {/* Row 1 */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
                                 <div className="text-center md:text-left">
-                                    <h3 className="text-2xl md:text-3xl font-bold text-[#DAFF00] mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                                    <h3 className="text-3xl font-bold text-[#DAFF00] mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>
                                         The End of the "Blank Page"
                                     </h3>
-                                    <p className="text-base md:text-lg text-purple-200/90 leading-relaxed">
+                                    <p className="text-lg text-purple-200/90 leading-relaxed">
                                         VidScriptHub eliminates your biggest enemy: creative block. You'll never stare at a blank screen wondering what to say again. Our AI delivers proven, structured ideas on demand.
                                     </p>
                                 </div>
@@ -532,15 +506,15 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
 
                             {/* Row 2 */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
-                                 <div className="relative flex justify-center items-center md:order-2">
+                                 <div className="relative flex justify-center items-center md:order-1">
                                     <img src="images/float-shape-02.png" alt="abstract floating shape" className="absolute w-full max-w-md h-auto opacity-10 -z-1" />
                                     <img src="images/human-element-02.png" alt="A person analyzing data on a screen" className="relative z-10 rounded-lg shadow-2xl shadow-black/30 max-w-sm w-full" />
                                 </div>
-                                <div className="text-center md:text-left md:order-1">
-                                    <h3 className="text-2xl md:text-3xl font-bold text-[#DAFF00] mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                                <div className="text-center md:text-left md:order-2">
+                                    <h3 className="text-3xl font-bold text-[#DAFF00] mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>
                                         From Raw Data To Perfect Scripts
                                     </h3>
-                                    <p className="text-base md:text-lg text-purple-200/90 leading-relaxed">
+                                    <p className="text-lg text-purple-200/90 leading-relaxed">
                                         Our system doesn't just guess. It analyzes real-time viral trends and transforms that complex data into simple, powerful scripts you can use immediately to get results.
                                     </p>
                                 </div>
@@ -552,11 +526,11 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                 {/* Proof of Views Section */}
                 <section className="py-16 md:py-24 bg-[#1A0F3C]">
                     <div className="container mx-auto max-w-5xl px-4 text-center">
-                        <h2 className="text-2xl md:text-4xl lg:text-5xl font-extrabold text-[#F0F0F0] tracking-tight uppercase" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#F0F0F0] tracking-tight uppercase" style={{ fontFamily: "'Poppins', sans-serif" }}>
                             WE PULLED OVER 508,084 VIEWS IN JUST 90 DAYS
                         </h2>
-                        <h3 className="mt-4 text-2xl md:text-4xl font-extrabold inline-block text-center" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                            <span className="bg-[#4A3F7A] text-white px-4 py-2 md:px-6 md:py-3 rounded-lg shadow-lg border-b-4 border-red-500">
+                        <h3 className="mt-4 text-3xl md:text-4xl font-extrabold inline-block text-center" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                            <span className="bg-[#4A3F7A] text-white px-6 py-3 rounded-lg shadow-lg border-b-4 border-red-500">
                                 ALL FROM FACELESS VIDEOS
                             </span>
                         </h3>
@@ -578,14 +552,14 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                                 <img src="images/founder-alex-jego.png" alt="Alex Jego, Founder of Vid Script Hub" className="w-48 h-48 rounded-full object-cover border-4 border-[#DAFF00] shadow-2xl" />
                             </div>
                             <div className="md:col-span-2 text-center md:text-left">
-                                <h2 className="text-2xl md:text-3xl font-bold mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>A Message From The Creator</h2>
-                                <p className="text-base md:text-lg text-purple-200/90 leading-relaxed mb-4 italic">
+                                <h2 className="text-3xl font-bold mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>A Message From The Creator</h2>
+                                <p className="text-lg text-purple-200/90 leading-relaxed mb-4 italic">
                                     "I was stuck. I knew video was the future, but every time I tried to create content, I'd either get stuck with writer's block, or my videos would flop. I saw others going viral and I couldn't figure out the 'secret'. So, I decided to build it."
                                 </p>
-                                <p className="text-base md:text-lg text-purple-200/90 leading-relaxed">
+                                <p className="text-lg text-purple-200/90 leading-relaxed">
                                     "Vid Script Hub is the tool I wish I had. It's not about guessing; it's about using proven data to give every creator, including you, a fair shot at success. My mission is to level the playing field. Let's make something amazing together."
                                 </p>
-                                <p className="mt-6 font-bold text-white text-lg md:text-xl">Alex Jego</p>
+                                <p className="mt-6 font-bold text-white text-xl">Alex Jego</p>
                                 <p className="text-purple-300">Founder, Vid Script Hub</p>
                             </div>
                         </div>
@@ -596,10 +570,10 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                 <section id="offer" className="py-16 md:py-24 bg-[#F7F8FC] text-[#1A1A1A]">
                     <div className="container mx-auto max-w-6xl px-4">
                         <div className="text-center mb-16 md:mb-20">
-                            <h2 className="text-3xl md:text-5xl font-extrabold text-[#1A1A1A]" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                            <h2 className="text-4xl md:text-5xl font-extrabold text-[#1A1A1A]" style={{ fontFamily: "'Poppins', sans-serif" }}>
                                 Here's Everything You're Getting Today
                             </h2>
-                            <p className="mt-4 text-base md:text-lg text-gray-700 max-w-3xl mx-auto">
+                            <p className="mt-4 text-lg text-gray-700 max-w-3xl mx-auto">
                                 When you act now, you don't just get the core VidScriptHub app. You get the entire <span className="font-bold">Launch VIP Package</span>, worth over $4,990, absolutely free.
                             </p>
                         </div>
@@ -607,14 +581,14 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                         <div className="max-w-4xl mx-auto space-y-6">
                             {/* Main Product */}
                             <div className="bg-white p-6 rounded-xl shadow-lg border-2 border-[#1A0F3C] flex flex-col md:flex-row gap-6 items-center">
-                                <div className="w-16 h-16 md:w-20 md:h-20 bg-[#1A0F3C] rounded-lg flex items-center justify-center flex-shrink-0">
-                                     <i className="fa-solid fa-rocket text-3xl md:text-4xl text-[#DAFF00]"></i>
+                                <div className="w-20 h-20 bg-[#1A0F3C] rounded-lg flex items-center justify-center flex-shrink-0">
+                                     <i className="fa-solid fa-rocket text-4xl text-[#DAFF00]"></i>
                                 </div>
                                 <div className="flex-grow text-center md:text-left">
-                                    <h3 className="text-xl md:text-2xl font-bold text-[#1A1A1A]">VidScriptHub Main App</h3>
-                                    <p className="text-gray-700 text-sm md:text-base">The complete, unrestricted access to our revolutionary AI script writing hub.</p>
+                                    <h3 className="text-2xl font-bold text-[#1A1A1A]">VidScriptHub Main App</h3>
+                                    <p className="text-gray-700">The complete, unrestricted access to our revolutionary AI script writing hub.</p>
                                 </div>
-                                <div className="font-bold text-base md:text-lg text-center md:text-right flex-shrink-0">
+                                <div className="font-bold text-lg text-center md:text-right flex-shrink-0">
                                     <p className="text-gray-500 line-through text-sm">$997</p>
                                     <p className="text-[#1A1A1A]">Value: ${mainProductValue}</p>
                                 </div>
@@ -627,13 +601,13 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                                         <i className={`${bonus.icon} text-3xl text-[#1A1A1A]`}></i>
                                     </div>
                                     <div className="flex-grow text-center md:text-left">
-                                        <div className="flex items-center justify-center md:justify-start gap-2 mb-1 flex-wrap">
-                                            <span className="text-xs md:text-sm font-bold bg-yellow-400 text-black px-2 py-0.5 rounded-full">{bonus.tier}</span>
-                                            <h3 className="text-lg md:text-xl font-bold text-[#1A1A1A]">{bonus.title}</h3>
+                                        <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
+                                            <span className="text-sm font-bold bg-yellow-400 text-black px-2 py-0.5 rounded-full">{bonus.tier}</span>
+                                            <h3 className="text-xl font-bold text-[#1A1A1A]">{bonus.title}</h3>
                                         </div>
                                         <p className="text-gray-600 text-sm">{bonus.description}</p>
                                     </div>
-                                    <div className="font-bold text-base md:text-lg text-gray-800 flex-shrink-0">
+                                    <div className="font-bold text-lg text-gray-800 flex-shrink-0">
                                         Value: ${bonus.value}
                                     </div>
                                 </div>
@@ -642,30 +616,30 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
 
                         {/* Value Summary & Final CTA */}
                         <div className="mt-20 md:mt-24 text-center max-w-3xl mx-auto">
-                            <div className="border-2 border-dashed border-gray-400 rounded-xl p-6 md:p-8 mb-8">
-                                <p className="text-xl md:text-2xl font-semibold text-gray-600 uppercase tracking-wider">Total Value You Get Today:</p>
-                                <p className="text-5xl md:text-8xl font-extrabold text-[#1A1A1A] my-2">${totalValue.toLocaleString()}</p>
+                            <div className="border-2 border-dashed border-gray-400 rounded-xl p-8 mb-8">
+                                <p className="text-2xl font-semibold text-gray-600 uppercase tracking-wider">Total Value You Get Today:</p>
+                                <p className="text-7xl md:text-8xl font-extrabold text-[#1A1A1A] my-2">${totalValue.toLocaleString()}</p>
                             </div>
                             
-                            <p className="text-lg md:text-xl font-medium text-gray-800 mb-4">Get Everything You See Above...</p>
+                            <p className="text-xl font-medium text-gray-800 mb-4">Get Everything You See Above...</p>
                             
                              <button
                                 onClick={onPurchaseClick}
-                                className="block w-full bg-[#DAFF00] text-[#1A0F3C] font-bold text-lg md:text-2xl uppercase py-4 px-5 rounded-lg shadow-[0_5px_0px_0px_#a8c400] hover:translate-y-1 hover:shadow-[0_4px_0px_0px_#a8c400] transition-all duration-150 ease-in-out"
+                                className="block w-full bg-[#DAFF00] text-[#1A0F3C] font-bold text-xl md:text-2xl uppercase py-5 px-6 rounded-lg shadow-[0_5px_0px_0px_#a8c400] hover:translate-y-1 hover:shadow-[0_4px_0px_0px_#a8c400] transition-all duration-150 ease-in-out"
                             >
                                 CLICK HERE TO GET VIDSCRIPTHUB + ALL BONUSES
                             </button>
-                            <p className="mt-4 text-[#1A0F3C] font-bold text-base md:text-lg">For A One-Time Investment Of Just $17</p>
+                            <p className="mt-4 text-[#1A0F3C] font-bold text-lg">For A One-Time Investment Of Just $17</p>
 
                              {/* Trust Badges */}
                              <div className="mt-8">
                                 <div className="flex justify-center items-center space-x-4 flex-wrap">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-5 md:h-6 filter grayscale opacity-60" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4 md:h-5 filter grayscale opacity-60" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6 md:h-7 filter grayscale opacity-60" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f3/American_Express_logo.svg" alt="American Express" className="h-6 md:h-7 filter grayscale opacity-60" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-6 filter grayscale opacity-60" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-5 filter grayscale opacity-60" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-7 filter grayscale opacity-60" />
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f3/American_Express_logo.svg" alt="American Express" className="h-7 filter grayscale opacity-60" />
                                 </div>
-                                <div className="mt-6 inline-flex items-center space-x-2 bg-white text-gray-700 text-xs md:text-sm px-4 py-2 rounded-full border border-gray-300">
+                                <div className="mt-6 inline-flex items-center space-x-2 bg-white text-gray-700 text-sm px-4 py-2 rounded-full border border-gray-300">
                                     <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>
                                     <span className="font-semibold">30-Day Money-Back Guarantee</span>
                                 </div>
@@ -678,8 +652,8 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                 <section className="py-16 md:py-24 bg-[#F7F8FC] text-[#1A1A1A]">
                     <div className="container mx-auto max-w-4xl px-4">
                         <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-5xl font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>Still Have Questions? We Have Answers.</h2>
-                            <p className="mt-4 text-base md:text-lg text-gray-700">We want you to be 100% confident in your decision to join Vid Script Hub today.</p>
+                            <h2 className="text-4xl md:text-5xl font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>Still Have Questions? We Have Answers.</h2>
+                            <p className="mt-4 text-lg text-gray-700">We want you to be 100% confident in your decision to join Vid Script Hub today.</p>
                         </div>
 
                         <div className="max-w-3xl mx-auto space-y-4">
@@ -687,14 +661,14 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                                 <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
                                     <button 
                                         onClick={() => handleFaqToggle(index)}
-                                        className="w-full flex justify-between items-center p-5 text-left font-semibold text-base md:text-lg bg-white hover:bg-gray-50 transition-colors"
+                                        className="w-full flex justify-between items-center p-5 text-left font-semibold text-lg bg-white hover:bg-gray-50 transition-colors"
                                     >
                                         <span>{faq.question}</span>
                                         {openFaq === index ? <MinusIcon className="w-6 h-6 text-[#1A1A1A]" /> : <PlusIcon className="w-6 h-6 text-[#1A1A1A]" />}
                                     </button>
                                     <div className={`transition-all duration-300 ease-in-out ${openFaq === index ? 'max-h-96' : 'max-h-0'}`}>
                                         <div className="p-5 bg-white border-t border-gray-200">
-                                            <p className="text-gray-700 leading-relaxed text-sm md:text-base">{faq.answer}</p>
+                                            <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
                                         </div>
                                     </div>
                                 </div>
