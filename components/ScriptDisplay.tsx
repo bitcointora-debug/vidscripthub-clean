@@ -1,6 +1,6 @@
 
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Script } from '../types.ts';
 import { ScriptCard } from './ScriptCard.tsx';
 
@@ -45,6 +45,12 @@ const LoadingState: React.FC = () => (
 
 
 export const ScriptDisplay: React.FC<ScriptDisplayProps> = ({ scripts, isLoading, error, onOpenSaveModal, onUnsaveScript, isScriptSaved, scoringScriptId, onVisualize, visualizingScriptId, onToggleSpeech, speakingScriptId }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [scripts]);
+
   if (isLoading) {
     return <LoadingState />;
   }
@@ -61,24 +67,50 @@ export const ScriptDisplay: React.FC<ScriptDisplayProps> = ({ scripts, isLoading
   if (scripts.length === 0) {
     return <EmptyState />;
   }
+  
+  const activeScript = scripts[activeIndex];
 
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold text-[#F0F0F0]">Your Generated Scripts</h2>
-      {scripts.map((script) => (
-        <ScriptCard 
-            key={script.id} 
-            script={script} 
-            onOpenSaveModal={onOpenSaveModal} 
-            onUnsave={onUnsaveScript} 
-            isSaved={isScriptSaved(script)} 
-            isScoring={scoringScriptId === script.id} 
-            onVisualize={onVisualize}
-            isVisualizing={visualizingScriptId === script.id}
-            onToggleSpeech={onToggleSpeech}
-            isSpeaking={speakingScriptId === script.id}
-        />
-      ))}
+      
+      {/* Tab Navigation */}
+      <div className="border-b border-[#4A3F7A]/30">
+          <div className="flex -mb-px space-x-4" aria-label="Tabs">
+              {scripts.map((script, index) => (
+                  <button
+                      key={script.id}
+                      onClick={() => setActiveIndex(index)}
+                      className={`group inline-flex items-center py-3 px-1 border-b-2 font-medium text-sm transition-all duration-200
+                          ${activeIndex === index
+                              ? 'border-[#DAFF00] text-[#DAFF00]'
+                              : 'border-transparent text-purple-300 hover:text-white hover:border-purple-300'
+                          }`
+                      }
+                  >
+                      <i className="fa-regular fa-file-lines mr-2"></i>
+                      <span>Script {index + 1}</span>
+                  </button>
+              ))}
+          </div>
+      </div>
+
+      {/* Active Script Card */}
+       {activeScript && (
+          <div key={activeScript.id}>
+             <ScriptCard 
+                script={activeScript} 
+                onOpenSaveModal={onOpenSaveModal} 
+                onUnsave={onUnsaveScript} 
+                isSaved={isScriptSaved(activeScript)} 
+                isScoring={scoringScriptId === activeScript.id} 
+                onVisualize={onVisualize}
+                isVisualizing={visualizingScriptId === activeScript.id}
+                onToggleSpeech={onToggleSpeech}
+                isSpeaking={speakingScriptId === activeScript.id}
+             />
+          </div>
+       )}
     </div>
   );
 };

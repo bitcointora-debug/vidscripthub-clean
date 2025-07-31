@@ -1,53 +1,64 @@
 
 
-
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { TrendCard } from './TrendCard.tsx';
 import type { Trend } from '../types.ts';
 import { fetchTrendingTopics, QUOTA_ERROR_MESSAGE } from '../services/geminiService.ts';
 import { formatDistanceToNow } from 'date-fns';
-import { DashboardContext } from '../context/DashboardContext.tsx';
+import { UIContext } from '../context/UIContext.tsx';
+import { DataContext } from '../context/DataContext.tsx';
+import { AuthContext } from '../context/AuthContext.tsx';
 
 interface TrendingTopicsViewProps {
     onGenerateForTrend: (topic: string) => void;
-    addNotification: (message: string) => void;
     onWatchTrend: (trend: Trend) => void;
     onUnwatchTrend: (topic: string) => void;
     isTrendWatched: (topic: string) => boolean;
 }
 
-const LoadingState = () => (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {[...Array(4)].map((_, i) => (
-             <div key={i} className="bg-[#2A1A5E] rounded-xl border border-[#4A3F7A] p-6 shadow-lg animate-pulse flex flex-col space-y-4 h-[320px]">
-                <div className="flex items-start gap-4">
-                    <div className="w-20 h-20 rounded-full bg-slate-700 flex-shrink-0"></div>
-                    <div className="flex-grow space-y-2 pt-2">
-                        <div className="h-5 bg-slate-700 rounded w-3/4"></div>
-                        <div className="h-4 bg-slate-700 rounded w-full"></div>
-                        <div className="h-4 bg-slate-700 rounded w-5/6"></div>
-                    </div>
-                </div>
-                <div className="space-y-3 pt-4 border-t border-slate-700">
-                     <div className="h-4 bg-slate-700 rounded w-1/2"></div>
-                     <div className="h-4 bg-slate-700 rounded w-1/3"></div>
-                </div>
-                 <div className="mt-auto pt-4">
-                    <div className="h-9 bg-slate-700 rounded-md w-full"></div>
-                </div>
+const SkeletonTrendCard: React.FC = () => (
+    <div className="bg-[#2A1A5E] rounded-xl border border-[#4A3F7A] p-6 shadow-lg animate-pulse flex flex-col space-y-4 h-[320px]">
+        <div className="flex items-start gap-4">
+            <div className="w-20 h-20 rounded-full bg-slate-700 flex-shrink-0"></div>
+            <div className="flex-grow space-y-2 pt-2">
+                <div className="h-5 bg-slate-700 rounded w-3/4"></div>
+                <div className="h-4 bg-slate-700 rounded w-full"></div>
+                <div className="h-4 bg-slate-700 rounded w-5/6"></div>
             </div>
-        ))}
+        </div>
+        <div className="space-y-3 pt-4 border-t border-slate-700/50">
+             <div className="h-4 bg-slate-700 rounded w-1/2"></div>
+             <div className="h-4 bg-slate-700 rounded w-1/3"></div>
+        </div>
+         <div className="mt-auto pt-4">
+            <div className="h-9 bg-slate-700 rounded-md w-full"></div>
+        </div>
     </div>
 );
 
 
-export const TrendingTopicsView: React.FC<TrendingTopicsViewProps> = ({ onGenerateForTrend, addNotification, onWatchTrend, onUnwatchTrend, isTrendWatched }) => {
-    const { dispatch } = useContext(DashboardContext);
+const LoadingState = () => (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {[...Array(4)].map((_, i) => <SkeletonTrendCard key={i} />)}
+    </div>
+);
+
+
+export const TrendingTopicsView: React.FC<TrendingTopicsViewProps> = ({ onGenerateForTrend, onWatchTrend, onUnwatchTrend, isTrendWatched }) => {
+    const { state: { user } } = useContext(AuthContext);
+    const { dispatch: uiDispatch } = useContext(UIContext);
+    const { dispatch: dataDispatch } = useContext(DataContext);
     const [trends, setTrends] = useState<Trend[]>([]);
     const [sources, setSources] = useState<{ uri: string; title: string }[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+    const addNotification = useCallback((message: string) => {
+        if(user) {
+            dataDispatch({ type: 'ADD_NOTIFICATION_REQUEST', payload: { message, userId: user.id } });
+        }
+    }, [dataDispatch, user]);
 
     const loadTrends = useCallback(async (forceRefresh: boolean = false) => {
         const cacheKey = 'vsh_trending_topics';
@@ -73,7 +84,7 @@ export const TrendingTopicsView: React.FC<TrendingTopicsViewProps> = ({ onGenera
         }
         
         try {
-            const { trends: fetchedTrends, sources: fetchedSources } = await fetchTrendingTopics();
+            const { trends: fetchedTrends, sources: fetchedSources } = await fetchTrendingTopics(user?.primary_niche);
             const timestamp = new Date().getTime();
             const cachePayload = { trends: fetchedTrends, sources: fetchedSources, timestamp };
             sessionStorage.setItem(cacheKey, JSON.stringify(cachePayload));
@@ -86,7 +97,7 @@ export const TrendingTopicsView: React.FC<TrendingTopicsViewProps> = ({ onGenera
         } catch (err: unknown) {
              const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
              if (errorMessage === QUOTA_ERROR_MESSAGE) {
-                dispatch({ type: 'SET_QUOTA_ERROR', payload: errorMessage });
+                uiDispatch({ type: 'SET_QUOTA_ERROR', payload: errorMessage });
              } else {
                 setError(errorMessage);
                 addNotification(`Error fetching trends: ${errorMessage}`);
@@ -94,7 +105,7 @@ export const TrendingTopicsView: React.FC<TrendingTopicsViewProps> = ({ onGenera
         } finally {
             setIsLoading(false);
         }
-    }, [addNotification, dispatch]);
+    }, [addNotification, uiDispatch, user?.primary_niche]);
 
     useEffect(() => {
         loadTrends();

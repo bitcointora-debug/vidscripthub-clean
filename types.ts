@@ -1,9 +1,12 @@
 
+
 import type { AuthSession as Session } from '@supabase/supabase-js';
 
 export interface Folder {
   id: string;
   name: string;
+  user_id?: string;
+  created_at?: string;
 }
 
 export interface ViralScoreBreakdown {
@@ -37,7 +40,7 @@ export interface Client {
   email: string;
   status: 'Active' | 'Pending' | 'Inactive';
   created_at?: string;
-  avatar?: string | null;
+  avatar: string;
 }
 
 export interface Trend {
@@ -65,7 +68,10 @@ export interface User {
     primary_niche?: string;
     platforms?: ('tiktok' | 'instagram' | 'youtube')[];
     preferred_tone?: string;
-    isPersonalized?: boolean;
+    isPersonalized: boolean;
+    plan_level: 'standard' | 'unlimited';
+    has_dfy_vault: boolean;
+    is_agency: boolean;
 }
 
 export interface Notification {
@@ -89,7 +95,7 @@ export interface VideoDeconstruction {
         valueProposition: string;
         callToAction: string;
     };
-    thumbnailAnalysis: {
+    thumbnailAnalysis?: {
         effectiveness: string;
         ideas: {
             title: string;

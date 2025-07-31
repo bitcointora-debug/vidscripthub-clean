@@ -1,5 +1,6 @@
 
 
+
 import React from 'react';
 import { RadialProgress } from './icons/RadialProgress.tsx';
 import type { Trend } from '../types.ts';
@@ -19,9 +20,9 @@ const competitionStyles = {
 };
 
 const trendDirectionStyles = {
-    Upward: { icon: 'fa-arrow-trend-up', color: 'text-green-400' },
-    Stable: { icon: 'fa-minus', color: 'text-yellow-400' },
-    Downward: { icon: 'fa-arrow-trend-down', color: 'text-red-400' },
+    Upward: { icon: 'fa-arrow-trend-up', color: 'text-green-400', style: 'bg-green-500/10 border-green-500/30' },
+    Stable: { icon: 'fa-minus', color: 'text-yellow-400', style: 'bg-yellow-500/10 border-yellow-500/30' },
+    Downward: { icon: 'fa-arrow-trend-down', color: 'text-red-400', style: 'bg-red-500/10 border-red-500/30' },
 };
 
 export const TrendCard: React.FC<TrendCardProps> = ({ 
@@ -57,31 +58,34 @@ export const TrendCard: React.FC<TrendCardProps> = ({
             </div>
 
             {/* Data Section */}
-            <div className="border-t border-[#4A3F7A]/50 pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                 <div>
-                    <h4 className="text-xs font-semibold text-purple-300 uppercase tracking-wider mb-1">Audience Insight</h4>
-                    <p className="text-sm text-white/90">{audienceInsight}</p>
-                </div>
-                 <div className="flex items-start gap-4">
+            <div className="border-t border-[#4A3F7A]/50 pt-4 space-y-4">
+                {/* Key Metrics */}
+                <div className="flex flex-wrap items-center gap-4">
                     <div>
                         <h4 className="text-xs font-semibold text-purple-300 uppercase tracking-wider mb-1">Competition</h4>
-                        <div className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full border ${competitionStyles[competition]}`}>
+                        <div className={`inline-block px-2.5 py-1 text-xs font-bold rounded-full border ${competitionStyles[competition]}`}>
                             {competition}
                         </div>
                     </div>
-                     <div>
+                    <div>
                         <h4 className="text-xs font-semibold text-purple-300 uppercase tracking-wider mb-1">Momentum</h4>
-                         <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-semibold rounded-full`}>
-                             <i className={`fa-solid ${directionInfo.icon} ${directionInfo.color}`}></i>
-                             <span className={directionInfo.color}>{trendDirection}</span>
+                        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-full border ${directionInfo.style} ${directionInfo.color}`}>
+                            <i className={`fa-solid ${directionInfo.icon}`}></i>
+                            <span>{trendDirection}</span>
                         </div>
                     </div>
                 </div>
+                {/* Audience Insight */}
+                <div>
+                    <h4 className="text-xs font-semibold text-purple-300 uppercase tracking-wider mb-1">Audience Insight</h4>
+                    <p className="text-sm text-white/90 leading-relaxed">{audienceInsight}</p>
+                </div>
             </div>
+
 
             {/* Suggested Angles Section */}
             {suggestedAngles && suggestedAngles.length > 0 && (
-              <div>
+              <div className="pt-2">
                   <h4 className="text-xs font-semibold text-purple-300 uppercase tracking-wider mb-2">Suggested Angles</h4>
                   <div className="space-y-2">
                       {suggestedAngles.map((angle, index) => (

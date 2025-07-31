@@ -1,5 +1,8 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+
+import React, { useState, useCallback, useRef, useEffect, useContext } from 'react';
 import type { Script, Folder } from '../types.ts';
+import { AuthContext } from '../context/AuthContext.tsx';
+import { UIContext } from '../context/UIContext.tsx';
 
 interface ScriptCardProps {
   script: Script;
@@ -18,6 +21,9 @@ interface ScriptCardProps {
   onRemix?: (script: Script) => void;
   onToggleSpeech?: (script: Script) => void;
   isSpeaking?: boolean;
+  isSelectable?: boolean;
+  isSelected?: boolean;
+  onToggleSelect?: (scriptId:string) => void;
 }
 
 const toneEmojis: { [key: string]: string } = {
@@ -38,19 +44,25 @@ const AnalysisDetail: React.FC<{ label: string, content?: string }> = ({ label, 
 export const ScriptCard: React.FC<ScriptCardProps> = ({ 
   script, onOpenSaveModal, onUnsave, onDelete, isSaved, isScoring = false, isMoving = false, isSavedView = false, 
   folders = [], onMoveScriptToFolder, addNotification, onVisualize, isVisualizing = false,
-  onRemix, onToggleSpeech, isSpeaking = false
+  onRemix, onToggleSpeech, isSpeaking = false, isSelectable = false, isSelected = false, onToggleSelect
 }) => {
+  const { state: { user } } = useContext(AuthContext);
+  const { dispatch: uiDispatch } = useContext(UIContext);
+  const isUnlimited = user?.plan_level === 'unlimited';
+
   const [copied, setCopied] = useState(false);
-  const [folderDropdownOpen, setFolderDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [actionsMenuOpen, setActionsMenuOpen] = useState(false);
+  const actionsMenuRef = useRef<HTMLDivElement>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [visualsExpanded, setVisualsExpanded] = useState(false);
   const [analysisExpanded, setAnalysisExpanded] = useState(false);
   const [showArtStylePicker, setShowArtStylePicker] = useState(false);
+  const [isAnimatingSave, setIsAnimatingSave] = useState(false);
 
   const fullScriptText = `Title: ${script.title}\n\nHook: ${script.hook}\n\nScript:\n${script.script}`;
 
-  const handleCopy = useCallback(() => {
+  const handleCopy = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
     navigator.clipboard.writeText(fullScriptText).then(() => {
       setCopied(true);
       if (addNotification) addNotification("Script copied to clipboard!");
@@ -58,12 +70,17 @@ export const ScriptCard: React.FC<ScriptCardProps> = ({
     });
   }, [fullScriptText, addNotification]);
 
-  const handleSaveClick = () => { isSaved ? onUnsave(script.id) : onOpenSaveModal(script); };
-  const handleDeleteClick = () => { if (onDelete) onDelete(script.id) };
+  const handleSaveClick = (e: React.MouseEvent) => { 
+    e.stopPropagation();
+    isSaved ? onUnsave(script.id) : onOpenSaveModal(script); 
+    setIsAnimatingSave(true);
+    setTimeout(() => setIsAnimatingSave(false), 300);
+  };
   
   const handleVisualizeClick = () => {
     if (onVisualize) {
         setShowArtStylePicker(true);
+        setActionsMenuOpen(false);
     }
   };
 
@@ -75,75 +92,113 @@ export const ScriptCard: React.FC<ScriptCardProps> = ({
     setShowArtStylePicker(false);
   };
 
-  const handleMove = (folderId: string | null) => { if (onMoveScriptToFolder) onMoveScriptToFolder(script.id, folderId); setFolderDropdownOpen(false); };
+  const handleMove = (folderId: string | null) => { 
+      if (onMoveScriptToFolder) onMoveScriptToFolder(script.id, folderId); 
+      setActionsMenuOpen(false); 
+  };
+  
+  const handleDeleteClick = () => { if (onDelete) { onDelete(script.id); setActionsMenuOpen(false); } };
+  const handleRemixClick = () => { if (onRemix) { onRemix(script); setActionsMenuOpen(false); } };
+  const handleToggleSpeechClick = () => { if (onToggleSpeech) { onToggleSpeech(script); setActionsMenuOpen(false); } };
+  
+  const handlePremiumVoicesClick = () => {
+    if (!isUnlimited) {
+      uiDispatch({ type: 'OPEN_UPGRADE_MODAL', payload: 'unlimited' });
+    } else if (addNotification) {
+      addNotification("Premium AI voices from ElevenLabs are coming soon!");
+    }
+    setActionsMenuOpen(false);
+  };
+  
+  const handleCardClick = () => {
+    if (isSelectable && onToggleSelect) {
+      onToggleSelect(script.id);
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) setFolderDropdownOpen(false);
+      if (actionsMenuRef.current && !actionsMenuRef.current.contains(event.target as Node)) {
+          setActionsMenuOpen(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [dropdownRef]);
+  }, [actionsMenuRef]);
 
   const emoji = toneEmojis[script.tone] || '📄';
+  
+  const ActionMenuItem: React.FC<{onClick: (e: React.MouseEvent) => void, icon: string, label: string, disabled?: boolean, destructive?: boolean, children?: React.ReactNode, premium?: boolean}> = ({onClick, icon, label, disabled, destructive, premium, children}) => (
+      <button onClick={onClick} disabled={disabled} className={`w-full text-left flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors duration-150 ${destructive ? 'text-red-400 hover:bg-red-900/50' : 'text-purple-200 hover:bg-[#4A3F7A]/50 hover:text-white'} disabled:opacity-50 disabled:cursor-not-allowed`}>
+          <i className={`${icon} w-4 text-center ${premium && 'text-yellow-400'}`}></i>
+          <span>{label}</span>
+          {premium && !isUnlimited && <i className="fa-solid fa-lock text-xs ml-auto text-yellow-500"></i>}
+          {children}
+      </button>
+  );
 
   return (
-    <div className={`bg-[#2A1A5E] rounded-xl border p-6 shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-[#DAFF00]/5 flex flex-col ${script.isNew ? 'border-[#DAFF00]/80' : 'border-[#4A3F7A] hover:border-[#DAFF00]/50'}`}>
-      <div className="flex items-start justify-between mb-4">
+    <div 
+        className={`bg-[#2A1A5E] rounded-xl border p-6 shadow-lg transition-all duration-300 flex flex-col relative ${isSelectable ? 'cursor-pointer' : ''} ${script.isNew ? 'border-[#DAFF00]/80' : 'border-[#4A3F7A]'} ${isSelected ? 'border-[#DAFF00] ring-2 ring-[#DAFF00]' : 'hover:border-[#DAFF00]/50 hover:shadow-2xl hover:shadow-[#DAFF00]/5'}`}
+        onClick={handleCardClick}
+    >
+      {isSelectable && (
+        <div className="absolute top-4 left-4 z-20" onClick={(e) => e.stopPropagation()}>
+           <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onToggleSelect && onToggleSelect(script.id)}
+              className="h-5 w-5 rounded-md bg-[#1A0F3C] border-[#4A3F7A] text-[#DAFF00] focus:ring-[#DAFF00] focus:ring-offset-[#2A1A5E]"
+           />
+        </div>
+      )}
+
+      <div className={`flex items-start justify-between mb-4 ${isSelectable ? 'ml-8' : ''}`}>
         <h3 className="text-xl font-bold text-[#DAFF00] pr-4">{script.title}</h3>
-        <div className="flex items-center space-x-2 flex-shrink-0">
-          {onRemix && (
-            <button onClick={() => onRemix(script)} className="text-purple-300 hover:text-[#DAFF00] transition-colors duration-200 p-2 rounded-full bg-[#1A0F3C]/50 hover:bg-[#1A0F3C]" title="Remix This Script">
-               <i className="fa-solid fa-arrows-spin"></i>
-            </button>
-          )}
-          {onVisualize && !showArtStylePicker && (
-              <button onClick={handleVisualizeClick} disabled={isVisualizing} className="text-purple-300 hover:text-[#DAFF00] transition-colors duration-200 p-2 rounded-full bg-[#1A0F3C]/50 hover:bg-[#1A0F3C]" title="Visualize Script">
-                {isVisualizing ? <svg className="animate-spin h-4 w-4 text-[#DAFF00]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> : <i className="fa-solid fa-palette"></i>}
-              </button>
-          )}
-          {onToggleSpeech && (
-            <button onClick={() => onToggleSpeech(script)} className="text-purple-300 hover:text-[#DAFF00] transition-colors duration-200 p-2 rounded-full bg-[#1A0F3C]/50 hover:bg-[#1A0F3C]" title={isSpeaking ? "Stop Voiceover" : "Listen to Script"}>
-                {isSpeaking ? <i className="fa-solid fa-stop text-red-400"></i> : <i className="fa-solid fa-volume-high"></i>}
-            </button>
-          )}
+        <div className="flex items-center space-x-2 flex-shrink-0" onClick={e => e.stopPropagation()}>
           <button onClick={handleCopy} className="text-purple-300 hover:text-[#DAFF00] transition-colors duration-200 p-2 rounded-full bg-[#1A0F3C]/50 hover:bg-[#1A0F3C]" title={copied ? "Copied!" : "Copy Script"}>
             {copied ? <i className="fa-solid fa-check text-green-400"></i> : <i className="fa-solid fa-copy"></i>}
           </button>
-          {isSavedView && onMoveScriptToFolder && (
-            <div className="relative" ref={dropdownRef}>
-              <button onClick={() => setFolderDropdownOpen(!folderDropdownOpen)} disabled={isMoving} className="text-purple-300 hover:text-[#DAFF00] transition-colors duration-200 p-2 rounded-full bg-[#1A0F3C]/50 hover:bg-[#1A0F3C] disabled:cursor-wait" title="Move to folder">
-                {isMoving ? <svg className="animate-spin h-4 w-4 text-[#DAFF00]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> : <i className="fa-solid fa-folder-plus"></i>}
-              </button>
-              {folderDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-[#1A0F3C] border border-[#4A3F7A] rounded-md shadow-lg z-10">
-                    <div className="py-1">
-                        {folders.filter(f => f.id !== 'all').map(folder => (
-                            <button key={folder.id} onClick={() => handleMove(folder.id)} className="w-full text-left block px-4 py-2 text-sm text-purple-200 hover:bg-[#2A1A5E] hover:text-white">
-                                {folder.name}
-                            </button>
-                        ))}
-                        {script.folder_id && (
-                            <>
-                                <div className="border-t border-[#4A3F7A] my-1"></div>
-                                <button onClick={() => handleMove(null)} className="w-full text-left block px-4 py-2 text-sm text-purple-200 hover:bg-[#2A1A5E] hover:text-white">
-                                    Remove from folder
-                                </button>
-                            </>
-                        )}
-                    </div>
-                </div>
-              )}
-            </div>
-          )}
-           {isSavedView && onDelete && (
-            <button onClick={handleDeleteClick} className="text-purple-300 hover:text-red-400 transition-colors duration-200 p-2 rounded-full bg-[#1A0F3C]/50 hover:bg-[#1A0F3C]" title="Delete Script">
-                <i className="fa-solid fa-trash-can"></i>
-            </button>
-          )}
-          <button onClick={handleSaveClick} disabled={isScoring} className={`transition-colors duration-200 p-2 rounded-full bg-[#1A0F3C]/50 hover:bg-[#1A0F3C] disabled:cursor-not-allowed ${isSaved ? 'text-[#DAFF00]' : 'text-purple-300 hover:text-[#DAFF00]'}`} title={isSaved ? "Unsave Script" : "Save to Favorites"}>
-            {isScoring ? (<svg className="animate-spin h-4 w-4 text-[#DAFF00]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>) : (<i className={`fa-bookmark ${isSaved ? 'fa-solid' : 'fa-regular'}`}></i>)}
+           <button onClick={handleSaveClick} disabled={isScoring} className={`transition-colors duration-200 p-2 rounded-full bg-[#1A0F3C]/50 hover:bg-[#1A0F3C] disabled:cursor-not-allowed ${isSaved ? 'text-[#DAFF00]' : 'text-purple-300 hover:text-[#DAFF00]'}`} title={isSaved ? "Unsave Script" : "Save to Favorites"}>
+            {isScoring ? (<svg className="animate-spin h-4 w-4 text-[#DAFF00]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>) : (<i className={`fa-bookmark ${isSaved ? 'fa-solid' : 'fa-regular'} ${isAnimatingSave ? 'animate-pop-in' : ''}`}></i>)}
           </button>
+          
+          {/* Kebab Menu */}
+           <div className="relative" ref={actionsMenuRef}>
+              <button onClick={(e) => {e.stopPropagation(); setActionsMenuOpen(o => !o);}} className="text-purple-300 hover:text-[#DAFF00] transition-colors duration-200 p-2 rounded-full bg-[#1A0F3C]/50 hover:bg-[#1A0F3C]" title="More actions">
+                <i className="fa-solid fa-ellipsis-vertical"></i>
+              </button>
+              {actionsMenuOpen && (
+                 <div className="absolute right-0 mt-2 w-56 bg-[#1A0F3C] border border-[#4A3F7A] rounded-md shadow-lg z-10 p-2 space-y-1">
+                    {onVisualize && <ActionMenuItem onClick={(e) => {e.stopPropagation(); handleVisualizeClick();}} icon="fa-solid fa-palette" label="Visualize Script" disabled={isVisualizing} />}
+                    {onRemix && <ActionMenuItem onClick={(e) => {e.stopPropagation(); handleRemixClick();}} icon="fa-solid fa-arrows-spin" label="Remix This Script" />}
+                    {onToggleSpeech && <ActionMenuItem onClick={(e) => {e.stopPropagation(); handleToggleSpeechClick();}} icon={isSpeaking ? "fa-solid fa-stop" : "fa-solid fa-volume-high"} label={isSpeaking ? "Stop Voiceover" : "Listen to Script"} />}
+                    <ActionMenuItem onClick={(e) => {e.stopPropagation(); handlePremiumVoicesClick();}} icon="fa-solid fa-waveform" label="Premium Voices" premium />
+                    {isSavedView && <div className="border-t border-[#4A3F7A]/50 my-1 !mx-2"></div>}
+                    {isSavedView && onMoveScriptToFolder && (
+                        <div className="relative group/move">
+                            <button disabled={isMoving} className="w-full text-left flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors duration-150 text-purple-200 hover:bg-[#4A3F7A]/50 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed">
+                                <i className="fa-solid fa-folder-plus w-4 text-center"></i>
+                                <span>Move to folder</span>
+                                <i className="fa-solid fa-chevron-right text-xs ml-auto"></i>
+                            </button>
+                            <div className="absolute left-full -top-2 ml-1 w-48 bg-[#1A0F3C] border border-[#4A3F7A] rounded-md shadow-lg z-20 p-1 hidden group-hover/move:block">
+                                <button onClick={(e) => {e.stopPropagation(); handleMove(null);}} className="w-full text-left block px-3 py-2 text-sm text-purple-200 hover:bg-[#2A1A5E] hover:text-white rounded-md">
+                                    <i className="fa-regular fa-clone w-4 mr-2"></i>All Scripts (no folder)
+                                </button>
+                                <div className="border-t border-[#4A3F7A] my-1"></div>
+                                {folders.filter(f => f.id !== 'all').map(folder => (
+                                    <button key={folder.id} onClick={(e) => {e.stopPropagation(); handleMove(folder.id);}} className="w-full text-left block px-3 py-2 text-sm text-purple-200 hover:bg-[#2A1A5E] hover:text-white rounded-md">
+                                        <i className="fa-regular fa-folder w-4 mr-2"></i>{folder.name}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    {isSavedView && onDelete && <ActionMenuItem onClick={(e) => {e.stopPropagation(); handleDeleteClick();}} icon="fa-solid fa-trash-can" label="Delete Script" destructive />}
+                 </div>
+              )}
+           </div>
         </div>
       </div>
 
@@ -160,14 +215,14 @@ export const ScriptCard: React.FC<ScriptCardProps> = ({
           </div>
       )}
 
-      <div className="flex-grow">
+      <div className={`flex-grow ${isSelectable ? 'ml-8' : ''}`}>
         <div className="space-y-4">
           <div><h4 className="font-semibold text-purple-200 text-sm tracking-wider uppercase">Hook (First 3s)</h4><p className="text-[#F0F0F0] mt-1 italic">"{script.hook}"</p></div>
           <div className="border-t border-[#4A3F7A]/50 my-4"></div>
           <div>
             <h4 className="font-semibold text-purple-200 text-sm tracking-wider uppercase">Full Script</h4>
             <pre className={`text-purple-100/90 mt-2 whitespace-pre-wrap text-sm leading-relaxed font-sans transition-all duration-300 ${!isExpanded ? 'line-clamp-3' : 'line-clamp-none'}`}>{script.script}</pre>
-            <button onClick={() => setIsExpanded(!isExpanded)} className="text-[#DAFF00] text-sm font-semibold mt-2 hover:underline">
+            <button onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }} className="text-[#DAFF00] text-sm font-semibold mt-2 hover:underline">
               {isExpanded ? 'Show Less' : 'Show More...'}
             </button>
           </div>
@@ -176,7 +231,7 @@ export const ScriptCard: React.FC<ScriptCardProps> = ({
 
       {(script.viral_score_breakdown) && (
         <div className="border-t border-[#4A3F7A]/50 mt-4 pt-4">
-          <button onClick={() => setAnalysisExpanded(!analysisExpanded)} className="w-full flex justify-between items-center text-left">
+          <button onClick={(e) => { e.stopPropagation(); setAnalysisExpanded(!analysisExpanded);}} className="w-full flex justify-between items-center text-left">
               <h4 className="font-semibold text-purple-200 text-sm tracking-wider uppercase">Detailed Virality Analysis</h4>
               <i className={`fa-solid fa-chevron-down transition-transform ${analysisExpanded ? 'rotate-180' : ''}`}></i>
           </button>
@@ -199,7 +254,7 @@ export const ScriptCard: React.FC<ScriptCardProps> = ({
 
        {(script.visuals || isVisualizing) && (
         <div className="border-t border-[#4A3F7A]/50 mt-4 pt-4">
-            <button onClick={() => setVisualsExpanded(!visualsExpanded)} className="w-full flex justify-between items-center text-left">
+            <button onClick={(e) => { e.stopPropagation(); setVisualsExpanded(!visualsExpanded);}} className="w-full flex justify-between items-center text-left">
               <h4 className="font-semibold text-purple-200 text-sm tracking-wider uppercase">AI Storyboard Concepts</h4>
               <i className={`fa-solid fa-chevron-down transition-transform ${visualsExpanded ? 'rotate-180' : ''}`}></i>
             </button>

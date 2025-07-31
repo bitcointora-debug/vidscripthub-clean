@@ -1,14 +1,16 @@
-import React, { useMemo, useContext } from 'react';
+
+
+import React, { useMemo, useContext, useCallback } from 'react';
 import type { Client } from '../types.ts';
-import { DashboardContext } from '../context/DashboardContext.tsx';
+import { DataContext } from '../context/DataContext.tsx';
+import { AuthContext } from '../context/AuthContext.tsx';
+import { sendClientInvite } from '../services/geminiService.ts';
 
 interface AgencyViewProps {
-    clients: Client[];
     onRemoveClient: (clientId: string) => void;
     onOpenAddClientModal: () => void;
     onLoginAsClient: (client: Client) => void;
     onOpenEditClientModal: (client: Client) => void;
-    addNotification: (message: string) => void;
 }
 
 const statusStyles = {
@@ -28,9 +30,16 @@ const AgencyStatCard: React.FC<{ icon: string; value: number; label: string }> =
 );
 
 
-export const AgencyView: React.FC<AgencyViewProps> = ({ clients, onRemoveClient, onOpenAddClientModal, onLoginAsClient, onOpenEditClientModal, addNotification }) => {
+export const AgencyView: React.FC<AgencyViewProps> = ({ onRemoveClient, onOpenAddClientModal, onLoginAsClient, onOpenEditClientModal }) => {
     
-    const { dispatch } = useContext(DashboardContext);
+    const { state: { user } } = useContext(AuthContext);
+    const { state: { clients }, dispatch: dataDispatch } = useContext(DataContext);
+
+    const addNotification = useCallback((message: string) => {
+        if(user) {
+            dataDispatch({ type: 'ADD_NOTIFICATION_REQUEST', payload: { message, userId: user.id } });
+        }
+    }, [dataDispatch, user]);
 
     const stats = useMemo(() => {
         const total = clients.length;
@@ -39,11 +48,38 @@ export const AgencyView: React.FC<AgencyViewProps> = ({ clients, onRemoveClient,
         return { total, active, pending };
     }, [clients]);
 
-    const handleSendInvite = (client: Client) => {
-        const updatedClient = { ...client, status: 'Active' as const };
-        dispatch({ type: 'UPDATE_CLIENT_REQUEST', payload: { updatedClient } });
-        addNotification(`Invite sent to ${client.name}. Client is now active.`);
+    const handleSendInvite = async (client: Client) => {
+        addNotification(`Sending invite to ${client.name}...`);
+        try {
+            await sendClientInvite(client.email);
+            const updatedClient = { ...client, status: 'Active' as const };
+            dataDispatch({ type: 'UPDATE_CLIENT_REQUEST', payload: { updatedClient } });
+            addNotification(`Invite sent successfully to ${client.name}. Client is now active.`);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
+            addNotification(`Failed to send invite: ${errorMessage}`);
+            console.error("Failed to send invite:", error);
+        }
     }
+
+    const EmptyState = () => (
+        <tr>
+            <td colSpan={4}>
+                <div className="text-center py-16 px-6">
+                    <i className="fa-solid fa-users-slash text-5xl text-purple-300/50 mb-4"></i>
+                    <h3 className="text-lg font-medium text-white">No Clients Yet</h3>
+                    <p className="text-sm text-purple-200/80 max-w-xs mx-auto mt-1 mb-6">Add your first client to start managing their scripts and providing massive value.</p>
+                    <button 
+                        onClick={onOpenAddClientModal}
+                        className="bg-[#DAFF00] text-[#1A0F3C] font-bold py-2.5 px-5 rounded-md hover:bg-opacity-90 transition-all duration-200"
+                    >
+                        <i className="fa-solid fa-plus mr-2"></i>
+                        Add Your First Client
+                    </button>
+                </div>
+            </td>
+        </tr>
+    );
 
     return (
         <div>
@@ -89,7 +125,7 @@ export const AgencyView: React.FC<AgencyViewProps> = ({ clients, onRemoveClient,
                                         </div>
                                     </td>
                                 </tr>
-                            )) : (<tr><td colSpan={4} className="text-center py-10 px-6 text-purple-300">No clients found. Click "Add New Client" to get started.</td></tr>)}
+                            )) : <EmptyState />}
                         </tbody>
                     </table>
                 </div>

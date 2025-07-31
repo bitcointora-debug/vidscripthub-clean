@@ -1,12 +1,13 @@
 
 
-
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import type { Script, Trend } from '../types.ts';
 import { fetchTrendingTopics, QUOTA_ERROR_MESSAGE } from '../services/geminiService.ts';
 import { ScriptCard } from './ScriptCard.tsx';
 import { TrendCard } from './TrendCard.tsx';
-import { DashboardContext } from '../context/DashboardContext.tsx';
+import { AuthContext } from '../context/AuthContext.tsx';
+import { DataContext } from '../context/DataContext.tsx';
+import { UIContext } from '../context/UIContext.tsx';
 
 interface DashboardHomeViewProps {
     onNavigate: (view: string) => void;
@@ -16,20 +17,37 @@ interface DashboardHomeViewProps {
     isScriptSaved: (script: Script) => boolean;
     scoringScriptId: string | null;
     onGenerateForTrend: (topic: string) => void;
-    addNotification: (message: string) => void;
     agencyClientCount: number;
-    agencyEarnings: string;
     watchedTrends: Trend[];
     onWatchTrend: (trend: Trend) => void;
     onUnwatchTrend: (topic: string) => void;
     isTrendWatched: (topic: string) => boolean;
     onVisualize: (scriptId: string, artStyle: string) => void;
     visualizingScriptId: string | null;
-    primaryNiche?: string;
     scriptOfTheDay?: Script;
     onToggleSpeech: (script: Script) => void;
     speakingScriptId: string | null;
 }
+
+const SkeletonTrendCard: React.FC = () => (
+    <div className="bg-[#2A1A5E] rounded-xl border border-[#4A3F7A] p-6 shadow-lg animate-pulse flex flex-col space-y-4 h-[320px]">
+        <div className="flex items-start gap-4">
+            <div className="w-20 h-20 rounded-full bg-slate-700 flex-shrink-0"></div>
+            <div className="flex-grow space-y-2 pt-2">
+                <div className="h-5 bg-slate-700 rounded w-3/4"></div>
+                <div className="h-4 bg-slate-700 rounded w-full"></div>
+                <div className="h-4 bg-slate-700 rounded w-5/6"></div>
+            </div>
+        </div>
+        <div className="space-y-3 pt-4 border-t border-slate-700/50">
+             <div className="h-4 bg-slate-700 rounded w-1/2"></div>
+             <div className="h-4 bg-slate-700 rounded w-1/3"></div>
+        </div>
+         <div className="mt-auto pt-4">
+            <div className="h-9 bg-slate-700 rounded-md w-full"></div>
+        </div>
+    </div>
+);
 
 const QuickActionCard: React.FC<{icon: string, title: string, description: string, onClick: () => void}> = ({icon, title, description, onClick}) => (
     <button onClick={onClick} className="bg-[#2A1A5E] p-6 rounded-xl border border-[#4A3F7A] text-left hover:border-[#DAFF00] hover:-translate-y-1 transition-all duration-300 w-full flex items-start space-x-4">
@@ -49,25 +67,30 @@ export const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
     isScriptSaved,
     scoringScriptId,
     onGenerateForTrend,
-    addNotification,
     agencyClientCount,
-    agencyEarnings,
     watchedTrends,
     onWatchTrend,
     onUnwatchTrend,
     isTrendWatched,
     onVisualize,
     visualizingScriptId,
-    primaryNiche,
     scriptOfTheDay,
     onToggleSpeech,
     speakingScriptId
 }) => {
-    const { dispatch } = useContext(DashboardContext);
+    const { state: { user } } = useContext(AuthContext);
+    const { dispatch: dataDispatch } = useContext(DataContext);
+    const { dispatch: uiDispatch } = useContext(UIContext);
     const [trendingTopics, setTrendingTopics] = useState<Trend[]>([]);
     const [sources, setSources] = useState<{ uri: string; title: string }[]>([]);
     const [isLoadingTrends, setIsLoadingTrends] = useState(true);
     const [trendError, setTrendError] = useState<string | null>(null);
+
+     const addNotification = useCallback((message: string) => {
+        if(user) {
+            dataDispatch({ type: 'ADD_NOTIFICATION_REQUEST', payload: { message, userId: user.id } });
+        }
+    }, [dataDispatch, user]);
 
     const loadTrends = useCallback(async (forceRefresh: boolean = false) => {
         const cacheKey = 'vsh_trending_topics';
@@ -92,7 +115,7 @@ export const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
         }
 
         try {
-            const { trends, sources } = await fetchTrendingTopics(primaryNiche);
+            const { trends, sources } = await fetchTrendingTopics(user?.primary_niche);
             const cachePayload = { trends, sources, timestamp: new Date().getTime() };
             sessionStorage.setItem(cacheKey, JSON.stringify(cachePayload));
             setTrendingTopics(trends.slice(0, 2)); 
@@ -104,7 +127,7 @@ export const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
             console.error("Failed to load trends for dashboard home:", error);
             const errorMessage = error instanceof Error ? error.message : "Could not fetch trends."
             if (errorMessage === QUOTA_ERROR_MESSAGE) {
-                dispatch({ type: 'SET_QUOTA_ERROR', payload: errorMessage });
+                uiDispatch({ type: 'SET_QUOTA_ERROR', payload: errorMessage });
             } else {
                 setTrendError(errorMessage);
                 addNotification(`Failed to load trends for dashboard home: ${errorMessage}`);
@@ -112,13 +135,11 @@ export const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
         } finally {
             setIsLoadingTrends(false);
         }
-    }, [addNotification, primaryNiche, dispatch]);
+    }, [addNotification, user?.primary_niche, uiDispatch]);
     
     useEffect(() => {
-        if (primaryNiche !== undefined) {
-            loadTrends();
-        }
-    }, [primaryNiche, loadTrends]);
+        loadTrends();
+    }, [loadTrends]);
 
     return (
         <div className="space-y-10">
@@ -146,7 +167,10 @@ export const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
                     </div>
                      <div className="space-y-6">
                         {isLoadingTrends ? (
-                            <div className="bg-[#2A1A5E] p-4 rounded-xl animate-pulse h-48"></div>
+                            <>
+                                <SkeletonTrendCard />
+                                <SkeletonTrendCard />
+                            </>
                         ) : trendError ? (
                              <div className="bg-red-900/20 border border-red-500/50 text-red-300 px-4 py-3 rounded-lg text-center" role="alert">
                                 <p className="text-sm font-semibold">{trendError}</p>
@@ -242,10 +266,6 @@ export const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
                              <div className="flex justify-between items-center">
                                 <span className="font-semibold text-purple-200">Active Clients</span>
                                 <span className="font-bold text-white text-2xl">{agencyClientCount}</span>
-                            </div>
-                             <div className="flex justify-between items-center">
-                                <span className="font-semibold text-purple-200">Total Earnings</span>
-                                <span className="font-bold text-[#DAFF00] text-2xl">{agencyEarnings}</span>
                             </div>
                             <button onClick={() => onNavigate('Manage Clients')} className="w-full text-center bg-transparent border-2 border-[#4A3F7A] text-purple-200 font-bold py-2 px-3 rounded-md hover:bg-[#2A1A5E] hover:text-white transition-all duration-200 text-sm mt-2">
                                 Go to Agency Dashboard

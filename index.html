@@ -75,6 +75,16 @@
         outline: 3px solid rgba(218, 255, 0, 0.5);
         outline-offset: 2px;
       }
+
+      /* Micro-interaction Animations */
+      @keyframes pop-in {
+        0% { transform: scale(0.8); opacity: 0.8; }
+        50% { transform: scale(1.25); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      .animate-pop-in {
+        animation: pop-in 0.3s ease-in-out;
+      }
     </style>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script type="importmap">
@@ -90,7 +100,8 @@
     "@supabase/auth-ui-shared": "https://esm.sh/@supabase/auth-ui-shared@^0.1.8",
     "@netlify/functions": "https://esm.sh/@netlify/functions@^4.2.1",
     "@google/genai": "https://esm.sh/@google/genai@^1.11.0",
-    "@vercel/node": "https://esm.sh/@vercel/node@^5.3.7"
+    "@vercel/node": "https://esm.sh/@vercel/node@^5.3.7",
+    "react-joyride": "https://esm.sh/react-joyride@^2.8.2"
   }
 }
 </script>

@@ -1,11 +1,19 @@
 
-import React from 'react';
+import React, { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext.tsx';
 
 interface Oto3PageProps {
     onNavigateToDashboard: () => void;
 }
 
 export const Oto3Page: React.FC<Oto3PageProps> = ({ onNavigateToDashboard }) => {
+    const { dispatch } = useContext(AuthContext);
+
+    const handlePurchase = () => {
+        dispatch({ type: 'PURCHASE_AGENCY_LICENSE_REQUEST' });
+        onNavigateToDashboard();
+    };
+
 
     const profitPaths = [
         {
@@ -30,19 +38,19 @@ export const Oto3Page: React.FC<Oto3PageProps> = ({ onNavigateToDashboard }) => 
             <div className="w-full max-w-5xl mx-auto text-center relative z-10">
 
                 {/* Headline */}
-                <h1 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                <h1 className="text-2xl md:text-4xl font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>
                     FINAL UPGRADE: Don't Just Use VidScriptHub...
                 </h1>
                 <p className="text-4xl md:text-6xl lg:text-7xl font-extrabold mt-2 mb-4 text-[#DAFF00]" style={{ fontFamily: "'Poppins', sans-serif", lineHeight: 1.2 }}>
                     SELL IT AS YOUR OWN
                 </p>
-                <p className="text-2xl md:text-3xl font-bold">And Keep 100% Of The Profits!</p>
+                <p className="text-xl md:text-3xl font-bold">And Keep 100% Of The Profits!</p>
                 
-                <div className="w-24 h-1 bg-[#DAFF00]/50 mx-auto my-12 rounded-full"></div>
+                <div className="w-24 h-1 bg-[#DAFF00]/50 mx-auto my-8 md:my-12 rounded-full"></div>
 
                 {/* Core Offer */}
-                <div className="bg-[#2A1A5E] rounded-2xl p-8 md:p-12 shadow-2xl shadow-[#DAFF00]/5 border border-[#4A3F7A]/50">
-                    <p className="text-xl text-purple-200 leading-relaxed italic max-w-3xl mx-auto mb-12">
+                <div className="bg-[#2A1A5E] rounded-2xl p-6 md:p-12 shadow-2xl shadow-[#DAFF00]/5 border border-[#4A3F7A]/50">
+                    <p className="text-lg md:text-xl text-purple-200 leading-relaxed italic max-w-3xl mx-auto mb-12">
                        "You've seen the power of VidScriptHub. You know it works. This is your one and only chance to get on the other side of the table and turn our proven product into your personal income stream."
                     </p>
                     
@@ -50,16 +58,16 @@ export const Oto3Page: React.FC<Oto3PageProps> = ({ onNavigateToDashboard }) => 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 my-12 text-left">
                         {profitPaths.map((path, index) => (
                              <div key={index} className="bg-[#1A0F3C] p-6 rounded-xl border border-[#4A3F7A]">
-                                 <h3 className="text-2xl font-bold text-[#DAFF00] mb-4 text-center" style={{ fontFamily: "'Poppins', sans-serif" }}>{path.headline}</h3>
+                                 <h3 className="text-xl md:text-2xl font-bold text-[#DAFF00] mb-4 text-center" style={{ fontFamily: "'Poppins', sans-serif" }}>{path.headline}</h3>
                                  <img src={path.image} alt={path.alt} className="rounded-lg shadow-lg mb-4 w-full h-auto" />
-                                 <p className="text-purple-200/90 leading-relaxed">{path.text}</p>
+                                 <p className="text-purple-200/90 leading-relaxed text-sm md:text-base">{path.text}</p>
                             </div>
                         ))}
                     </div>
 
                     {/* Proof of Ownership */}
                     <div className="my-12">
-                         <h3 className="text-2xl font-bold text-white mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>You Get The Official License To Do Both!</h3>
+                         <h3 className="text-xl md:text-2xl font-bold text-white mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>You Get The Official License To Do Both!</h3>
                          <img 
                             src="images/oto3-license.png" 
                             alt="Official Agency & Reseller License Certificate" 
@@ -68,11 +76,11 @@ export const Oto3Page: React.FC<Oto3PageProps> = ({ onNavigateToDashboard }) => 
                     </div>
 
                     {/* Income Proof Section */}
-                    <div className="my-16">
-                        <h3 className="text-3xl font-bold text-white mb-6" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                    <div className="my-12 md:my-16">
+                        <h3 className="text-2xl md:text-3xl font-bold text-white mb-6" style={{ fontFamily: "'Poppins', sans-serif" }}>
                             Visualize Your Potential Earnings...
                         </h3>
-                        <p className="text-lg text-purple-200/80 max-w-3xl mx-auto mb-8">
+                        <p className="text-base md:text-lg text-purple-200/80 max-w-3xl mx-auto mb-8">
                             Our top resellers are already seeing results like this. With a proven, high-converting offer, your affiliate dashboard could look like this too.
                         </p>
                         <img 
@@ -82,13 +90,41 @@ export const Oto3Page: React.FC<Oto3PageProps> = ({ onNavigateToDashboard }) => 
                         />
                     </div>
 
+                    {/* Your Agency License Includes Section */}
+                    <div className="max-w-xl mx-auto my-12">
+                        <div className="bg-[#1A0F3C] border-2 border-[#4A3F7A] rounded-xl p-6 md:p-8">
+                            <h3 className="text-xl md:text-2xl font-bold text-white text-center mb-6">Your Agency License Includes:</h3>
+                            <ul className="space-y-3 text-left">
+                                <li className="flex items-start gap-3">
+                                    <i className="fa-solid fa-check-circle text-green-400 text-xl mt-1 flex-shrink-0"></i>
+                                    <span className="text-purple-200"><b>Full Agency Dashboard:</b> Add and manage up to 10 clients inside your account.</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                    <i className="fa-solid fa-check-circle text-green-400 text-xl mt-1 flex-shrink-0"></i>
+                                    <span className="text-purple-200"><b>100% Reseller Rights:</b> Sell VidScriptHub and keep 100% of the profits across the entire funnel.</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                    <i className="fa-solid fa-check-circle text-green-400 text-xl mt-1 flex-shrink-0"></i>
+                                    <span className="text-purple-200"><b>Done-For-You Promo Kit:</b> Get access to our high-converting email swipes and promotional graphics.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
 
                     {/* Call to Action (CTA) Block */}
                     <div className="max-w-xl mx-auto mt-12">
-                        <button onClick={onNavigateToDashboard} className="block w-full bg-[#DAFF00] text-[#1A0F3C] font-bold text-xl md:text-2xl uppercase py-5 px-6 rounded-lg shadow-[0_5px_0px_0px_#a8c400] hover:translate-y-1 hover:shadow-[0_4px_0px_0px_#a8c400] transition-all duration-150 ease-in-out">
+                        <div className="bg-[#1A0F3C] border-2 border-[#DAFF00] rounded-xl p-6 md:p-8 shadow-lg shadow-[#DAFF00]/20 mb-8">
+                            <h3 className="text-xl md:text-2xl font-bold text-white">Become A Licensed Vid Script Hub Partner</h3>
+                            <div className="flex items-center justify-center gap-4 my-3">
+                                <p className="text-xl md:text-2xl text-purple-300 line-through">Value: $997</p>
+                                <p className="text-4xl md:text-6xl font-extrabold text-[#DAFF00]">$197</p>
+                            </div>
+                            <p className="font-semibold text-white text-base md:text-lg">One-Time License Fee. Keep 100% Of Profits.</p>
+                        </div>
+                        <button onClick={handlePurchase} className="block w-full bg-[#DAFF00] text-[#1A0F3C] font-bold text-lg md:text-2xl uppercase py-4 px-5 rounded-lg shadow-[0_5px_0px_0px_#a8c400] hover:translate-y-1 hover:shadow-[0_4px_0px_0px_#a8c400] transition-all duration-150 ease-in-out">
                             YES! I Want The Agency & Reseller License To VidScriptHub!
                         </button>
-                        <button onClick={onNavigateToDashboard} className="block mt-6 text-purple-300/70 hover:text-white transition-colors duration-200 text-sm underline">
+                        <button onClick={onNavigateToDashboard} className="block mt-6 text-purple-300/70 hover:text-white transition-colors duration-200 text-xs md:text-sm underline">
                            No thanks, I understand this is my only chance to get a reseller license and I'm happy to pass on keeping 100% of the profits.
                         </button>
                     </div>

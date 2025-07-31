@@ -1,29 +1,19 @@
 
-
-import React from 'react';
+import React, { useContext } from 'react';
 import { CheckCircleIcon } from './icons/CheckCircleIcon.tsx';
+import { AuthContext } from '../context/AuthContext.tsx';
 
 interface Oto1PageProps {
     onNavigateToNextStep: () => void;
 }
 
 export const Oto1Page: React.FC<Oto1PageProps> = ({ onNavigateToNextStep }) => {
-    const benefits = [
-        "UNLIMITED Script Generations",
-        "UNLIMITED Niche Searches",
-        "UNLIMITED Viral Analysis"
-    ];
+    const { dispatch } = useContext(AuthContext);
 
-    const newFeatures = [
-        {
-            title: "Unlock Advanced Tonal Styles",
-            description: "(Humorous, Controversial, Shocking & More!)"
-        },
-        {
-            title: "Unlock The \"Trending Topics\" Forecaster",
-            description: ""
-        }
-    ];
+    const handleUpgrade = () => {
+        dispatch({ type: 'UPGRADE_TO_UNLIMITED_REQUEST' });
+        onNavigateToNextStep();
+    }
 
     return (
         <div className="bg-[#1A0F3C] text-[#F0F0F0] antialiased min-h-screen flex items-center justify-center py-12 px-4 relative overflow-hidden">
@@ -36,15 +26,15 @@ export const Oto1Page: React.FC<Oto1PageProps> = ({ onNavigateToNextStep }) => {
                     WAIT!
                 </h1>
                 <p className="text-2xl md:text-3xl font-bold mt-2 mb-4">Your Order Is Not Complete...</p>
-                <p className="text-lg md:text-xl text-purple-200/80 max-w-3xl mx-auto">
+                <p className="text-base md:text-xl text-purple-200/80 max-w-3xl mx-auto">
                     You've Made A Smart Choice, But Your Account Is Currently Limited. Read The Page Below To See How To Remove All Restrictions...
                 </p>
-                <div className="w-24 h-1 bg-[#DAFF00]/50 mx-auto my-12 rounded-full"></div>
+                <div className="w-24 h-1 bg-[#DAFF00]/50 mx-auto my-8 md:my-12 rounded-full"></div>
 
                 {/* Core Offer */}
-                <div className="bg-[#2A1A5E] rounded-2xl p-8 md:p-12 shadow-2xl shadow-[#DAFF00]/5 border border-[#4A3F7A]/50">
+                <div className="bg-[#2A1A5E] rounded-2xl p-6 md:p-12 shadow-2xl shadow-[#DAFF00]/5 border border-[#4A3F7A]/50">
                     {/* The Problem */}
-                    <p className="text-xl text-purple-200 leading-relaxed italic max-w-3xl mx-auto mb-8">
+                    <p className="text-lg md:text-xl text-purple-200 leading-relaxed italic max-w-3xl mx-auto mb-8">
                         "Right now, you're limited to 30 searches a month. What happens when you find a winning niche on day 5? Your momentum dies. <span className="not-italic font-semibold text-white">The pros never limit their potential.</span>"
                     </p>
 
@@ -58,49 +48,56 @@ export const Oto1Page: React.FC<Oto1PageProps> = ({ onNavigateToNextStep }) => {
                     </div>
 
                     {/* The Upgrade Pitch */}
-                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-8" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                    <h2 className="text-3xl md:text-5xl font-bold text-white mb-8" style={{ fontFamily: "'Poppins', sans-serif" }}>
                         Upgrade To VidScriptHub <span className="text-[#DAFF00]">UNLIMITED</span> And 10x Your Content Output Instantly.
                     </h2>
-
-                    {/* Benefit List */}
-                    <div className="max-w-2xl mx-auto text-left space-y-4 mb-12">
-                        {benefits.map((benefit, index) => (
-                             <div key={index} className="flex items-center space-x-3 bg-[#1A0F3C]/50 p-4 rounded-lg">
-                                <CheckCircleIcon className="w-7 h-7 text-[#DAFF00] flex-shrink-0" />
-                                <span className="text-[#F0F0F0] text-lg font-medium">{benefit}</span>
+                    
+                    {/* NEW COMPARISON TABLE */}
+                    <div className="max-w-2xl mx-auto my-12 text-left">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Standard Column */}
+                            <div className="bg-[#1A0F3C]/50 rounded-lg p-6 border border-red-500/50">
+                                <h4 className="font-bold text-xl text-red-400 text-center mb-4">Standard</h4>
+                                <ul className="space-y-3 text-purple-200 text-sm">
+                                    <li className="flex items-start gap-2"><i className="fa-solid fa-times text-red-400 mt-1 flex-shrink-0 w-4 text-center"></i><span>Scripts up to 1 minute</span></li>
+                                    <li className="flex items-start gap-2"><i className="fa-solid fa-times text-red-400 mt-1 flex-shrink-0 w-4 text-center"></i><span>Limited Script Generations</span></li>
+                                    <li className="flex items-start gap-2"><i className="fa-solid fa-times text-red-400 mt-1 flex-shrink-0 w-4 text-center"></i><span><b className="text-red-300">LOCKED:</b> Advanced Tones</span></li>
+                                    <li className="flex items-start gap-2"><i className="fa-solid fa-times text-red-400 mt-1 flex-shrink-0 w-4 text-center"></i><span><b className="text-red-300">LOCKED:</b> Trending Topics Hub</span></li>
+                                </ul>
                             </div>
-                        ))}
-                        {newFeatures.map((feature, index) => (
-                             <div key={index} className="flex items-center space-x-3 bg-[#1A0F3C]/50 p-4 rounded-lg">
-                                <CheckCircleIcon className="w-7 h-7 text-[#DAFF00] flex-shrink-0" />
-                                <div>
-                                    <span className="text-[#F0F0F0] text-lg font-bold">
-                                        <span className="text-xs uppercase bg-[#DAFF00] text-[#1A0F3C] font-bold px-2 py-0.5 rounded-full mr-2">NEW FEATURE</span>
-                                        {feature.title}
-                                    </span>
-                                    {feature.description && <span className="text-purple-300 ml-1">{feature.description}</span>}
-                                </div>
+                            {/* Unlimited Column */}
+                            <div className="bg-[#DAFF00]/10 rounded-lg p-6 border-2 border-[#DAFF00]">
+                                <h4 className="font-bold text-xl text-[#DAFF00] text-center mb-4">UNLIMITED</h4>
+                                <ul className="space-y-3 text-white text-sm">
+                                    <li className="flex items-start gap-2"><i className="fa-solid fa-check text-green-400 mt-1 flex-shrink-0 w-4 text-center"></i><span>Scripts up to 10 minutes</span></li>
+                                    <li className="flex items-start gap-2"><i className="fa-solid fa-check text-green-400 mt-1 flex-shrink-0 w-4 text-center"></i><span><b>UNLIMITED</b> Script Generations</span></li>
+                                    <li className="flex items-start gap-2"><i className="fa-solid fa-check text-green-400 mt-1 flex-shrink-0 w-4 text-center"></i><span><b className="text-green-300">UNLOCKED:</b> Advanced Tones</span></li>
+                                    <li className="flex items-start gap-2"><i className="fa-solid fa-check text-green-400 mt-1 flex-shrink-0 w-4 text-center"></i><span><b className="text-green-300">UNLOCKED:</b> Trending Topics Hub</span></li>
+                                </ul>
                             </div>
-                        ))}
+                        </div>
                     </div>
 
                     {/* Call to Action (CTA) Block */}
                     <div className="max-w-xl mx-auto">
-                        <div className="bg-[#1A0F3C] border-2 border-[#DAFF00] rounded-xl p-6 shadow-lg shadow-[#DAFF00]/20">
-                            <h3 className="text-xl font-bold text-white">Get The UNLIMITED Upgrade Now!</h3>
-                            <p className="text-5xl font-extrabold text-[#DAFF00] my-3">$67</p>
-                            <p className="font-semibold text-white text-lg">One-Time Payment</p>
-                            <p className="text-purple-300 text-sm mt-1 line-through">(Normally $47/Month After Launch)</p>
+                        <div className="bg-[#1A0F3C] border-2 border-[#DAFF00] rounded-xl p-6 md:p-8 shadow-lg shadow-[#DAFF00]/20">
+                            <h3 className="text-xl md:text-2xl font-bold text-white">Get The UNLIMITED Upgrade Now!</h3>
+                            <div className="flex items-center justify-center gap-4 my-3">
+                                <p className="text-xl md:text-2xl text-purple-300 line-through">Regular: $197</p>
+                                <p className="text-4xl md:text-6xl font-extrabold text-[#DAFF00]">$67</p>
+                            </div>
+                            <p className="font-semibold text-white text-base md:text-lg">One-Time Payment</p>
+                            <p className="text-purple-300 text-xs md:text-sm mt-1">(Normally $47/Month After Launch)</p>
                             <button 
-                                onClick={onNavigateToNextStep}
-                                className="block w-full bg-[#DAFF00] text-[#1A0F3C] font-bold text-xl md:text-2xl uppercase py-5 px-6 rounded-lg shadow-[0_5px_0px_0px_#a8c400] hover:translate-y-1 hover:shadow-[0_4px_0px_0px_#a8c400] transition-all duration-150 ease-in-out mt-6"
+                                onClick={handleUpgrade}
+                                className="block w-full bg-[#DAFF00] text-[#1A0F3C] font-bold text-lg md:text-2xl uppercase py-4 px-5 rounded-lg shadow-[0_5px_0px_0px_#a8c400] hover:translate-y-1 hover:shadow-[0_4px_0px_0px_#a8c400] transition-all duration-150 ease-in-out mt-8"
                             >
                                 YES! UPGRADE MY ACCOUNT NOW!
                             </button>
                         </div>
                         <button 
                             onClick={onNavigateToNextStep}
-                            className="block mt-6 text-purple-300/70 hover:text-white transition-colors duration-200 text-sm underline"
+                            className="block mt-6 text-purple-300/70 hover:text-white transition-colors duration-200 text-xs md:text-sm underline"
                         >
                             No thanks, I don't want to go unlimited. I understand I will lose access to this one-time offer forever and my account will remain limited.
                         </button>

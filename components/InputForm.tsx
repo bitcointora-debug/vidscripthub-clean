@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useContext } from 'react';
 import type { EnhancedTopic } from '../types.ts';
+import { AuthContext } from '../context/AuthContext.tsx';
+import { UIContext } from '../context/UIContext.tsx';
 
 interface InputFormProps {
   onGenerate: (topic: string, tone: string, length: number) => void;
@@ -10,8 +13,6 @@ interface InputFormProps {
   isEnhancing: boolean;
   enhancedTopics: EnhancedTopic[];
   onSelectEnhancedTopic: (topic: string) => void;
-  primaryNiche?: string;
-  preferredTone?: string;
 }
 
 export const InputForm: React.FC<InputFormProps> = ({ 
@@ -23,9 +24,13 @@ export const InputForm: React.FC<InputFormProps> = ({
     isEnhancing,
     enhancedTopics,
     onSelectEnhancedTopic,
-    primaryNiche,
-    preferredTone
 }) => {
+  const { state: { user } } = useContext(AuthContext);
+  const { dispatch: uiDispatch } = useContext(UIContext);
+  const { primary_niche: primaryNiche, preferred_tone: preferredTone, plan_level } = user || {};
+  const isUnlimited = plan_level === 'unlimited';
+  const maxLength = isUnlimited ? 600 : 60;
+
   const [topic, setTopic] = useState('');
   const [tone, setTone] = useState('Funny');
   const [length, setLength] = useState(60); // Default to 60 seconds
@@ -45,6 +50,12 @@ export const InputForm: React.FC<InputFormProps> = ({
         setTone(preferredTone);
     }
   }, [initialTopic, primaryNiche, preferredTone]);
+
+  useEffect(() => {
+    if (length > maxLength) {
+      setLength(maxLength);
+    }
+  }, [maxLength, length]);
 
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -74,6 +85,10 @@ export const InputForm: React.FC<InputFormProps> = ({
     const remainingSeconds = seconds % 60;
     if (remainingSeconds === 0) return `${minutes} minute${minutes > 1 ? 's' : ''}`;
     return `${minutes} min ${remainingSeconds} sec`;
+  };
+
+  const handleUpgradeClick = (plan: 'unlimited' | 'dfy' | 'agency') => {
+    uiDispatch({ type: 'OPEN_UPGRADE_MODAL', payload: plan });
   };
 
   const renderToneButton = (t: string) => (
@@ -154,16 +169,24 @@ export const InputForm: React.FC<InputFormProps> = ({
               <span>Script Length</span>
               <span className="font-bold text-[#DAFF00] bg-[#1A0F3C] px-2 py-1 rounded-md text-xs">{formatDuration(length)}</span>
             </label>
-            <input
-                id="length"
-                type="range"
-                min="10"
-                max="600"
-                step="5"
-                value={length}
-                onChange={(e) => setLength(parseInt(e.target.value, 10))}
-                className="w-full h-2 rounded-lg appearance-none cursor-pointer"
-            />
+            <div className="relative">
+              <input
+                  id="length"
+                  type="range"
+                  min="10"
+                  max={maxLength}
+                  step="5"
+                  value={length}
+                  onChange={(e) => setLength(parseInt(e.target.value, 10))}
+                  className="w-full h-2 rounded-lg appearance-none cursor-pointer"
+              />
+               {!isUnlimited && (
+                  <button type="button" onClick={() => handleUpgradeClick('unlimited')} className="w-full text-center text-xs text-yellow-200/70 mt-2 hover:text-yellow-100">
+                      <i className="fa-solid fa-lock mr-1.5"></i>
+                      Upgrade to UNLIMITED to generate scripts up to 10 minutes long.
+                  </button>
+               )}
+            </div>
           </div>
 
 
@@ -176,21 +199,37 @@ export const InputForm: React.FC<InputFormProps> = ({
               {tones.map(renderToneButton)}
             </div>
           </div>
+          
+          {/* UNLOCKED/LOCKED: Advanced Tonal Styles */}
+          {isUnlimited ? (
+            <div className="pt-8 pb-4 px-4 border-t border-[#DAFF00]/20 bg-gradient-to-b from-[#DAFF00]/5 to-transparent rounded-lg relative">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span className="bg-[#DAFF00] text-[#1A0F3C] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-[#DAFF00]/20">
+                        UNLIMITED
+                    </span>
+                </div>
+                <label className="block text-sm font-medium text-[#DAFF00] mb-3 text-center tracking-wide">
+                Advanced Tonal Styles
+                </label>
+                <div className="flex flex-wrap gap-2 justify-center">
+                {advancedTones.map(renderToneButton)}
+                </div>
+            </div>
+          ) : (
+            <button type="button" onClick={() => handleUpgradeClick('unlimited')} className="w-full pt-4 pb-4 px-4 border border-yellow-500/30 bg-yellow-900/10 rounded-lg relative text-center group cursor-pointer hover:bg-yellow-900/20">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span className="bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-yellow-400/20">
+                       <i className="fa-solid fa-lock mr-1.5"></i> LOCKED
+                    </span>
+                </div>
+                <label className="block text-sm font-medium text-yellow-300 mb-2 mt-2 tracking-wide pointer-events-none">
+                    Upgrade to UNLIMITED to Unlock Advanced Tones
+                </label>
+                <p className="text-xs text-yellow-200/60 mb-3 pointer-events-none">Get access to Controversial, Shocking, Luxury, and Data-Driven tonal styles to maximize viral potential.</p>
+                <span className="font-bold text-white text-sm group-hover:text-yellow-300 transition-colors pointer-events-none">Click here to upgrade!</span>
+            </button>
+          )}
 
-          {/* UNLOCKED: Advanced Tonal Styles */}
-          <div className="pt-8 pb-4 px-4 border-t border-[#DAFF00]/20 bg-gradient-to-b from-[#DAFF00]/5 to-transparent rounded-lg relative">
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="bg-[#DAFF00] text-[#1A0F3C] text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-[#DAFF00]/20">
-                    UNLOCKED
-                </span>
-            </div>
-            <label className="block text-sm font-medium text-[#DAFF00] mb-3 text-center tracking-wide">
-              Advanced Tonal Styles
-            </label>
-            <div className="flex flex-wrap gap-2 justify-center">
-              {advancedTones.map(renderToneButton)}
-            </div>
-          </div>
 
           {/* Generate Button */}
           <button

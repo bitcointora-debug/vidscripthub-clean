@@ -1,8 +1,10 @@
+
+
 import React, { useContext } from 'react';
-import { DashboardContext } from '../context/DashboardContext';
+import { UIContext } from '../context/UIContext.tsx';
 
 export const QuotaErrorModal: React.FC = () => {
-    const { state, dispatch } = useContext(DashboardContext);
+    const { state, dispatch } = useContext(UIContext);
     const { quotaError } = state;
 
     if (!quotaError) return null;

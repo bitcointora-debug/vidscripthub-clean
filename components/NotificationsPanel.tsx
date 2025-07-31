@@ -1,20 +1,22 @@
-import React, { useRef, useEffect } from 'react';
+
+
+import React, { useRef, useEffect, useContext } from 'react';
 import type { Notification } from '../types.ts';
 import { formatDistanceToNow } from 'date-fns';
+import { DataContext } from '../context/DataContext.tsx';
 
 interface NotificationsPanelProps {
   isOpen: boolean;
-  notifications: Notification[];
   onClose: () => void;
   onMarkAllAsRead: () => void;
 }
 
 export const NotificationsPanel: React.FC<NotificationsPanelProps> = ({
   isOpen,
-  notifications,
   onClose,
   onMarkAllAsRead,
 }) => {
+  const { state: { notifications } } = useContext(DataContext);
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

@@ -17,7 +17,7 @@ export type Database = {
           email: string
           status: "Active" | "Pending" | "Inactive"
           created_at: string
-          avatar: string | null
+          avatar: string
         }
         Insert: {
           id?: string
@@ -26,7 +26,7 @@ export type Database = {
           email: string
           status: "Active" | "Pending" | "Inactive"
           created_at?: string
-          avatar?: string | null
+          avatar: string
         }
         Update: {
           id?: string
@@ -35,7 +35,7 @@ export type Database = {
           email?: string
           status?: "Active" | "Pending" | "Inactive"
           created_at?: string
-          avatar?: string | null
+          avatar?: string
         }
         Relationships: [
           {
@@ -117,6 +117,10 @@ export type Database = {
           primary_niche: string | null
           platforms: ("tiktok" | "instagram" | "youtube")[] | null
           preferred_tone: string | null
+          isPersonalized: boolean
+          plan_level: "standard" | "unlimited"
+          has_dfy_vault: boolean
+          is_agency: boolean
         }
         Insert: {
           id: string
@@ -126,6 +130,10 @@ export type Database = {
           primary_niche?: string | null
           platforms?: ("tiktok" | "instagram" | "youtube")[] | null
           preferred_tone?: string | null
+          isPersonalized?: boolean
+          plan_level?: "standard" | "unlimited"
+          has_dfy_vault?: boolean
+          is_agency?: boolean
         }
         Update: {
           id?: string
@@ -135,16 +143,12 @@ export type Database = {
           primary_niche?: string | null
           platforms?: ("tiktok" | "instagram" | "youtube")[] | null
           preferred_tone?: string | null
+          isPersonalized?: boolean
+          plan_level?: "standard" | "unlimited"
+          has_dfy_vault?: boolean
+          is_agency?: boolean
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_id_fkey"
-            columns: ["id"]
-            isOneToOne: true
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       scripts: {
         Row: {

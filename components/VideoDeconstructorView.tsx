@@ -1,14 +1,14 @@
 
 
-
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useCallback } from 'react';
 import { deconstructVideo, QUOTA_ERROR_MESSAGE } from '../services/geminiService.ts';
 import type { VideoDeconstruction, Script } from '../types.ts';
 import { ScriptCard } from './ScriptCard.tsx';
-import { DashboardContext } from '../context/DashboardContext.tsx';
+import { DataContext } from '../context/DataContext.tsx';
+import { UIContext } from '../context/UIContext.tsx';
+import { AuthContext } from '../context/AuthContext.tsx';
 
 interface VideoDeconstructorViewProps {
-    addNotification: (message: string) => void;
     onOpenSaveModal: (script: Script) => void;
     onUnsaveScript: (scriptId: string) => void;
     isScriptSaved: (script: Script) => boolean;
@@ -37,14 +37,22 @@ const LoadingState: React.FC = () => (
 );
 
 export const VideoDeconstructorView: React.FC<VideoDeconstructorViewProps> = ({ 
-    addNotification, onOpenSaveModal, onUnsaveScript, isScriptSaved, scoringScriptId, onVisualize, visualizingScriptId, onToggleSpeech, speakingScriptId
+    onOpenSaveModal, onUnsaveScript, isScriptSaved, scoringScriptId, onVisualize, visualizingScriptId, onToggleSpeech, speakingScriptId
 }) => {
-    const { dispatch } = useContext(DashboardContext);
+    const { state: { user } } = useContext(AuthContext);
+    const { dispatch: dataDispatch } = useContext(DataContext);
+    const { dispatch: uiDispatch } = useContext(UIContext);
     const [videoUrl, setVideoUrl] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<VideoDeconstruction | null>(null);
     const [sources, setSources] = useState<{ uri: string; title: string }[]>([]);
+
+    const addNotification = useCallback((message: string) => {
+        if(user) {
+            dataDispatch({ type: 'ADD_NOTIFICATION_REQUEST', payload: { message, userId: user.id } });
+        }
+    }, [dataDispatch, user]);
 
     const isValidUrl = (url: string) => {
         try {
@@ -74,7 +82,7 @@ export const VideoDeconstructorView: React.FC<VideoDeconstructorViewProps> = ({
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
             if (errorMessage === QUOTA_ERROR_MESSAGE) {
-                dispatch({ type: 'SET_QUOTA_ERROR', payload: errorMessage });
+                uiDispatch({ type: 'SET_QUOTA_ERROR', payload: errorMessage });
             } else {
                 setError(errorMessage);
                 addNotification(`Error deconstructing video: ${errorMessage}`);

@@ -2,7 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { Dashboard } from './components/Dashboard.tsx';
 import type { Client, Session } from './types.ts';
-import { DashboardProvider } from './context/DashboardContext.tsx';
+import { AuthProvider } from './context/AuthContext.tsx';
+import { DataProvider } from './context/DataContext.tsx';
+import { UIProvider } from './context/UIContext.tsx';
 import { supabase } from './services/supabaseClient.ts';
 import { AuthPage } from './components/AuthPage.tsx';
 import { SalesPage } from './components/SalesPage.tsx';
@@ -15,6 +17,7 @@ const App: React.FC = () => {
   const [impersonatingClient, setImpersonatingClient] = useState<Client | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [flowState, setFlowState] = useState<'sales' | 'oto1' | 'oto2' | 'oto3' | 'app'>('sales');
+  const [cameFromApp, setCameFromApp] = useState(false);
 
   useEffect(() => {
     const getSession = async () => {
@@ -40,17 +43,24 @@ const App: React.FC = () => {
     setImpersonatingClient(null);
   };
   
+  const handleInitiateUpgrade = (targetFlow: 'oto1' | 'oto2' | 'oto3') => {
+    setCameFromApp(true);
+    setFlowState(targetFlow);
+  };
+
   if (flowState === 'sales') {
     return <SalesPage onPurchaseClick={() => setFlowState('oto1')} onDashboardClick={() => setFlowState('app')} />;
   }
   if (flowState === 'oto1') {
-      return <Oto1Page onNavigateToNextStep={() => setFlowState('oto2')} />;
+      const nextStep = cameFromApp ? 'app' : 'oto2';
+      return <Oto1Page onNavigateToNextStep={() => { setFlowState(nextStep); if(cameFromApp) setCameFromApp(false); }} />;
   }
   if (flowState === 'oto2') {
-      return <Oto2Page onNavigateToNextStep={() => setFlowState('oto3')} />;
+      const nextStep = cameFromApp ? 'app' : 'oto3';
+      return <Oto2Page onNavigateToNextStep={() => { setFlowState(nextStep); if(cameFromApp) setCameFromApp(false); }} />;
   }
   if (flowState === 'oto3') {
-      return <Oto3Page onNavigateToDashboard={() => setFlowState('app')} />;
+      return <Oto3Page onNavigateToDashboard={() => { setFlowState('app'); if(cameFromApp) setCameFromApp(false); }} />;
   }
 
   if (isLoading) {
@@ -69,9 +79,18 @@ const App: React.FC = () => {
   }
   
   return (
-    <DashboardProvider session={session}>
-      <Dashboard impersonatingClient={impersonatingClient} onLoginAsClient={handleLoginAsClient} onLogoutClientView={handleLogoutClientView} />
-    </DashboardProvider>
+    <AuthProvider session={session}>
+        <UIProvider>
+            <DataProvider>
+                <Dashboard 
+                    impersonatingClient={impersonatingClient} 
+                    onLoginAsClient={handleLoginAsClient} 
+                    onLogoutClientView={handleLogoutClientView}
+                    onInitiateUpgrade={handleInitiateUpgrade}
+                />
+            </DataProvider>
+        </UIProvider>
+    </AuthProvider>
   );
 };
 

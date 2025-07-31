@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext.tsx';
 
 interface PersonalizationModalProps {
     isOpen: boolean;
@@ -15,6 +17,7 @@ const platformOptions = [
 
 
 export const PersonalizationModal: React.FC<PersonalizationModalProps> = ({ isOpen, onComplete }) => {
+    const { dispatch } = useContext(AuthContext);
     const [step, setStep] = useState(1);
     const [niche, setNiche] = useState('');
     const [customNiche, setCustomNiche] = useState('');

@@ -1,3 +1,4 @@
+
 import type { Script, Trend, EnhancedTopic, VideoDeconstruction, ViralScoreBreakdown } from '../types.ts';
 
 export const QUOTA_ERROR_MESSAGE = "API quota exceeded for the 'gemini-2.5-flash' model. Your Google Cloud project has paid limits, but they might not be applied to this specific model. Please go to the Quotas page in your Google Cloud Console, filter for the 'generativelanguage.googleapis.com' service, and request a quota increase for the 'gemini-2.5-flash' model.";
@@ -46,4 +47,12 @@ export const deconstructVideo = (videoUrl: string): Promise<{ deconstruction: Vi
 
 export const remixScript = (baseScript: Script, newTopic: string): Promise<Script> => {
     return callApi('remixScript', { baseScript, newTopic });
+};
+
+export const sendClientInvite = (email: string): Promise<any> => {
+    return callApi('sendClientInvite', { email });
+};
+
+export const createBillingPortalSession = (): Promise<{ url: string }> => {
+    return callApi('createBillingPortalSession', {});
 };

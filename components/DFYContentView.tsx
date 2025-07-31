@@ -1,23 +1,14 @@
-import React, { useState, useMemo, useCallback } from 'react';
+
+import React, { useState, useMemo, useCallback, useEffect, useContext } from 'react';
 import type { Script } from '../types.ts';
 import { ScriptCard } from './ScriptCard.tsx';
 import { RemixScriptModal } from './RemixScriptModal.tsx';
 import { generateBonusPdf } from '../services/pdfService.ts';
+import { DataContext } from '../context/DataContext.tsx';
+import { AuthContext } from '../context/AuthContext.tsx';
+import { UIContext } from '../context/UIContext.tsx';
 
-export const mockDfyScripts: Script[] = [
-    { id: 'dfy-1', title: "3 'Healthy' Foods That Are Actually Scams", hook: "You won't believe what's hiding in your 'healthy' snacks...", script: "VOICEOVER: You think you're eating healthy? Think again.\n[SCENE]: A vibrant, colorful shot of a fruit yogurt parfait. Looks delicious.\n[SOUND EFFECT: record scratch]\nON-SCREEN TEXT: High in Sugar!\nVOICEOVER: This is packed with more sugar than a candy bar. The 'fruit' is basically jam.\n[SCENE]: A hand grabbing a handful of granola from a bag.\nON-SCREEN TEXT: Mostly Processed Oats & Oil!\nVOICEOVER: And this 'wholesome' granola? It's basically dessert, coated in oil and sugar.\n[SCENE]: A bag of veggie chips next to actual vegetables.\nVOICEOVER: Don't even get me started on these. They're just potato chips in disguise with a sprinkle of vegetable powder. \nON-SCREEN TEXT: Follow for more health truths.", tone: 'Shocking', niche: 'Weight Loss', isNew: true },
-    { id: 'dfy-2', title: "The Easiest Side Hustle You Can Start TODAY", hook: "I made $200 last weekend with this simple side hustle...", script: "VOICEOVER: Stop scrolling and start earning. \n[SCENE]: Show a person cleaning a slightly dirty car headlight with a microfiber towel.\n[CAMERA ANGLE: Close-up on the yellow, hazy grime]\nVOICEOVER: This is headlight restoration. You can buy a kit for $20 online.\n[SCENE]: A super satisfying before-and-after shot of a crystal clear headlight.\n[SOUND EFFECT: Sparkle]\nVOICEOVER: And you can charge $50 per car for 30 minutes of work. That's $100 an hour for making cars safer and look better.\nON-SCREEN TEXT: Want more side hustles? Link in bio!", tone: 'Educational', niche: 'Make Money', isNew: true },
-    { id: 'dfy-3', title: "This Fitness Myth is Destroying Your Progress", hook: "If you're still doing hours of cardio, you need to see this.", script: "VOICEOVER: You've been told cardio is the key to fat loss. You've been lied to.\n[SCENE]: Show someone looking exhausted and bored on a treadmill in black and white.\nON-SCREEN TEXT: Endless Cardio = High Cortisol\nVOICEOVER: Endless cardio can actually raise your cortisol levels, a stress hormone that makes you store MORE belly fat.\n[SCENE]: Show a person lifting weights, looking powerful and focused, in full color.\nON-SCREEN TEXT: Strength Training = Higher Metabolism\nVOICEOVER: Prioritize strength training to build muscle. More muscle burns more calories 24/7, even when you're resting. Your body will thank you.", tone: 'Data-Driven', niche: 'Fitness' },
-    { id: 'dfy-4', title: "The 5-Second Rule to Stop Procrastinating", hook: "This simple trick will change your life.", script: "VOICEOVER: The moment you feel yourself hesitating to do something you know you should do... \n[SCENE]: A person staring at a laptop, hesitating to start work. The world is in slow motion.\nVOICEOVER: ...count backwards. 5-4-3-2-1. And when you hit 1, MOVE.\n[SCENE]: The person physically pushes back from the table and stands up at normal speed.\n[SOUND EFFECT: Whoosh]\nVOICEOVER: This interrupts your brain's habit of making excuses and forces you into action. It's a mental trick to launch yourself. Try it now.", tone: 'Inspirational', niche: 'Productivity' },
-    { id: 'dfy-5', title: "Unboxing the new AI Pin That's Replacing Phones", hook: "Is this the end of the iPhone?", script: "VOICEOVER: This little device right here? It might just replace your smartphone.\n[SCENE]: A clean, aesthetic unboxing of the Humane AI Pin, showing its sleek design.\nVOICEOVER: It has no screen. You just talk to it. It has a camera, a projector, and it's powered by AI.\n[SCENE]: Demonstrating a feature, like holding up a piece of fruit and the pin projecting nutritional info onto their hand.\nON-SCREEN TEXT: '105 Calories, 27g Carbs'\nVOICEOVER: The future is weird, but I'm here for it. Full review coming soon.", tone: 'Tech', niche: 'Tech' },
-    { id: 'dfy-6', title: "IKEA Hack: Turn a $20 Shelf into a Masterpiece", hook: "Don't buy this, HACK it.", script: "VOICEOVER: Don't just build your IKEA furniture, transform it.\n[SCENE]: Show a basic, boring IKEA 'KALLAX' shelf unit.\nON-SCREEN TEXT: Boring Kallax Shelf: $20\nVOICEOVER: We're taking this shelf and making it look custom. You'll need paint, fluted wood trim, and a good adhesive.\n[SCENE]: A satisfying timelapse of painting the shelf and precisely attaching the trim, all set to upbeat music.\n[ACTION: Show the final product, now looking like a high-end designer piece of furniture.]\nVOICEOVER: And just like that... a custom piece that looks like it's from a high-end store.", tone: 'DIY', niche: 'DIY' },
-    { id: 'dfy-7', title: "Crypto Investing for Absolute Beginners (in 60s)", hook: "Here's everything you need to know to start investing in crypto.", script: "VOICEOVER: Crypto seems confusing, right? Let's fix that. \n[SCENE]: Show logos of trusted crypto exchanges like Coinbase or Kraken on a phone screen.\nON-SCREEN TEXT: Step 1: Use a Trusted Exchange\nVOICEOVER: Download a major, trusted exchange. This is where you buy.\n[SCENE]: Show the logos of Bitcoin and Ethereum prominently.\nON-SCREEN TEXT: Step 2: Start with the 'Blue Chips'\nVOICEOVER: For your first buys, stick with the big two: Bitcoin and Ethereum. They're the most established.\n[SCENE]: A screen recording of someone setting up a recurring buy for a small amount, like $25.\nON-SCREEN TEXT: Step 3: Dollar-Cost Average\nVOICEOVER: Buy a small, fixed amount every week or month. Don't try to time the market. This is the safest way to start. You're welcome.", tone: 'Educational', niche: 'Make Money' },
-    // more scripts...
-    { id: 'dfy-40', title: "How a 'Sinking Fund' Prevents Financial Emergencies", hook: "This simple bank account trick will save you from debt.", script: "VOICEOVER: Stop letting unexpected expenses like car repairs become financial emergencies.\n[SCENE]: A person looking stressed, holding a huge car repair bill with a dramatic red 'PAST DUE' stamp on it.\nON-SCREEN TEXT: The Problem: The 'Oh No!' Fund\nVOICEOVER: Most people have one savings account. It feels painful to use it for a car repair or a new fridge.\n[SCENE]: Show a clean, organized banking app with multiple, named savings accounts: 'Car Repairs: $240', 'Vacation: $500', 'New Laptop: $150'.\nON-SCREEN TEXT: The Solution: Sinking Funds\nVOICEOVER: This is a 'sinking fund'. You create separate savings accounts for specific, future expenses. Every payday, you automatically transfer a small amount into each one. $20 to car repairs, $50 to vacation.\n[SCENE]: The person now pays the car repair bill with a calm expression, easily transferring money from their 'Car Repairs' sinking fund.\nVOICEOVER: Now, when your car breaks down, it's not an emergency. It's just an expense you already planned for. You're not touching your real emergency fund; you're just using the money you set aside for that exact purpose.", tone: 'Educational', niche: 'Personal Finance' },
-
-];
-
-const niches = ['All', 'Weight Loss', 'Make Money', 'Fitness', 'Productivity', 'Tech', 'DIY', 'Cooking', 'Pets', 'Travel', 'Gardening', 'Real Estate', 'Parenting', 'Gaming', 'Car Detailing', 'Relationships', 'Personal Finance', 'Philosophy', 'History', 'Career', 'Psychology'];
+const niches = ['All', 'Weight Loss', 'Make Money', 'Fitness', 'Productivity', 'Tech', 'DIY', 'Cooking', 'Pets', 'Travel', 'Real Estate', 'Psychology', 'Personal Finance', 'Gaming', 'Parenting', 'Car Detailing', 'Relationships', 'Philosophy', 'History', 'Career'];
 
 const viralHooks = {
     "Controversial & Bold Statements": [
@@ -73,9 +64,9 @@ const viralHooks = {
 };
 
 const bonuses = [
-    { title: "Profit Niches Exposed", description: "Our secret list of 20+ underexploited niches where you can go viral fast.", icon: "fa-solid fa-lightbulb" },
-    { title: "The 60-Second Video Toolkit", description: "A simple checklist for shooting high-quality viral videos with just your smartphone.", icon: "fa-solid fa-camera" },
-    { title: "The Viral Monetization Blueprint", description: "Learn 5 easy ways to turn your newfound views into actual, spendable cash.", icon: "fa-solid fa-sack-dollar" },
+    { title: "The 34,092 Buyers List CASE STUDY", description: "Learn how to turn viral views into a massive, profitable email list.", icon: "fa-solid fa-file-invoice-dollar" },
+    { title: "The Affiliate Profits Club", description: "Get access to our private community and learn how to monetize with affiliate marketing.", icon: "fa-solid fa-users" },
+    { title: "The Traffic Accelerator Training", description: "A video masterclass on advanced strategies to drive traffic from your viral content.", icon: "fa-solid fa-video" },
 ];
 
 type Tab = 'Scripts' | 'Hooks' | 'Audio' | 'Bonuses';
@@ -85,7 +76,6 @@ interface DFYContentViewProps {
     onUnsaveScript: (scriptId: string) => void;
     isScriptSaved: (script: Script) => boolean;
     scoringScriptId: string | null;
-    addNotification: (message: string) => void;
     onVisualize: (scriptId: string, artStyle: string) => void;
     visualizingScriptId: string | null;
     onToggleSpeech: (script: Script) => void;
@@ -95,18 +85,65 @@ interface DFYContentViewProps {
 }
 
 export const DFYContentView: React.FC<DFYContentViewProps> = ({ 
-    onOpenSaveModal, onUnsaveScript, isScriptSaved, scoringScriptId, addNotification,
+    onOpenSaveModal, onUnsaveScript, isScriptSaved, scoringScriptId,
     onVisualize, visualizingScriptId, onToggleSpeech, speakingScriptId, onRemixScript, isRemixing
 }) => {
+    const { state: { user } } = useContext(AuthContext);
+    const { dispatch: dataDispatch } = useContext(DataContext);
+    const { dispatch: uiDispatch } = useContext(UIContext);
+    const hasDfyVault = user?.has_dfy_vault ?? false;
+
     const [activeTab, setActiveTab] = useState<Tab>('Scripts');
     const [activeNiche, setActiveNiche] = useState('All');
+    const [activeTone, setActiveTone] = useState('All');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [dfyScripts, setDfyScripts] = useState<Script[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [remixModalOpen, setRemixModalOpen] = useState(false);
     const [scriptToRemix, setScriptToRemix] = useState<Script | null>(null);
 
+    const addNotification = useCallback((message: string) => {
+        if(user) {
+           dataDispatch({ type: 'ADD_NOTIFICATION_REQUEST', payload: { message, userId: user.id } });
+        }
+    }, [dataDispatch, user]);
+
+    useEffect(() => {
+        fetch('/data/dfy-scripts.json')
+            .then(res => {
+                if (!res.ok) { throw new Error(`HTTP error! status: ${res.status}`); }
+                return res.json();
+            })
+            .then((data: Script[]) => {
+                setDfyScripts(data);
+                setIsLoading(false);
+            })
+            .catch(err => {
+                console.error("Failed to load DFY scripts:", err);
+                addNotification("Error: Could not load the DFY script library.");
+                setIsLoading(false);
+            });
+    }, [addNotification]);
+    
+    const tones = useMemo(() => ['All', ...Array.from(new Set(dfyScripts.map(s => s.tone)))], [dfyScripts]);
+
     const filteredScripts = useMemo(() => {
-        if (activeNiche === 'All') return mockDfyScripts;
-        return mockDfyScripts.filter(script => script.niche === activeNiche);
-    }, [activeNiche]);
+        let scripts = dfyScripts;
+        if (activeNiche !== 'All') {
+            scripts = scripts.filter(script => script.niche === activeNiche);
+        }
+        if (activeTone !== 'All') {
+            scripts = scripts.filter(script => script.tone === activeTone);
+        }
+        if (searchTerm) {
+            scripts = scripts.filter(script => 
+                script.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                script.script.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                script.hook.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        }
+        return scripts;
+    }, [activeNiche, activeTone, searchTerm, dfyScripts]);
     
     const handleOpenRemixModal = (script: Script) => {
         setScriptToRemix(script);
@@ -133,43 +170,95 @@ export const DFYContentView: React.FC<DFYContentViewProps> = ({
         }
     };
 
-    const TabButton: React.FC<{tabName: Tab, currentTab: Tab, children: React.ReactNode, icon: string}> = ({ tabName, currentTab, children, icon }) => (
-        <button onClick={() => setActiveTab(tabName)} className={`flex-1 group flex items-center justify-center gap-2 px-3 py-3 text-sm font-bold rounded-t-lg transition-all duration-200 border-b-4 ${currentTab === tabName ? 'text-[#DAFF00] border-[#DAFF00]' : 'text-purple-300 border-transparent hover:text-white hover:bg-[#4A3F7A]/30'}`}>
-            <i className={`${icon} transition-colors duration-200 ${currentTab === tabName ? 'text-[#DAFF00]' : 'text-purple-300/70 group-hover:text-white'}`}></i>
+    const handleTabClick = (tabName: Tab, isLocked: boolean) => {
+        if (isLocked) {
+            uiDispatch({ type: 'OPEN_UPGRADE_MODAL', payload: 'dfy' });
+        } else {
+            setActiveTab(tabName);
+        }
+    };
+
+    const TabButton: React.FC<{tabName: Tab, currentTab: Tab, children: React.ReactNode, icon: string, locked?: boolean}> = ({ tabName, currentTab, children, icon, locked=false }) => (
+        <button onClick={() => handleTabClick(tabName, locked)} className={`flex-1 group flex items-center justify-center gap-2 px-3 py-3 text-sm font-bold rounded-t-lg transition-all duration-200 border-b-4 ${locked ? 'text-purple-300/30 cursor-pointer' : currentTab === tabName ? 'text-[#DAFF00] border-[#DAFF00]' : 'text-purple-300 border-transparent hover:text-white hover:bg-[#4A3F7A]/30'}`}>
+            <i className={`${icon} transition-colors duration-200 ${locked ? 'text-purple-300/30' : currentTab === tabName ? 'text-[#DAFF00]' : 'text-purple-300/70 group-hover:text-white'}`}></i>
             {children}
+            {locked && <i className="fa-solid fa-lock text-xs text-yellow-400/50"></i>}
         </button>
     );
+
+    const FilterButton: React.FC<{label: string, activeLabel: string, onClick: () => void}> = ({ label, activeLabel, onClick }) => (
+        <button onClick={onClick} className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors duration-200 ${activeLabel === label ? 'bg-[#DAFF00] text-[#1A0F3C]' : 'bg-[#2A1A5E] text-purple-200 hover:bg-[#4A3F7A]/80'}`}>
+            {label}
+        </button>
+    );
+
 
     const renderContent = () => {
         switch (activeTab) {
             case 'Scripts':
                 return (
                     <>
-                        <div className="flex flex-wrap gap-2 mb-6">
-                            {niches.map(niche => (
-                                <button key={niche} onClick={() => setActiveNiche(niche)} className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors duration-200 ${activeNiche === niche ? 'bg-[#DAFF00] text-[#1A0F3C]' : 'bg-[#2A1A5E] text-purple-200 hover:bg-[#4A3F7A]/80'}`}>
-                                    {niche}
-                                </button>
-                            ))}
+                        {!hasDfyVault && (
+                            <button onClick={() => uiDispatch({type: 'OPEN_UPGRADE_MODAL', payload: 'dfy'})} className="w-full text-center p-4 mb-6 bg-yellow-900/20 border border-yellow-500/30 rounded-lg group hover:bg-yellow-900/30">
+                                 <h3 className="font-bold text-yellow-300"><i className="fa-solid fa-lock mr-2"></i>Upgrade to Unlock Premium Content</h3>
+                                 <p className="text-xs text-yellow-200/70 mt-1">Get instant access to the Viral Hooks Swipe File, Audio Masterclass, and Exclusive Bonuses!</p>
+                            </button>
+                        )}
+                        <div className="flex flex-col md:flex-row gap-4 mb-6">
+                            <div className="relative flex-grow">
+                                <i className="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-purple-300/50"></i>
+                                <input type="text" placeholder="Search all DFY scripts..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full bg-[#1A0F3C] border border-[#4A3F7A] rounded-md py-2.5 pl-10 pr-4 text-[#F0F0F0] placeholder-purple-300/50 focus:ring-2 focus:ring-[#DAFF00] focus:border-[#DAFF00] focus:outline-none transition duration-200" />
+                            </div>
                         </div>
-                        <div className="space-y-6">
-                            {filteredScripts.map(script => (
-                                <ScriptCard
-                                    key={script.id}
-                                    script={script}
-                                    onOpenSaveModal={onOpenSaveModal}
-                                    onUnsave={onUnsaveScript}
-                                    isSaved={isScriptSaved(script)}
-                                    isScoring={scoringScriptId === script.id}
-                                    addNotification={addNotification}
-                                    onVisualize={onVisualize}
-                                    isVisualizing={visualizingScriptId === script.id}
-                                    onRemix={handleOpenRemixModal}
-                                    onToggleSpeech={onToggleSpeech}
-                                    isSpeaking={speakingScriptId === script.id}
-                                />
-                            ))}
+                        <div className="space-y-4 mb-6">
+                            <div>
+                                <h4 className="text-xs font-semibold uppercase text-purple-300/80 mb-2">Filter by Niche</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {niches.map(niche => (
+                                        <FilterButton key={niche} label={niche} activeLabel={activeNiche} onClick={() => setActiveNiche(niche)} />
+                                    ))}
+                                </div>
+                            </div>
+                            <div>
+                                <h4 className="text-xs font-semibold uppercase text-purple-300/80 mb-2">Filter by Tone</h4>
+                                 <div className="flex flex-wrap gap-2">
+                                    {tones.map(tone => (
+                                        <FilterButton key={tone} label={tone} activeLabel={activeTone} onClick={() => setActiveTone(tone)} />
+                                    ))}
+                                </div>
+                            </div>
                         </div>
+
+                         {isLoading ? (
+                            <div className="space-y-6">
+                                {[...Array(3)].map((_, i) => <div key={i} className="bg-[#2A1A5E] p-6 rounded-xl animate-pulse h-64"></div>)}
+                            </div>
+                        ) : filteredScripts.length > 0 ? (
+                            <div className="space-y-6">
+                                {filteredScripts.map(script => (
+                                    <ScriptCard
+                                        key={script.id}
+                                        script={script}
+                                        onOpenSaveModal={onOpenSaveModal}
+                                        onUnsave={onUnsaveScript}
+                                        isSaved={isScriptSaved(script)}
+                                        isScoring={scoringScriptId === script.id}
+                                        addNotification={addNotification}
+                                        onVisualize={onVisualize}
+                                        isVisualizing={visualizingScriptId === script.id}
+                                        onRemix={handleOpenRemixModal}
+                                        onToggleSpeech={onToggleSpeech}
+                                        isSpeaking={speakingScriptId === script.id}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                             <div className="text-center py-16 px-6 bg-[#1A0F3C]/50 rounded-lg border-2 border-dashed border-[#4A3F7A]">
+                                <i className="fa-regular fa-face-sad-tear text-4xl text-purple-300 mb-4"></i>
+                                <h3 className="mt-2 text-lg font-medium text-[#F0F0F0]">No Scripts Found</h3>
+                                <p className="mt-1 text-sm text-purple-200/80">Your search and filter criteria did not match any scripts.</p>
+                            </div>
+                        )}
                     </>
                 );
             case 'Hooks':
@@ -228,13 +317,13 @@ export const DFYContentView: React.FC<DFYContentViewProps> = ({
                      <div className="bg-[#2A1A5E]/50 rounded-xl border border-[#4A3F7A]/30 p-6 md:p-8 space-y-8">
                         <div className="text-center">
                             <i className="fa-solid fa-gift text-4xl text-[#DAFF00] mb-3"></i>
-                            <h2 className="text-3xl font-bold text-white mb-2">Your Launch Bonuses</h2>
-                            <p className="text-purple-200 max-w-2xl mx-auto">Thank you for your purchase! Here are the special bonuses included with your order.</p>
+                            <h2 className="text-3xl font-bold text-white mb-2">Your UNLIMITED Bonus Vault</h2>
+                            <p className="text-purple-200 max-w-2xl mx-auto">Thank you for upgrading! Here are the special bonuses included with your Unlimited plan.</p>
                         </div>
                         <div className="space-y-6 max-w-3xl mx-auto">
                             {bonuses.map(bonus => (
                                 <div key={bonus.title} className="bg-[#1A0F3C] rounded-lg p-5 flex flex-col md:flex-row items-center justify-between gap-4">
-                                    <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-4 text-center md:text-left">
                                         <i className={`${bonus.icon} text-2xl text-[#DAFF00] w-8 text-center`}></i>
                                         <div>
                                             <h3 className="font-bold text-white">{bonus.title}</h3>
@@ -242,7 +331,7 @@ export const DFYContentView: React.FC<DFYContentViewProps> = ({
                                         </div>
                                     </div>
                                     <button onClick={() => handleDownloadBonus(bonus.title)} className="w-full md:w-auto flex-shrink-0 bg-[#DAFF00] text-[#1A0F3C] font-bold py-2 px-4 rounded-md text-sm hover:bg-opacity-90 transition-all">
-                                        <i className="fa-solid fa-download mr-2"></i>Download PDF
+                                        <i className="fa-solid fa-download mr-2"></i>Download Now
                                     </button>
                                 </div>
                             ))}
@@ -270,9 +359,9 @@ export const DFYContentView: React.FC<DFYContentViewProps> = ({
             <div className="border-b border-[#4A3F7A]/30 mb-6">
                 <div className="flex -mb-px">
                     <TabButton tabName="Scripts" currentTab={activeTab} icon="fa-solid fa-scroll">DFY Scripts</TabButton>
-                    <TabButton tabName="Hooks" currentTab={activeTab} icon="fa-solid fa-fish-fins">Viral Hooks</TabButton>
-                    <TabButton tabName="Audio" currentTab={activeTab} icon="fa-solid fa-headphones-simple">Audio Masterclass</TabButton>
-                    <TabButton tabName="Bonuses" currentTab={activeTab} icon="fa-solid fa-gift">Bonuses</TabButton>
+                    <TabButton tabName="Hooks" currentTab={activeTab} icon="fa-solid fa-fish-fins" locked={!hasDfyVault}>Viral Hooks</TabButton>
+                    <TabButton tabName="Audio" currentTab={activeTab} icon="fa-solid fa-headphones-simple" locked={!hasDfyVault}>Audio Masterclass</TabButton>
+                    <TabButton tabName="Bonuses" currentTab={activeTab} icon="fa-solid fa-gift" locked={!hasDfyVault}>Bonuses</TabButton>
                 </div>
             </div>
             {renderContent()}

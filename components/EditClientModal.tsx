@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useContext } from 'react';
 import type { Client } from '../types.ts';
+import { DataContext } from '../context/DataContext.tsx';
 
 interface EditClientModalProps {
   isOpen: boolean;
@@ -9,6 +11,7 @@ interface EditClientModalProps {
 }
 
 export const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onClose, onUpdateClient, client }) => {
+  const { dispatch: dataDispatch } = useContext(DataContext);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'Active' | 'Inactive'>('Active');

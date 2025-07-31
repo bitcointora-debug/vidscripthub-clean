@@ -1,7 +1,8 @@
 
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import type { Client } from '../types.ts';
+import { DataContext } from '../context/DataContext.tsx';
 
 interface AddClientModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface AddClientModalProps {
 }
 
 export const AddClientModal: React.FC<AddClientModalProps> = ({ isOpen, onClose, onAddClient }) => {
+  const { dispatch: dataDispatch } = useContext(DataContext);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
@@ -31,7 +33,7 @@ export const AddClientModal: React.FC<AddClientModalProps> = ({ isOpen, onClose,
     }
 
     setError('');
-    onAddClient({ name, email });
+    onAddClient({ name, email, avatar: '' });
     setName('');
     setEmail('');
   };

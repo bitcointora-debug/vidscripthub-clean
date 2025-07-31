@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "builds": [],
+  "framework": null,
   "headers": [
     {
       "source": "/(.*\\.tsx|.*\\.ts)",
@@ -8,5 +8,10 @@
         { "key": "Content-Type", "value": "application/javascript; charset=utf-8" }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/gemini-proxy.ts": {
+      "maxDuration": 60
+    }
+  }
 }
