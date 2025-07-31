@@ -19,6 +19,5 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["src", "api", "services", "types.ts", "vite.config.ts"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src", "api", "services", "types.ts", "vite.config.ts"]
 }
