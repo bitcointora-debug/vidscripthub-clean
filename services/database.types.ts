@@ -30,7 +30,6 @@ export type Database = {
           avatar: string
         }
         Update: {
-          id?: string
           agency_owner_id?: string
           name?: string
           email?: string
@@ -62,7 +61,6 @@ export type Database = {
           created_at?: string
         }
         Update: {
-          id?: string
           user_id?: string
           name?: string
           created_at?: string
@@ -93,7 +91,6 @@ export type Database = {
           created_at?: string
         }
         Update: {
-          id?: string
           user_id?: string
           message?: string
           read?: boolean
@@ -133,7 +130,6 @@ export type Database = {
           plan?: "basic" | "unlimited" | "dfy" | "agency"
         }
         Update: {
-          id?: string
           name?: string
           email?: string
           avatar_url?: string | null
@@ -173,7 +169,6 @@ export type Database = {
           created_at?: string
         }
         Update: {
-          id?: string
           user_id?: string
           folder_id?: string | null
           title?: string
@@ -216,7 +211,6 @@ export type Database = {
           created_at?: string
         }
         Update: {
-          id?: string
           user_id?: string
           trend_data?: Json
           created_at?: string

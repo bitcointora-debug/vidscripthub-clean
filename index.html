@@ -100,10 +100,30 @@
         animation: fadeInHighlight 0.5s ease-in-out;
       }
     </style>
-  </head>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^18.3.1/",
+    "react": "https://esm.sh/react@^18.3.1",
+    "react-dom/": "https://esm.sh/react-dom@^18.3.1/",
+    "date-fns": "https://esm.sh/date-fns@^4.1.0",
+    "jspdf": "https://esm.sh/jspdf@^2.5.1",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.45.0",
+    "@supabase/auth-ui-react": "https://esm.sh/@supabase/auth-ui-react@^0.4.7",
+    "@supabase/auth-ui-shared": "https://esm.sh/@supabase/auth-ui-shared@^0.1.8",
+    "@netlify/functions": "https://esm.sh/@netlify/functions@^4.2.1",
+    "@google/genai": "https://esm.sh/@google/genai@^1.11.0",
+    "@vercel/node": "https://esm.sh/@vercel/node@^5.3.7",
+    "react-joyride": "https://esm.sh/react-joyride@^2.8.2"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
   <body class="bg-[#1A0F3C]">
     <div id="root"></div>
-    <!-- This script tag correctly includes type="module" for Vite -->
-    <script type="module" src="/index.tsx"></script>
-  </body>
+    <script type="text/babel" data-presets="react,typescript" data-type="module" src="/index.tsx"></script>
+  <script type="module" src="/index.tsx"></script>
+</body>
 </html>

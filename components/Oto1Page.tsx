@@ -1,14 +1,13 @@
 
-import React, { useContext } from 'react';
+import React from 'react';
 import { CheckCircleIcon } from './icons/CheckCircleIcon.tsx';
-import { AuthContext } from '../context/AuthContext.tsx';
 
 interface Oto1PageProps {
-    onNavigateToNextStep: () => void;
+    onUpgrade: () => void;
+    onDecline: () => void;
 }
 
-export const Oto1Page: React.FC<Oto1PageProps> = ({ onNavigateToNextStep }) => {
-    const { dispatch } = useContext(AuthContext);
+export const Oto1Page: React.FC<Oto1PageProps> = ({ onUpgrade, onDecline }) => {
 
     const benefits = [
         "UNLIMITED Script Generations",
@@ -26,11 +25,6 @@ export const Oto1Page: React.FC<Oto1PageProps> = ({ onNavigateToNextStep }) => {
             description: ""
         }
     ];
-
-    const handleUpgrade = () => {
-        dispatch({ type: 'UPGRADE_PLAN_REQUEST', payload: 'unlimited' });
-        onNavigateToNextStep();
-    };
 
     return (
         <div className="bg-[#1A0F3C] text-[#F0F0F0] antialiased min-h-screen flex items-center justify-center py-12 px-4 relative overflow-hidden">
@@ -99,14 +93,14 @@ export const Oto1Page: React.FC<Oto1PageProps> = ({ onNavigateToNextStep }) => {
                             <p className="font-semibold text-white text-lg">One-Time Payment</p>
                             <p className="text-purple-300 text-sm mt-1 line-through">(Normally $47/Month After Launch)</p>
                             <button 
-                                onClick={handleUpgrade}
+                                onClick={onUpgrade}
                                 className="block w-full bg-[#DAFF00] text-[#1A0F3C] font-bold text-xl md:text-2xl uppercase py-5 px-6 rounded-lg shadow-[0_5px_0px_0px_#a8c400] hover:translate-y-1 hover:shadow-[0_4px_0px_0px_#a8c400] transition-all duration-150 ease-in-out mt-6"
                             >
                                 YES! UPGRADE MY ACCOUNT NOW!
                             </button>
                         </div>
                         <button 
-                            onClick={onNavigateToNextStep}
+                            onClick={onDecline}
                             className="block mt-6 text-purple-300/70 hover:text-white transition-colors duration-200 text-sm underline"
                         >
                             No thanks, I don't want to go unlimited. I understand I will lose access to this one-time offer forever and my account will remain limited.

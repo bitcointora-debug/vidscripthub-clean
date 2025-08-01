@@ -1,7 +1,7 @@
 
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Dashboard } from './Dashboard.tsx';
-import type { Client } from '../types.ts';
+import type { Client, Plan } from '../types.ts';
 import { AuthContext } from '../context/AuthContext.tsx';
 import { SalesPage } from './SalesPage.tsx';
 import { Oto1Page } from './Oto1Page.tsx';
@@ -9,14 +9,32 @@ import { Oto2Page } from './Oto2Page.tsx';
 import { Oto3Page } from './Oto3Page.tsx';
 import { AuthPage } from './AuthPage.tsx';
 
-export const AppRouter: React.FC = () => {
-    const { state } = useContext(AuthContext);
-    const { user, isLoading } = state;
+type FlowState = 'sales' | 'oto1' | 'oto2' | 'oto3' | 'app' | 'auth';
+type PostAuthAction = { planToUpgrade: Plan, nextFlowState: 'oto2' | 'oto3' | 'app' };
 
-    // Default to 'app' if user is already logged in, otherwise start at 'sales'
-    const [flowState, setFlowState] = useState<'sales' | 'oto1' | 'oto2' | 'oto3' | 'app'>(user ? 'app' : 'sales');
+
+export const AppRouter: React.FC = () => {
+    const { state, dispatch: authDispatch } = useContext(AuthContext);
+    const { user, isLoading } = state;
+    
+    const [flowState, setFlowState] = useState<FlowState>(user ? 'app' : 'sales');
+    const [postAuthAction, setPostAuthAction] = useState<PostAuthAction | null>(null);
     const [impersonatingClient, setImpersonatingClient] = useState<Client | null>(null);
 
+    // This effect handles the post-login action for upgrades.
+    useEffect(() => {
+        if (user && postAuthAction) {
+            authDispatch({ type: 'UPGRADE_PLAN_REQUEST', payload: postAuthAction.planToUpgrade });
+            setFlowState(postAuthAction.nextFlowState);
+            setPostAuthAction(null); // Clear the action
+        }
+    }, [user, postAuthAction, authDispatch]);
+
+    const handleRequireAuth = (action: PostAuthAction) => {
+        setPostAuthAction(action);
+        setFlowState('auth');
+    };
+    
     const handleLoginAsClient = (client: Client) => {
         setImpersonatingClient(client);
         window.scrollTo(0, 0);
@@ -25,7 +43,7 @@ export const AppRouter: React.FC = () => {
     const handleLogoutClientView = () => {
         setImpersonatingClient(null);
     };
-    
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-[#1A0F3C]">
@@ -37,32 +55,42 @@ export const AppRouter: React.FC = () => {
         );
     }
     
-    if (user) {
-        // User is logged in, show the OTO funnel or the main dashboard
+    if (!user) {
+        // --- USER IS LOGGED OUT ---
         switch (flowState) {
-            case 'oto1': return <Oto1Page onNavigateToNextStep={() => setFlowState('oto2')} />;
-            case 'oto2': return <Oto2Page onNavigateToNextStep={() => setFlowState('oto3')} />;
-            case 'oto3': return <Oto3Page onNavigateToDashboard={() => setFlowState('app')} />;
-            case 'app':
+            case 'sales':
+                return <SalesPage onPurchaseClick={() => setFlowState('oto1')} onDashboardClick={() => setFlowState('auth')} />;
+            case 'oto1':
+                return <Oto1Page onNavigateToNextStep={() => setFlowState('oto2')} onRequireAuth={() => handleRequireAuth({ planToUpgrade: 'unlimited', nextFlowState: 'oto2' })} />;
+            case 'oto2':
+                return <Oto2Page onNavigateToNextStep={() => setFlowState('oto3')} onRequireAuth={() => handleRequireAuth({ planToUpgrade: 'dfy', nextFlowState: 'oto3' })} />;
+            case 'oto3':
+                return <Oto3Page onNavigateToDashboard={() => setFlowState('app')} onRequireAuth={() => handleRequireAuth({ planToUpgrade: 'agency', nextFlowState: 'app' })} />;
+            case 'auth':
+                return <AuthPage />;
+            case 'app': // User tried to access dashboard while logged out
             default:
-                return <Dashboard 
-                            impersonatingClient={impersonatingClient} 
-                            onLoginAsClient={handleLoginAsClient} 
-                            onLogoutClientView={handleLogoutClientView} 
-                            setAppFlowState={setFlowState}
-                        />;
+                return <AuthPage />;
         }
     } else {
-        // User is not logged in
-        if (flowState !== 'sales') {
-            // If trying to access any protected page (OTOs or app), show the login page
-            return <AuthPage />;
-        } else {
-            // Otherwise, show the sales page
-            return <SalesPage 
-                    onPurchaseClick={() => setFlowState('oto1')} 
-                    onDashboardClick={() => setFlowState('app')} 
-                   />;
+        // --- USER IS LOGGED IN ---
+        const dashboard = <Dashboard impersonatingClient={impersonatingClient} onLoginAsClient={handleLoginAsClient} onLogoutClientView={handleLogoutClientView} setAppFlowState={setFlowState} />;
+        
+        switch (flowState) {
+            case 'sales':
+            case 'auth':
+                 // Logged in user should not see these pages, redirect to app
+                setFlowState('app');
+                return dashboard;
+            case 'oto1':
+                return <Oto1Page onNavigateToNextStep={() => setFlowState('oto2')} onRequireAuth={() => { /* Not called when logged in */ }} />;
+            case 'oto2':
+                return <Oto2Page onNavigateToNextStep={() => setFlowState('oto3')} onRequireAuth={() => { /* Not called when logged in */ }} />;
+            case 'oto3':
+                return <Oto3Page onNavigateToDashboard={() => setFlowState('app')} onRequireAuth={() => { /* Not called when logged in */ }} />;
+            case 'app':
+            default:
+                return dashboard;
         }
     }
 };

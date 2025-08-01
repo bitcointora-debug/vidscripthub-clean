@@ -1,9 +1,4 @@
 
-
-
-
-
-
 import React, { createContext, useReducer, useEffect, ReactNode, useCallback, useContext } from 'react';
 import type { Script, Folder, WatchedTrend, Client, Trend, Notification } from '../types.ts';
 import { supabase } from '../services/supabaseClient.ts';
@@ -117,12 +112,18 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const { state: authState } = useContext(AuthContext);
     const { user } = authState;
     const [state, dispatch] = useReducer(dataReducer, initialState);
+    
+    const isGuest = user?.id.startsWith('guest-') ?? false;
 
     useEffect(() => {
-        if (!user) {
-            // Clear data if user logs out
+        if (!user || isGuest) {
+            // Clear data if user logs out or is a guest
             dispatch({ type: 'FETCH_DATA_SUCCESS', payload: {
-                folders: [], clients: [], savedScripts: [], watchedTrends: [], notifications: []
+                folders: [{ id: 'all', name: 'All Scripts' }] as Folder[], 
+                clients: [], 
+                savedScripts: [], 
+                watchedTrends: [], 
+                notifications: []
             }});
             return;
         }
@@ -158,10 +159,22 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         };
 
         fetchData();
-    }, [user]);
+    }, [user, isGuest]);
     
     const handleAsyncAction = useCallback(async (action: RequestAction) => {
-        if (!user) return;
+        if (!user || isGuest) {
+            if (action.type.endsWith('_REQUEST')) {
+                // For guests, create a local notification instead of a DB call
+                const tempNotification: Notification = {
+                    id: crypto.randomUUID(),
+                    message: "Please sign up to save your work!",
+                    created_at: new Date().toISOString(),
+                    read: false,
+                };
+                dispatch({ type: 'ADD_NOTIFICATION_SUCCESS', payload: tempNotification });
+            }
+            return;
+        }
         const userId = user.id;
         
         try {
@@ -169,11 +182,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 case 'ADD_SAVED_SCRIPT_REQUEST': {
                     const { isNew, ...scriptToInsert } = action.payload.script;
                     const payload = { ...scriptToInsert, user_id: userId, viral_score_breakdown: scriptToInsert.viral_score_breakdown as unknown as Json ?? null };
-                    const { data, error } = await supabase.from('scripts').insert([payload] as any).select().single();
+                    const { data, error } = await supabase.from('scripts').insert([payload]).select().single();
                     if (error) throw error;
                     if (data) dispatch({ type: 'ADD_SAVED_SCRIPT_SUCCESS', payload: data as unknown as Script });
                     break;
                 }
+                // ... (rest of the cases are the same as before)
                 case 'UNSAVE_SCRIPT_REQUEST': {
                     const { error } = await supabase.from('scripts').delete().eq('id', action.payload.scriptId);
                     if(error) throw error;
@@ -181,33 +195,33 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     break;
                 }
                  case 'MOVE_SCRIPT_TO_FOLDER_REQUEST': {
-                    const { error } = await supabase.from('scripts').update({ folder_id: action.payload.folderId } as any).eq('id', action.payload.scriptId);
+                    const { error } = await supabase.from('scripts').update({ folder_id: action.payload.folderId }).eq('id', action.payload.scriptId);
                     if (error) throw error;
                     dispatch({ type: 'MOVE_SCRIPT_TO_FOLDER_SUCCESS', payload: action.payload });
                     break;
                 }
                 case 'ADD_FOLDER_REQUEST': {
                     const payload = { ...action.payload.folder, user_id: userId };
-                    const { data, error } = await supabase.from('folders').insert([payload] as any).select().single();
+                    const { data, error } = await supabase.from('folders').insert([payload]).select().single();
                     if (error) throw error;
                     if (data) dispatch({ type: 'ADD_FOLDER_SUCCESS', payload: data as unknown as Folder });
                     break;
                 }
                 case 'RENAME_FOLDER_REQUEST': {
-                    const { error } = await supabase.from('folders').update({ name: action.payload.newName } as any).eq('id', action.payload.folderId);
+                    const { error } = await supabase.from('folders').update({ name: action.payload.newName }).eq('id', action.payload.folderId);
                     if (error) throw error;
                     dispatch({ type: 'RENAME_FOLDER_SUCCESS', payload: action.payload });
                     break;
                 }
                 case 'DELETE_FOLDER_REQUEST': {
-                    await supabase.from('scripts').update({ folder_id: null } as any).eq('user_id', userId).eq('folder_id', action.payload.folderId);
+                    await supabase.from('scripts').update({ folder_id: null }).eq('user_id', userId).eq('folder_id', action.payload.folderId);
                     await supabase.from('folders').delete().eq('id', action.payload.folderId).eq('user_id', userId);
                     dispatch({ type: 'DELETE_FOLDER_SUCCESS', payload: action.payload });
                     break;
                 }
                 case 'ADD_CLIENT_REQUEST': {
                     const payload = { ...action.payload.clientData, agency_owner_id: userId, status: 'Pending' as const };
-                    const { data, error } = await supabase.from('clients').insert([payload] as any).select().single();
+                    const { data, error } = await supabase.from('clients').insert([payload]).select().single();
                     if (error) throw error;
                     if (data) dispatch({ type: 'ADD_CLIENT_SUCCESS', payload: data as unknown as Client });
                     break;
@@ -215,7 +229,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 case 'UPDATE_CLIENT_REQUEST': {
                     const { updatedClient } = action.payload;
                     const payload = { name: updatedClient.name, email: updatedClient.email, status: updatedClient.status };
-                    const { data, error } = await supabase.from('clients').update(payload as any).eq('id', updatedClient.id).eq('agency_owner_id', userId).select().single();
+                    const { data, error } = await supabase.from('clients').update(payload).eq('id', updatedClient.id).eq('agency_owner_id', userId).select().single();
                     if (error) throw error;
                     if (data) dispatch({ type: 'UPDATE_CLIENT_SUCCESS', payload: { updatedClient: data as unknown as Client } });
                     break;
@@ -228,7 +242,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 }
                 case 'ADD_WATCHED_TREND_REQUEST': {
                     const payload = { user_id: userId, trend_data: action.payload.trend as unknown as Json };
-                    const { data, error } = await supabase.from('watched_trends').insert([payload] as any).select().single();
+                    const { data, error } = await supabase.from('watched_trends').insert([payload]).select().single();
                     if (error) throw error;
                     if (data) dispatch({ type: 'ADD_WATCHED_TREND_SUCCESS', payload: data as unknown as WatchedTrend });
                     break;
@@ -240,7 +254,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     break;
                 }
                 case 'UPDATE_SAVED_SCRIPT_VISUALS_REQUEST': {
-                    const { error } = await supabase.from('scripts').update({ visuals: action.payload.visuals } as any).eq('id', action.payload.scriptId);
+                    const { error } = await supabase.from('scripts').update({ visuals: action.payload.visuals }).eq('id', action.payload.scriptId);
                     if(error) throw error;
                     dispatch({ type: 'UPDATE_SAVED_SCRIPT_VISUALS_SUCCESS', payload: action.payload });
                     break;
@@ -252,20 +266,20 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     break;
                 }
                 case 'BATCH_MOVE_SCRIPTS_REQUEST': {
-                    const { error } = await supabase.from('scripts').update({ folder_id: action.payload.folderId } as any).in('id', action.payload.scriptIds);
+                    const { error } = await supabase.from('scripts').update({ folder_id: action.payload.folderId }).in('id', action.payload.scriptIds);
                     if (error) throw error;
                     dispatch({ type: 'BATCH_MOVE_SCRIPTS_SUCCESS', payload: action.payload });
                     break;
                 }
                 case 'ADD_NOTIFICATION_REQUEST': {
                     const payload = { message: action.payload.message, user_id: userId };
-                    const { data, error } = await supabase.from('notifications').insert([payload] as any).select().single();
+                    const { data, error } = await supabase.from('notifications').insert([payload]).select().single();
                     if (error) throw error;
                     if (data) dispatch({ type: 'ADD_NOTIFICATION_SUCCESS', payload: data as unknown as Notification });
                     break;
                 }
                 case 'MARK_ALL_NOTIFICATIONS_READ_REQUEST': {
-                     const { error } = await supabase.from('notifications').update({ read: true } as any).eq('user_id', userId).eq('read', false);
+                     const { error } = await supabase.from('notifications').update({ read: true }).eq('user_id', userId).eq('read', false);
                      if (error) throw error;
                      const updatedNotifications = state.notifications.map(n => ({...n, read: true}));
                      dispatch({ type: 'MARK_ALL_NOTIFICATIONS_READ_SUCCESS', payload: updatedNotifications });
@@ -275,7 +289,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         } catch (error: any) {
             console.error(`Error in async dispatch for ${action.type}:`, error);
         }
-    }, [user, dispatch, state.notifications]);
+    }, [user, isGuest, dispatch, state.notifications]);
 
     const enhancedDispatch = useCallback((action: DataDispatchableAction) => {
         if (action.type.endsWith('_REQUEST')) {

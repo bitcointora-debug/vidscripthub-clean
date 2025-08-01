@@ -1,6 +1,4 @@
 
-
-
 import React, { createContext, useReducer, useEffect, ReactNode, useCallback } from 'react';
 import type { Session, User, Plan } from '../types.ts';
 import { supabase } from '../services/supabaseClient.ts';
@@ -24,6 +22,7 @@ type Action =
     | { type: 'FETCH_USER_START' }
     | { type: 'FETCH_USER_SUCCESS'; payload: User | null }
     | { type: 'FETCH_USER_ERROR'; payload: string }
+    | { type: 'SET_GUEST_USER'; payload: Plan }
     | { type: 'COMPLETE_PERSONALIZATION_SUCCESS'; payload: Partial<User> }
     | { type: 'UPGRADE_PLAN_SUCCESS'; payload: Plan };
 
@@ -45,6 +44,23 @@ const authReducer = (state: AuthState, action: Action): AuthState => {
         case 'FETCH_USER_START': return { ...state, isLoading: true, error: null };
         case 'FETCH_USER_SUCCESS': return { ...state, isLoading: false, user: action.payload };
         case 'FETCH_USER_ERROR': return { ...state, isLoading: false, error: action.payload };
+        case 'SET_GUEST_USER':
+            const guestId = `guest-${crypto.randomUUID()}`;
+            return {
+                ...state,
+                isLoading: false,
+                user: {
+                    id: guestId,
+                    name: 'Guest User',
+                    email: `guest@${guestId}.com`,
+                    avatar_url: null,
+                    primary_niche: null,
+                    platforms: null,
+                    preferred_tone: null,
+                    isPersonalized: true, // Skip personalization for guests
+                    plan: action.payload,
+                }
+            };
         case 'COMPLETE_PERSONALIZATION_SUCCESS': return { ...state, user: state.user ? { ...state.user, ...action.payload, isPersonalized: true } : null };
         case 'UPGRADE_PLAN_SUCCESS': return { ...state, user: state.user ? { ...state.user, plan: action.payload } : null };
         default: return state;
@@ -62,13 +78,23 @@ export const AuthContext = createContext<{
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-export const AuthProvider: React.FC<{ children: ReactNode; session: Session | null }> = ({ children, session }) => {
+interface AuthProviderProps {
+    children: ReactNode;
+    session: Session | null;
+    guestPlan: Plan | null;
+    pendingUpgradePlan: Plan | null;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, guestPlan, pendingUpgradePlan }) => {
     const [state, dispatch] = useReducer(authReducer, initialState);
 
     useEffect(() => {
         if (!session) {
-            dispatch({ type: 'FETCH_USER_START' }); // Start loading but expect no user
-            dispatch({ type: 'FETCH_USER_SUCCESS', payload: null }); // Clear user on sign out
+            if (guestPlan) {
+                dispatch({ type: 'SET_GUEST_USER', payload: guestPlan });
+            } else {
+                dispatch({ type: 'FETCH_USER_SUCCESS', payload: null });
+            }
             return;
         }
 
@@ -85,25 +111,20 @@ export const AuthProvider: React.FC<{ children: ReactNode; session: Session | nu
                 }
 
                 if (!profileData) {
-                    console.warn("Profile not found after polling, attempting to create it as a fallback.");
+                    console.warn("Profile not found, creating new profile.");
                     const newProfile: Database['public']['Tables']['profiles']['Insert'] = {
                         id: session.user.id,
                         email: session.user.email || '',
                         name: String(session.user.user_metadata?.name || session.user.user_metadata?.full_name || 'New User'),
                         avatar_url: (session.user.user_metadata?.avatar_url as string | null) || null,
                         isPersonalized: false,
-                        plan: 'basic'
+                        plan: pendingUpgradePlan || 'basic' // Use pending plan if available
                     };
                     const { data: newProfileData, error: newProfileError } = await supabase.from('profiles').insert([newProfile]).select().single();
                     
-                    if (newProfileError) {
-                        throw new Error(`Failed to create fallback profile: ${newProfileError.message}`);
-                    }
-                    if (newProfileData) {
-                        profileData = newProfileData;
-                    } else {
-                        throw new Error("Fallback profile creation did not return data.");
-                    }
+                    if (newProfileError) throw new Error(`Failed to create profile: ${newProfileError.message}`);
+                    if (newProfileData) profileData = newProfileData;
+                    else throw new Error("Profile creation did not return data.");
                 }
                 
                 dispatch({ type: 'FETCH_USER_SUCCESS', payload: profileData as User });
@@ -115,48 +136,33 @@ export const AuthProvider: React.FC<{ children: ReactNode; session: Session | nu
         };
 
         fetchDataWithRetry();
-    }, [session]);
+    }, [session, guestPlan, pendingUpgradePlan]);
 
     const handleAsyncAction = useCallback(async (action: RequestAction) => {
-        if (!state.user) {
-            console.error("Cannot perform request without a user.");
+        if (!state.user || state.user.id.startsWith('guest-')) {
+            console.warn("Cannot perform request for a guest user or without a user.");
             return;
         }
         
         switch(action.type) {
             case 'COMPLETE_PERSONALIZATION_REQUEST': {
                 const { niche, platforms, tone } = action.payload;
-                const updatePayload = {
+                const updatePayload: Database['public']['Tables']['profiles']['Update'] = {
                     primary_niche: niche,
                     platforms: platforms,
                     preferred_tone: tone,
                     isPersonalized: true
                 };
-
-                const { error } = await supabase
-                    .from('profiles')
-                    .update(updatePayload as any)
-                    .eq('id', state.user.id);
-                
-                if (error) {
-                    console.error("Error updating personalization:", error.message);
-                } else {
-                    dispatch({ type: 'COMPLETE_PERSONALIZATION_SUCCESS', payload: updatePayload });
-                }
+                const { error } = await supabase.from('profiles').update(updatePayload).eq('id', state.user.id);
+                if (error) console.error("Error updating personalization:", error.message);
+                else dispatch({ type: 'COMPLETE_PERSONALIZATION_SUCCESS', payload: updatePayload });
                 break;
             }
             case 'UPGRADE_PLAN_REQUEST': {
                 const newPlan = action.payload;
-                const { error } = await supabase
-                    .from('profiles')
-                    .update({ plan: newPlan } as any)
-                    .eq('id', state.user.id);
-                
-                if (error) {
-                    console.error("Error upgrading plan:", error.message);
-                } else {
-                    dispatch({ type: 'UPGRADE_PLAN_SUCCESS', payload: newPlan });
-                }
+                const { error } = await supabase.from('profiles').update({ plan: newPlan }).eq('id', state.user.id);
+                if (error) console.error("Error upgrading plan:", error.message);
+                else dispatch({ type: 'UPGRADE_PLAN_SUCCESS', payload: newPlan });
                 break;
             }
         }

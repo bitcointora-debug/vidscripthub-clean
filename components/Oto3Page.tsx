@@ -1,14 +1,12 @@
 
-import React, { useContext } from 'react';
-import { AuthContext } from '../context/AuthContext.tsx';
-
+import React from 'react';
 
 interface Oto3PageProps {
-    onNavigateToDashboard: () => void;
+    onUpgrade: () => void;
+    onDecline: () => void;
 }
 
-export const Oto3Page: React.FC<Oto3PageProps> = ({ onNavigateToDashboard }) => {
-    const { dispatch } = useContext(AuthContext);
+export const Oto3Page: React.FC<Oto3PageProps> = ({ onUpgrade, onDecline }) => {
 
     const profitPaths = [
         {
@@ -24,11 +22,6 @@ export const Oto3Page: React.FC<Oto3PageProps> = ({ onNavigateToDashboard }) => 
             text: "Instantly unlock the Agency Dashboard inside your account, allowing you to add up to 10 clients. Charge them monthly for viral script services and use VidScriptHub to do all the work for you in minutes. A true business-in-a-box."
         }
     ];
-
-    const handleUpgrade = () => {
-        dispatch({ type: 'UPGRADE_PLAN_REQUEST', payload: 'agency' });
-        onNavigateToDashboard();
-    };
 
     return (
         <div className="bg-[#1A0F3C] text-[#F0F0F0] antialiased min-h-screen flex flex-col items-center justify-center py-12 px-4 relative overflow-hidden">
@@ -93,10 +86,10 @@ export const Oto3Page: React.FC<Oto3PageProps> = ({ onNavigateToDashboard }) => 
 
                     {/* Call to Action (CTA) Block */}
                     <div className="max-w-xl mx-auto mt-12">
-                        <button onClick={handleUpgrade} className="block w-full bg-[#DAFF00] text-[#1A0F3C] font-bold text-xl md:text-2xl uppercase py-5 px-6 rounded-lg shadow-[0_5px_0px_0px_#a8c400] hover:translate-y-1 hover:shadow-[0_4px_0px_0px_#a8c400] transition-all duration-150 ease-in-out">
+                        <button onClick={onUpgrade} className="block w-full bg-[#DAFF00] text-[#1A0F3C] font-bold text-xl md:text-2xl uppercase py-5 px-6 rounded-lg shadow-[0_5px_0px_0px_#a8c400] hover:translate-y-1 hover:shadow-[0_4px_0px_0px_#a8c400] transition-all duration-150 ease-in-out">
                             YES! I Want The Agency & Reseller License To VidScriptHub!
                         </button>
-                        <button onClick={onNavigateToDashboard} className="block mt-6 text-purple-300/70 hover:text-white transition-colors duration-200 text-sm underline">
+                        <button onClick={onDecline} className="block mt-6 text-purple-300/70 hover:text-white transition-colors duration-200 text-sm underline">
                            No thanks, I understand this is my only chance to get a reseller license and I'm happy to pass on keeping 100% of the profits.
                         </button>
                     </div>

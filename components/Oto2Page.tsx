@@ -1,13 +1,12 @@
 
-import React, { useContext } from 'react';
-import { AuthContext } from '../context/AuthContext.tsx';
+import React from 'react';
 
 interface Oto2PageProps {
-    onNavigateToNextStep: () => void;
+    onUpgrade: () => void;
+    onDecline: () => void;
 }
 
-export const Oto2Page: React.FC<Oto2PageProps> = ({ onNavigateToNextStep }) => {
-    const { dispatch } = useContext(AuthContext);
+export const Oto2Page: React.FC<Oto2PageProps> = ({ onUpgrade, onDecline }) => {
 
     const features = [
         {
@@ -29,12 +28,6 @@ export const Oto2Page: React.FC<Oto2PageProps> = ({ onNavigateToNextStep }) => {
             text: "Our simple guide to spotting and using trending sounds on TikTok & Reels to trick the algorithm into giving you views."
         }
     ];
-
-    const handleUpgrade = () => {
-        dispatch({ type: 'UPGRADE_PLAN_REQUEST', payload: 'dfy' });
-        onNavigateToNextStep();
-    };
-
 
     return (
         <div className="bg-[#F7F8FC] text-[#1A1A1A] antialiased min-h-screen flex flex-col justify-center py-12 px-4 relative overflow-hidden">
@@ -123,13 +116,13 @@ export const Oto2Page: React.FC<Oto2PageProps> = ({ onNavigateToNextStep }) => {
                     {/* Call to Action (CTA) Block */}
                     <div className="max-w-xl mx-auto">
                         <button 
-                            onClick={handleUpgrade}
+                            onClick={onUpgrade}
                             className="block w-full bg-[#DAFF00] text-[#1A0F3C] font-bold text-xl md:text-2xl uppercase py-5 px-6 rounded-lg shadow-[0_5px_0px_0px_#a8c400] hover:translate-y-1 hover:shadow-[0_4px_0px_0px_#a8c400] transition-all duration-150 ease-in-out"
                         >
                             YES! Add The DFY Content Bank To My Order!
                         </button>
                         <button 
-                            onClick={onNavigateToNextStep}
+                            onClick={onDecline}
                             className="block mt-6 text-gray-500 hover:text-black transition-colors duration-200 text-sm underline"
                         >
                             No thanks, I'm happy to do all the research and hard work myself.
