@@ -1,10 +1,10 @@
 
 
 import React, { useState, useMemo, useRef, useContext, useCallback, useEffect } from 'react';
-import { ScriptCard } from './ScriptCard.tsx';
-import type { Script, Folder } from '../types.ts';
-import { DataContext } from '../context/DataContext.tsx';
-import { UIContext } from '../context/UIContext.tsx';
+import { ScriptCard } from './ScriptCard';
+import type { Script, Folder } from '../types';
+import { DataContext } from '../context/DataContext';
+import { UIContext } from '../context/UIContext';
 
 interface SavedScriptsViewProps {
     onAddNewFolder: (folderName: string) => void;

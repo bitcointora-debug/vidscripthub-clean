@@ -1,10 +1,10 @@
 
 
 import React, { useState, useEffect } from 'react';
-import { CheckCircleIcon } from './icons/CheckCircleIcon.tsx';
-import { PlusIcon } from './icons/PlusIcon.tsx';
-import { MinusIcon } from './icons/MinusIcon.tsx';
-import { TestimonialCard } from './TestimonialCard.tsx';
+import { CheckCircleIcon } from './icons/CheckCircleIcon';
+import { PlusIcon } from './icons/PlusIcon';
+import { MinusIcon } from './icons/MinusIcon';
+import { TestimonialCard } from './TestimonialCard';
 
 const CountdownUnit = ({ value, label }: { value: string; label: string }) => (
     <div className="flex flex-col items-center leading-none">

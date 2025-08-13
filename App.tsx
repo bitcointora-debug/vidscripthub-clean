@@ -1,16 +1,16 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { AuthProvider } from './context/AuthContext.tsx';
-import { DataProvider } from './context/DataContext.tsx';
-import { UIProvider } from './context/UIContext.tsx';
-import { supabase } from './services/supabaseClient.ts';
-import type { Session, Plan, Client } from './types.ts';
-import { SalesPage } from './components/SalesPage.tsx';
-import { Oto1Page } from './components/Oto1Page.tsx';
-import { Oto2Page } from './components/Oto2Page.tsx';
-import { Oto3Page } from './components/Oto3Page.tsx';
-import { AuthPage } from './components/AuthPage.tsx';
-import { Dashboard } from './components/Dashboard.tsx';
+import { AuthProvider } from './context/AuthContext';
+import { DataProvider } from './context/DataContext';
+import { UIProvider } from './context/UIContext';
+import { supabase } from './services/supabaseClient';
+import type { Session, Plan, Client } from './types';
+import { SalesPage } from './components/SalesPage';
+import { Oto1Page } from './components/Oto1Page';
+import { Oto2Page } from './components/Oto2Page';
+import { Oto3Page } from './components/Oto3Page';
+import { AuthPage } from './components/AuthPage';
+import { Dashboard } from './components/Dashboard';
 
 type FlowState = 'sales' | 'oto1' | 'oto2' | 'oto3' | 'app' | 'auth';
 type PendingUpgrade = { plan: Plan, nextState: FlowState };
