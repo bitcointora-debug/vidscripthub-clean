@@ -1,9 +1,9 @@
 
 import React, { useState, useContext } from 'react';
-import { supabase } from '../services/supabaseClient.ts';
-import { AuthContext } from '../context/AuthContext.tsx';
-import type { Plan } from '../types.ts';
-import { CrownIcon } from './icons/CrownIcon.tsx';
+import { supabase } from '../services/supabaseClient';
+import { AuthContext } from '../context/AuthContext';
+import type { Plan } from '../types';
+import { CrownIcon } from './icons/CrownIcon';
 
 interface FormState {
     isSaving: boolean;

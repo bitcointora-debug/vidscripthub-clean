@@ -118,13 +118,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
                         name: String(session.user.user_metadata?.name || session.user.user_metadata?.full_name || 'New User'),
                         avatar_url: (session.user.user_metadata?.avatar_url as string | null) || null,
                         isPersonalized: false,
-                        plan: pendingUpgradePlan || 'basic' // Use pending plan if available
+                        plan: pendingUpgradePlan || 'basic'
                     };
-                    const { data: newProfileData, error: newProfileError } = await supabase.from('profiles').insert([newProfile]).select().single();
+                    const { error: insertError } = await supabase.from('profiles').insert(newProfile);
                     
-                    if (newProfileError) throw new Error(`Failed to create profile: ${newProfileError.message}`);
-                    if (newProfileData) profileData = newProfileData;
-                    else throw new Error("Profile creation did not return data.");
+                    if (insertError) throw new Error(`Failed to create profile: ${insertError.message}`);
+
+                    const { data: refetchedProfile, error: refetchError } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+                    if (refetchError) throw new Error(`Failed to fetch newly created profile: ${refetchError.message}`);
+                    
+                    if (refetchedProfile) {
+                        profileData = refetchedProfile;
+                    } else {
+                        throw new Error("Profile creation did not return data.");
+                    }
                 }
                 
                 dispatch({ type: 'FETCH_USER_SUCCESS', payload: profileData as User });
@@ -166,7 +173,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
                 break;
             }
         }
-    }, [state.user]);
+    }, [state.user, dispatch]);
     
     const enhancedDispatch = useCallback((action: AuthDispatchableAction) => {
         if (isRequestAction(action)) {
@@ -174,7 +181,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
         } else {
             dispatch(action as Action);
         }
-    }, [handleAsyncAction]);
+    }, [handleAsyncAction, dispatch]);
 
     return (
         <AuthContext.Provider value={{ state, dispatch: enhancedDispatch }}>

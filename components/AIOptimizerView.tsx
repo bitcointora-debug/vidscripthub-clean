@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import type { OptimizationStep, Script } from '../types.ts';
-import { RadialProgress } from './icons/RadialProgress.tsx';
+import type { OptimizationStep, Script } from '../types';
+import { RadialProgress } from './icons/RadialProgress';
 
 interface AIOptimizerViewProps {
     trace: OptimizationStep[] | null;

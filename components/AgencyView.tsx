@@ -1,10 +1,10 @@
 
 
 import React, { useMemo, useContext, useCallback } from 'react';
-import type { Client } from '../types.ts';
-import { DataContext } from '../context/DataContext.tsx';
-import { AuthContext } from '../context/AuthContext.tsx';
-import { sendClientInvite } from '../services/geminiService.ts';
+import type { Client } from '../types';
+import { DataContext } from '../context/DataContext';
+import { AuthContext } from '../context/AuthContext';
+import { sendClientInvite } from '../services/geminiService';
 
 interface AgencyViewProps {
     onRemoveClient: (clientId: string) => void;

@@ -1,13 +1,12 @@
 
-
 import React, { useState, useContext } from 'react';
-import type { Client } from '../types.ts';
-import { DataContext } from '../context/DataContext.tsx';
+import type { Client } from '../types';
+import { DataContext } from '../context/DataContext';
 
 interface AddClientModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddClient: (clientData: Omit<Client, 'id' | 'status'>) => void;
+  onAddClient: (clientData: Omit<Client, 'id' | 'status' | 'created_at' | 'agency_owner_id'>) => void;
 }
 
 export const AddClientModal: React.FC<AddClientModalProps> = ({ isOpen, onClose, onAddClient }) => {

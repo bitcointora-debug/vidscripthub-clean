@@ -7,7 +7,7 @@ import { getOptimizationTrace, analyzeScriptVirality, enhanceTopic, generateVisu
 import type { Script, Client, Folder, User, Notification, EnhancedTopic, Trend, OptimizationStep, Plan } from '../types';
 import { SavedScriptsView } from './SavedScriptsView';
 import { TrendingTopicsView } from './TrendingTopicsView';
-import { DFYContentView } from './DFYContentView.tsx';
+import { DFYContentView } from './DFYContentView';
 import { AgencyView } from './AgencyView';
 import { AddClientModal } from './AddClientModal';
 import { DashboardHomeView } from './DashboardHomeView';
@@ -19,14 +19,14 @@ import { EditClientModal } from './EditClientModal';
 import { ConfirmationModal } from './ConfirmationModal';
 import { VideoDeconstructorView } from './VideoDeconstructorView';
 import { PersonalizationModal } from './PersonalizationModal';
-import { AuthContext } from '../context/AuthContext.tsx';
-import { DataContext } from '../context/DataContext.tsx';
-import { UIContext } from '../context/UIContext.tsx';
+import { AuthContext } from '../context/AuthContext';
+import { DataContext } from '../context/DataContext';
+import { UIContext } from '../context/UIContext';
 import { QuotaErrorModal } from './QuotaErrorModal';
-import { supabase } from '../services/supabaseClient.ts';
-import { AIOptimizerView } from './AIOptimizerView.tsx';
-import { UpgradeModal } from './UpgradeModal.tsx';
-import { CrownIcon } from './icons/CrownIcon.tsx';
+import { supabase } from '../services/supabaseClient';
+import { AIOptimizerView } from './AIOptimizerView';
+import { UpgradeModal } from './UpgradeModal';
+import { CrownIcon } from './icons/CrownIcon';
 
 interface DashboardProps {
     impersonatingClient: Client | null;

@@ -1,10 +1,10 @@
 
 
 import React, { useState, useEffect } from 'react';
-import { CheckCircleIcon } from './icons/CheckCircleIcon.tsx';
-import { PlusIcon } from './icons/PlusIcon.tsx';
-import { MinusIcon } from './icons/MinusIcon.tsx';
-import { TestimonialCard } from './TestimonialCard.tsx';
+import { CheckCircleIcon } from './icons/CheckCircleIcon';
+import { PlusIcon } from './icons/PlusIcon';
+import { MinusIcon } from './icons/MinusIcon';
+import { TestimonialCard } from './TestimonialCard';
 
 const CountdownUnit = ({ value, label }: { value: string; label: string }) => (
     <div className="flex flex-col items-center leading-none">
@@ -585,7 +585,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                                      <i className="fa-solid fa-rocket text-4xl text-[#DAFF00]"></i>
                                 </div>
                                 <div className="flex-grow text-center md:text-left">
-                                    <h3 className="text-2xl font-bold text-[#1A1A1A]">VidScriptHub Main App</h3>
+                                    <h3 className="text-2xl font-bold text-[#1A0F3C]">VidScriptHub Main App</h3>
                                     <p className="text-gray-700">The complete, unrestricted access to our revolutionary AI script writing hub.</p>
                                 </div>
                                 <div className="font-bold text-lg text-center md:text-right flex-shrink-0">

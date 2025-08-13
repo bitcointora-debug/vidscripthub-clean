@@ -1,6 +1,6 @@
 
 import React, { useState, useContext } from 'react';
-import { AuthContext } from '../context/AuthContext.tsx';
+import { AuthContext } from '../context/AuthContext';
 
 interface PersonalizationModalProps {
     isOpen: boolean;

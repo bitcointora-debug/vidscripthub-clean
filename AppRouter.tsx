@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from './context/AuthContext.tsx';
-import type { Plan, Client } from './types.ts';
-import { SalesPage } from './components/SalesPage.tsx';
-import { Oto1Page } from './components/Oto1Page.tsx';
-import { Oto2Page } from './components/Oto2Page.tsx';
-import { Oto3Page } from './components/Oto3Page.tsx';
-import { AuthPage } from './components/AuthPage.tsx';
-import { Dashboard } from './components/Dashboard.tsx';
+import { AuthContext } from './context/AuthContext';
+import type { Plan, Client } from './types';
+import { SalesPage } from './components/SalesPage';
+import { Oto1Page } from './components/Oto1Page';
+import { Oto2Page } from './components/Oto2Page';
+import { Oto3Page } from './components/Oto3Page';
+import { AuthPage } from './components/AuthPage';
+import { Dashboard } from './components/Dashboard';
 
 type FlowState = 'sales' | 'oto1' | 'oto2' | 'oto3' | 'app' | 'auth';
 type PostAuthAction = { plan: Plan; next: FlowState };

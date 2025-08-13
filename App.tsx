@@ -1,11 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import { AuthProvider } from './context/AuthContext.tsx';
-import { DataProvider } from './context/DataContext.tsx';
-import { UIProvider } from './context/UIContext.tsx';
-import { supabase } from './services/supabaseClient.ts';
-import type { Session } from './types.ts';
-import { AppRouter } from './AppRouter.tsx';
+import { AuthProvider } from './context/AuthContext';
+import { DataProvider } from './context/DataContext';
+import { UIProvider } from './context/UIContext';
+import { supabase } from './services/supabaseClient';
+import type { Session } from './types';
+import { AppRouter } from './AppRouter';
 
 const App: React.FC = () => {
   const [session, setSession] = useState<Session | null>(null);

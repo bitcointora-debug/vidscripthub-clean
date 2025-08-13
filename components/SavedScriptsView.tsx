@@ -1,10 +1,9 @@
 
-
 import React, { useState, useMemo, useRef, useContext, useCallback, useEffect } from 'react';
-import { ScriptCard } from './ScriptCard.tsx';
-import type { Script, Folder } from '../types.ts';
-import { DataContext } from '../context/DataContext.tsx';
-import { UIContext } from '../context/UIContext.tsx';
+import { ScriptCard } from './ScriptCard';
+import type { Script, Folder } from '../types';
+import { DataContext } from '../context/DataContext';
+import { UIContext } from '../context/UIContext';
 
 interface SavedScriptsViewProps {
     onAddNewFolder: (folderName: string) => void;
@@ -29,7 +28,7 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
 }) => {
     const { state: dataState, dispatch: dataDispatch } = useContext(DataContext);
     const { savedScripts, folders } = dataState;
-    const { state: uiState, dispatch: uiDispatch } = useContext(UIContext);
+    const { state: uiState } = useContext(UIContext);
     const { movingScriptId } = uiState;
     
     const [activeFolderId, setActiveFolderId] = useState('all');
@@ -41,16 +40,15 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
     const [dragOverFolderId, setDragOverFolderId] = useState<string | null>(null);
     const [selectedScriptIds, setSelectedScriptIds] = useState<string[]>([]);
     const [isBatchMoveOpen, setIsBatchMoveOpen] = useState(false);
-    const batchMoveButtonRef = useRef<HTMLButtonElement>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
 
     const isSelectionMode = selectedScriptIds.length > 0;
 
     const addNotification = useCallback((message: string) => {
-        // This component doesn't have access to the user id for async notifications
-        // A more robust solution might involve passing userId or having a global notification service
-        console.log("Notification:", message);
+      // This component doesn't have direct access to userId for async dispatch
+      // Notifications are handled via the Dashboard component for now.
+      console.log("Notification intended:", message);
     }, []);
 
     const filteredAndSortedScripts = useMemo(() => {
@@ -124,7 +122,6 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
         return savedScripts.filter(s => s.folder_id === folderId).length;
     };
     
-    // Drag and Drop Handlers
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>, scriptId: string) => {
         e.dataTransfer.setData('scriptId', scriptId);
         e.currentTarget.style.opacity = '0.5';
@@ -135,14 +132,14 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
         setDragOverFolderId(null);
     };
 
-    const handleDragOver = (e: React.DragEvent<HTMLAnchorElement>, folderId: string) => {
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>, folderId: string) => {
         e.preventDefault();
         if(dragOverFolderId !== folderId) {
             setDragOverFolderId(folderId);
         }
     };
 
-    const handleDrop = (e: React.DragEvent<HTMLAnchorElement>, folderId: string | null) => {
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>, folderId: string | null) => {
         e.preventDefault();
         const scriptId = e.dataTransfer.getData('scriptId');
         if (scriptId) {
@@ -151,7 +148,6 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
         setDragOverFolderId(null);
     };
     
-     // Batch Action Handlers
     const handleToggleSelect = (scriptId: string) => {
         setSelectedScriptIds(prev =>
             prev.includes(scriptId) ? prev.filter(id => id !== scriptId) : [...prev, scriptId]
@@ -190,7 +186,7 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
     };
 
     useEffect(() => {
-        setCurrentPage(1); // Reset to first page when filters change
+        setCurrentPage(1);
     }, [activeFolderId, sortBy, searchTerm]);
 
 
@@ -204,78 +200,113 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
                         {folders.map(folder => {
                             const isDropTarget = dragOverFolderId === folder.id;
                             return (
-                                <div key={folder.id} className={`group flex items-center text-sm font-medium rounded-md transition-all duration-200 ${activeFolderId === folder.id ? 'bg-[#1A0F3C]' : ''} ${isDropTarget ? 'bg-[#DAFF00]/20 ring-2 ring-[#DAFF00]' : ''}`}>
-                                    <a
-                                        href="#"
-                                        onClick={(e) => { e.preventDefault(); setActiveFolderId(folder.id); }}
-                                        onDragOver={(e) => handleDragOver(e, folder.id)}
-                                        onDragLeave={() => setDragOverFolderId(null)}
-                                        onDrop={(e) => handleDrop(e, folder.id === 'all' ? null : folder.id)}
-                                        className="flex-grow flex items-center px-3 py-2 truncate text-purple-200 hover:text-white"
-                                    >
-                                        <i className={`fa-regular ${folder.id === 'all' ? 'fa-clone' : 'fa-folder'} w-5 mr-3 text-purple-300/70 group-hover:text-white/80`}></i>
-                                        {renamingFolderId === folder.id ? (
-                                            <input type="text" ref={renameInputRef} value={tempFolderName} onChange={(e) => setTempFolderName(e.target.value)} onBlur={() => handleRenameSubmit(folder.id)} onKeyDown={(e) => {if(e.key === 'Enter') handleRenameSubmit(folder.id); if(e.key === 'Escape') handleRenameCancel();}} className="bg-transparent text-white outline-none w-full" />
-                                        ) : (<span className="truncate">{folder.name}</span>)}
-                                         <span className="ml-auto text-xs font-mono bg-[#1A0F3C]/50 text-purple-300/80 rounded-full px-2 py-0.5">{getFolderScriptCount(folder.id)}</span>
-                                    </a>
-                                    {folder.id !== 'all' && renamingFolderId !== folder.id && (
-                                        <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity pr-2 space-x-1">
-                                            <button onClick={() => handleRenameStart(folder)} className="p-1 text-purple-200 hover:text-white"><i className="fa-solid fa-pencil text-xs"></i></button>
-                                            <button onClick={() => onDeleteFolder(folder.id)} className="p-1 text-purple-200 hover:text-red-400"><i className="fa-solid fa-trash-can text-xs"></i></button>
+                                <div 
+                                    key={folder.id} 
+                                    className={`group flex items-center text-sm font-medium rounded-md transition-colors duration-200 relative ${isDropTarget ? 'bg-[#DAFF00]/10' : ''}`}
+                                    onDragLeave={() => setDragOverFolderId(null)}
+                                    onDragOver={(e) => handleDragOver(e, folder.id)}
+                                    onDrop={(e) => handleDrop(e, folder.id === 'all' ? null : folder.id)}
+                                >
+                                    {renamingFolderId === folder.id ? (
+                                        <input
+                                            ref={renameInputRef}
+                                            type="text"
+                                            value={tempFolderName}
+                                            onChange={(e) => setTempFolderName(e.target.value)}
+                                            onBlur={() => handleRenameSubmit(folder.id)}
+                                            onKeyDown={(e) => { if (e.key === 'Enter') handleRenameSubmit(folder.id); if (e.key === 'Escape') handleRenameCancel(); }}
+                                            className="w-full bg-[#1A0F3C] border border-[#DAFF00] rounded-md py-1.5 px-2 text-sm text-white"
+                                            autoFocus
+                                        />
+                                    ) : (
+                                    <>
+                                        <button onClick={() => setActiveFolderId(folder.id)} className={`w-full text-left flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${activeFolderId === folder.id ? 'bg-[#DAFF00] text-[#1A0F3C]' : 'text-purple-200 hover:bg-[#4A3F7A]/50 hover:text-white'}`}>
+                                            <i className="fa-regular fa-folder w-4 text-center"></i>
+                                            <span className="flex-1 truncate">{folder.name}</span>
+                                            <span className="text-xs opacity-70">{getFolderScriptCount(folder.id)}</span>
+                                        </button>
+                                        {folder.id !== 'all' && (
+                                        <div className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button onClick={() => handleRenameStart(folder)} className="p-1 text-purple-300 hover:text-white" title="Rename"><i className="fa-solid fa-pencil text-xs"></i></button>
+                                            <button onClick={() => onDeleteFolder(folder.id)} className="p-1 text-purple-300 hover:text-red-400" title="Delete"><i className="fa-solid fa-trash-can text-xs"></i></button>
                                         </div>
+                                        )}
+                                    </>
                                     )}
                                 </div>
-                            )
+                            );
                         })}
                     </nav>
                 </div>
             </aside>
-
             <main className="flex-1">
-                <div className="mb-6">
-                    <h1 className="text-3xl font-bold text-white mb-2">My Script Library</h1>
-                    <p className="text-purple-300">Browse, search, and manage all your saved scripts. Drag scripts onto folders to organize them.</p>
-                </div>
                 <div className="flex flex-col md:flex-row gap-4 mb-6">
-                    <div className="relative flex-grow">
+                     <div className="relative flex-grow">
                         <i className="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-purple-300/50"></i>
-                        <input type="text" placeholder="Search all scripts..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full bg-[#1A0F3C] border border-[#4A3F7A] rounded-md py-2.5 pl-10 pr-4 text-[#F0F0F0] placeholder-purple-300/50 focus:ring-2 focus:ring-[#DAFF00] focus:border-[#DAFF00] focus:outline-none transition duration-200" />
+                        <input type="text" placeholder="Search saved scripts..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full bg-[#2A1A5E]/50 border border-[#4A3F7A]/30 rounded-md py-2.5 pl-10 pr-4 text-[#F0F0F0] placeholder-purple-300/50 focus:ring-2 focus:ring-[#DAFF00] focus:border-[#DAFF00] focus:outline-none transition duration-200" />
                     </div>
-                    <div className="flex-shrink-0 flex items-center gap-2">
-                         <input
-                            type="checkbox"
-                            className="h-5 w-5 rounded-md bg-[#1A0F3C] border-[#4A3F7A] text-[#DAFF00] focus:ring-offset-[#1A0F3C] focus:ring-[#DAFF00]"
-                            checked={allVisibleScriptsSelected}
-                            onChange={handleToggleSelectAll}
-                            title="Select all on this page"
-                         />
-                        <span className="text-sm text-purple-300">Sort by:</span>
-                        <button onClick={() => setSortBy('dateSaved')} className={`px-3 py-1.5 text-sm font-semibold rounded-md transition-colors duration-200 ${sortBy === 'dateSaved' ? 'bg-[#DAFF00] text-[#1A0F3C]' : 'bg-[#2A1A5E] hover:bg-[#4A3F7A]/80'}`}>Date Saved</button>
-                        <button onClick={() => setSortBy('viralScore')} className={`px-3 py-1.5 text-sm font-semibold rounded-md transition-colors duration-200 ${sortBy === 'viralScore' ? 'bg-[#DAFF00] text-[#1A0F3C]' : 'bg-[#2A1A5E] hover:bg-[#4A3F7A]/80'}`}>Viral Score</button>
+                    <div className="flex-shrink-0">
+                        <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)} className="w-full md:w-auto bg-[#2A1A5E]/50 border border-[#4A3F7A]/30 rounded-md py-2.5 pl-4 pr-10 text-white focus:ring-2 focus:ring-[#DAFF00] appearance-none bg-no-repeat" style={{backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`}}>
+                            <option value="dateSaved">Sort by Date</option>
+                            <option value="viralScore">Sort by Viral Score</option>
+                        </select>
                     </div>
                 </div>
+                
+                {isSelectionMode && (
+                    <div className="bg-[#1A0F3C] p-3 rounded-lg mb-6 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <input 
+                                type="checkbox"
+                                className="h-5 w-5 rounded bg-[#2A1A5E] border-[#4A3F7A] text-[#DAFF00] focus:ring-[#DAFF00]"
+                                checked={allVisibleScriptsSelected}
+                                onChange={handleToggleSelectAll}
+                                title={allVisibleScriptsSelected ? "Deselect all on this page" : "Select all on this page"}
+                            />
+                            <span className="text-sm font-semibold text-white">{selectedScriptIds.length} script{selectedScriptIds.length !== 1 ? 's' : ''} selected</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                           <div className="relative">
+                                <button onClick={() => setIsBatchMoveOpen(o => !o)} className="px-3 py-1.5 text-xs font-bold text-purple-200 bg-[#2A1A5E] rounded-md hover:bg-[#4A3F7A] flex items-center gap-2"><i className="fa-solid fa-folder-plus"></i>Move</button>
+                                {isBatchMoveOpen && (
+                                     <div className="absolute right-0 bottom-full mb-2 w-48 bg-[#1A0F3C] border border-[#4A3F7A] rounded-md shadow-lg z-20 p-1">
+                                        <button onClick={() => handleBatchMove(null)} className="w-full text-left block px-3 py-2 text-sm text-purple-200 hover:bg-[#2A1A5E] hover:text-white rounded-md">
+                                            All Scripts (no folder)
+                                        </button>
+                                        <div className="border-t border-[#4A3F7A]/50 my-1"></div>
+                                        {folders.filter(f => f.id !== 'all').map(folder => (
+                                            <button key={folder.id} onClick={() => handleBatchMove(folder.id)} className="w-full text-left block px-3 py-2 text-sm text-purple-200 hover:bg-[#2A1A5E] hover:text-white rounded-md">
+                                                {folder.name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                           </div>
+                           <button onClick={handleBatchDelete} className="px-3 py-1.5 text-xs font-bold text-red-400 bg-red-900/50 rounded-md hover:bg-red-900/80 flex items-center gap-2"><i className="fa-solid fa-trash-can"></i>Delete</button>
+                        </div>
+                    </div>
+                )}
 
                 <div className="space-y-6">
                     {paginatedScripts.length > 0 ? (
-                        paginatedScripts.map((script) => (
-                            <div key={script.id} draggable={!isSelectionMode} onDragStart={(e) => handleDragStart(e, script.id)} onDragEnd={handleDragEnd}>
+                        paginatedScripts.map(script => (
+                            <div key={script.id} draggable onDragStart={(e) => handleDragStart(e, script.id)} onDragEnd={handleDragEnd}>
                                 <ScriptCard
-                                    script={script} 
-                                    onOpenSaveModal={onOpenSaveModal} 
-                                    onUnsave={onUnsaveScript} 
-                                    onDelete={onDeleteScript} 
-                                    isSaved={isScriptSaved(script)} 
-                                    isScoring={scoringScriptId === script.id} 
+                                    script={script}
+                                    onOpenSaveModal={onOpenSaveModal}
+                                    onUnsave={onUnsaveScript}
+                                    onDelete={onDeleteScript}
+                                    isSaved={isScriptSaved(script)}
+                                    isScoring={scoringScriptId === script.id}
                                     isMoving={movingScriptId === script.id}
-                                    isSavedView={true} 
-                                    folders={folders} 
-                                    onMoveScriptToFolder={onMoveScriptToFolder} 
+                                    isSavedView={true}
+                                    folders={folders}
+                                    onMoveScriptToFolder={onMoveScriptToFolder}
+                                    addNotification={addNotification}
                                     onVisualize={onVisualize}
                                     isVisualizing={visualizingScriptId === script.id}
                                     onToggleSpeech={onToggleSpeech}
                                     isSpeaking={speakingScriptId === script.id}
-                                    addNotification={addNotification}
                                     isSelectable={true}
                                     isSelected={selectedScriptIds.includes(script.id)}
                                     onToggleSelect={handleToggleSelect}
@@ -283,8 +314,8 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
                             </div>
                         ))
                     ) : (
-                         <div className="text-center py-16 px-6 bg-[#1A0F3C]/50 rounded-lg border-2 border-dashed border-[#4A3F7A]">
-                            <i className="fa-regular fa-face-sad-tear text-4xl text-purple-300 mb-4"></i>
+                        <div className="text-center py-20 px-6 bg-[#2A1A5E]/30 rounded-lg border-2 border-dashed border-[#4A3F7A]/50">
+                            <i className="fa-regular fa-folder-open text-4xl text-purple-300 mb-4"></i>
                             <h3 className="mt-2 text-lg font-medium text-[#F0F0F0]">{renderEmptyState().title}</h3>
                             <p className="mt-1 text-sm text-purple-200/80">{renderEmptyState().message}</p>
                         </div>
@@ -292,43 +323,13 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
                 </div>
 
                 {totalPages > 1 && (
-                    <div className="flex justify-between items-center mt-8">
-                        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="px-4 py-2 text-sm font-semibold bg-[#2A1A5E] text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#4A3F7A]">
-                            <i className="fa-solid fa-arrow-left mr-2"></i> Previous
-                        </button>
-                        <span className="text-sm text-purple-300">
-                            Page {currentPage} of {totalPages}
-                        </span>
-                        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="px-4 py-2 text-sm font-semibold bg-[#2A1A5E] text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#4A3F7A]">
-                            Next <i className="fa-solid fa-arrow-right ml-2"></i>
-                        </button>
+                    <div className="mt-8 flex justify-center items-center gap-2">
+                        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="px-3 py-1 rounded-md bg-[#2A1A5E] text-purple-200 disabled:opacity-50 hover:bg-[#4A3F7A]"><i className="fa-solid fa-chevron-left text-xs"></i></button>
+                        <span className="text-sm text-purple-300">Page {currentPage} of {totalPages}</span>
+                        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="px-3 py-1 rounded-md bg-[#2A1A5E] text-purple-200 disabled:opacity-50 hover:bg-[#4A3F7A]"><i className="fa-solid fa-chevron-right text-xs"></i></button>
                     </div>
                 )}
             </main>
-            
-             {isSelectionMode && (
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-[#1A0F3C] border-2 border-[#DAFF00] rounded-xl shadow-2xl shadow-[#DAFF00]/10 flex items-center gap-6 p-3">
-                    <span className="text-sm font-semibold text-white px-2">{selectedScriptIds.length} script{selectedScriptIds.length > 1 ? 's' : ''} selected</span>
-                    <div className="relative">
-                        <button ref={batchMoveButtonRef} onClick={() => setIsBatchMoveOpen(prev => !prev)} className="flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-[#2A1A5E] text-purple-200 rounded-md hover:bg-[#4A3F7A]"><i className="fa-solid fa-folder-plus"></i> Move</button>
-                        {isBatchMoveOpen && (
-                             <div className="absolute bottom-full mb-2 w-48 bg-[#1A0F3C] border border-[#4A3F7A] rounded-md shadow-lg z-20 p-1">
-                                <button onClick={() => handleBatchMove(null)} className="w-full text-left block px-3 py-2 text-sm text-purple-200 hover:bg-[#2A1A5E] hover:text-white rounded-md">
-                                    <i className="fa-regular fa-clone w-4 mr-2"></i>All Scripts (no folder)
-                                </button>
-                                <div className="border-t border-[#4A3F7A] my-1"></div>
-                                {folders.filter(f => f.id !== 'all').map(folder => (
-                                    <button key={folder.id} onClick={() => handleBatchMove(folder.id)} className="w-full text-left block px-3 py-2 text-sm text-purple-200 hover:bg-[#2A1A5E] hover:text-white rounded-md">
-                                        <i className="fa-regular fa-folder w-4 mr-2"></i>{folder.name}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                    <button onClick={handleBatchDelete} className="flex items-center gap-2 px-4 py-2 text-sm font-semibold bg-[#2A1A5E] text-red-400 rounded-md hover:bg-[#4A3F7A]"><i className="fa-solid fa-trash-can"></i> Delete</button>
-                    <button onClick={() => setSelectedScriptIds([])} className="text-purple-300 hover:text-white" title="Cancel selection"><i className="fa-solid fa-times"></i></button>
-                </div>
-             )}
         </div>
     );
 };

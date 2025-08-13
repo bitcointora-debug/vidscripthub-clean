@@ -1,7 +1,8 @@
 
+
 import React, { useState, useEffect, useContext } from 'react';
-import type { Client } from '../types.ts';
-import { DataContext } from '../context/DataContext.tsx';
+import type { Client } from '../types';
+import { DataContext } from '../context/DataContext';
 
 interface EditClientModalProps {
   isOpen: boolean;
