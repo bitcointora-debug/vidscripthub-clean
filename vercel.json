@@ -13,5 +13,11 @@
     "api/gemini-proxy.ts": {
       "maxDuration": 60
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/((?!api|\\.).*)",
+      "destination": "/index.html"
+    }
+  ]
 }
