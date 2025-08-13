@@ -2,8 +2,8 @@
 
 
 import React from 'react';
-import { RadialProgress } from './icons/RadialProgress.tsx';
-import type { Trend } from '../types.ts';
+import { RadialProgress } from './icons/RadialProgress';
+import type { Trend } from '../types';
 
 interface TrendCardProps {
     trend: Trend;

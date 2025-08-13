@@ -37,7 +37,6 @@ export type Database = {
           created_at?: string
           avatar?: string
         }
-        Relationships: []
       }
       folders: {
         Row: {
@@ -57,7 +56,6 @@ export type Database = {
           name?: string
           created_at?: string
         }
-        Relationships: []
       }
       notifications: {
         Row: {
@@ -80,7 +78,6 @@ export type Database = {
           read?: boolean
           created_at?: string
         }
-        Relationships: []
       }
       profiles: {
         Row: {
@@ -115,7 +112,6 @@ export type Database = {
           isPersonalized?: boolean
           plan?: "basic" | "unlimited" | "dfy" | "agency"
         }
-        Relationships: []
       }
       scripts: {
         Row: {
@@ -156,7 +152,6 @@ export type Database = {
           niche?: string | null
           created_at?: string
         }
-        Relationships: []
       }
       watched_trends: {
         Row: {
@@ -176,7 +171,6 @@ export type Database = {
           trend_data?: Json
           created_at?: string
         }
-        Relationships: []
       }
     }
     Views: {}

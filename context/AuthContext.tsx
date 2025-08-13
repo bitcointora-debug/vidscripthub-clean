@@ -1,8 +1,9 @@
 
+
 import React, { createContext, useReducer, useEffect, ReactNode, useCallback } from 'react';
-import type { Session, User, Plan } from '../types.ts';
-import { supabase } from '../services/supabaseClient.ts';
-import type { Database } from '../services/database.types.ts';
+import type { Session, User, Plan } from '../types';
+import { supabase } from '../services/supabaseClient';
+import type { Database } from '../services/database.types';
 
 // --- STATE AND INITIAL VALUES ---
 export interface AuthState {
@@ -120,7 +121,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
                         isPersonalized: false,
                         plan: pendingUpgradePlan || 'basic'
                     };
-                    const { error: insertError } = await supabase.from('profiles').insert(newProfile);
+                    const { error: insertError } = await supabase.from('profiles').insert([newProfile]);
                     
                     if (insertError) throw new Error(`Failed to create profile: ${insertError.message}`);
 

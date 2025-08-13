@@ -1,9 +1,10 @@
 
+
 import React, { createContext, useReducer, useEffect, ReactNode, useCallback, useContext } from 'react';
-import type { Script, Folder, WatchedTrend, Client, Trend, Notification } from '../types.ts';
-import { supabase } from '../services/supabaseClient.ts';
-import type { Json, Database } from '../services/database.types.ts';
-import { AuthContext } from './AuthContext.tsx';
+import type { Script, Folder, WatchedTrend, Client, Trend, Notification } from '../types';
+import { supabase } from '../services/supabaseClient';
+import type { Json, Database } from '../services/database.types';
+import { AuthContext } from './AuthContext';
 
 // --- STATE AND INITIAL VALUES ---
 export interface DataState {
@@ -184,9 +185,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     const payload: Database['public']['Tables']['scripts']['Insert'] = { 
                         ...scriptToInsert, 
                         user_id: userId, 
-                        viral_score_breakdown: scriptToInsert.viral_score_breakdown as Json ?? null 
+                        viral_score_breakdown: scriptToInsert.viral_score_breakdown as unknown as Json ?? null 
                     };
-                    const { data, error } = await supabase.from('scripts').insert(payload).select().single();
+                    const { data, error } = await supabase.from('scripts').insert([payload]).select().single();
                     if (error) throw error;
                     if (data) dispatch({ type: 'ADD_SAVED_SCRIPT_SUCCESS', payload: data as unknown as Script });
                     break;
@@ -205,7 +206,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 }
                 case 'ADD_FOLDER_REQUEST': {
                     const payload: Database['public']['Tables']['folders']['Insert'] = { ...action.payload.folder, user_id: userId };
-                    const { data, error } = await supabase.from('folders').insert(payload).select().single();
+                    const { data, error } = await supabase.from('folders').insert([payload]).select().single();
                     if (error) throw error;
                     if (data) dispatch({ type: 'ADD_FOLDER_SUCCESS', payload: data as unknown as Folder });
                     break;
@@ -224,7 +225,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 }
                 case 'ADD_CLIENT_REQUEST': {
                     const payload: Database['public']['Tables']['clients']['Insert'] = { ...action.payload.clientData, agency_owner_id: userId, status: 'Pending' };
-                    const { data, error } = await supabase.from('clients').insert(payload).select().single();
+                    const { data, error } = await supabase.from('clients').insert([payload]).select().single();
                     if (error) throw error;
                     if (data) dispatch({ type: 'ADD_CLIENT_SUCCESS', payload: data as unknown as Client });
                     break;
@@ -245,7 +246,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 }
                 case 'ADD_WATCHED_TREND_REQUEST': {
                     const payload: Database['public']['Tables']['watched_trends']['Insert'] = { user_id: userId, trend_data: action.payload.trend as unknown as Json };
-                    const { data, error } = await supabase.from('watched_trends').insert(payload).select().single();
+                    const { data, error } = await supabase.from('watched_trends').insert([payload]).select().single();
                     if (error) throw error;
                     if (data) dispatch({ type: 'ADD_WATCHED_TREND_SUCCESS', payload: data as unknown as WatchedTrend });
                     break;
@@ -276,7 +277,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 }
                 case 'ADD_NOTIFICATION_REQUEST': {
                     const payload: Database['public']['Tables']['notifications']['Insert'] = { message: action.payload.message, user_id: userId };
-                    const { data, error } = await supabase.from('notifications').insert(payload).select().single();
+                    const { data, error } = await supabase.from('notifications').insert([payload]).select().single();
                     if (error) throw error;
                     if (data) dispatch({ type: 'ADD_NOTIFICATION_SUCCESS', payload: data as unknown as Notification });
                     break;
