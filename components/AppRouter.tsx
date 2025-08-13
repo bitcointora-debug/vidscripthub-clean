@@ -1,5 +1,5 @@
 
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, Dispatch, SetStateAction } from 'react';
 import { Dashboard } from './Dashboard.tsx';
 import type { Client, Plan } from '../types.ts';
 import { AuthContext } from '../context/AuthContext.tsx';
@@ -61,11 +61,11 @@ export const AppRouter: React.FC = () => {
             case 'sales':
                 return <SalesPage onPurchaseClick={() => setFlowState('oto1')} onDashboardClick={() => setFlowState('auth')} />;
             case 'oto1':
-                return <Oto1Page onNavigateToNextStep={() => setFlowState('oto2')} onRequireAuth={() => handleRequireAuth({ planToUpgrade: 'unlimited', nextFlowState: 'oto2' })} />;
+                return <Oto1Page onUpgrade={() => handleRequireAuth({ planToUpgrade: 'unlimited', nextFlowState: 'oto2' })} onDecline={() => setFlowState('oto2')} />;
             case 'oto2':
-                return <Oto2Page onNavigateToNextStep={() => setFlowState('oto3')} onRequireAuth={() => handleRequireAuth({ planToUpgrade: 'dfy', nextFlowState: 'oto3' })} />;
+                 return <Oto2Page onUpgrade={() => handleRequireAuth({ planToUpgrade: 'dfy', nextFlowState: 'oto3' })} onDecline={() => setFlowState('oto3')} />;
             case 'oto3':
-                return <Oto3Page onNavigateToDashboard={() => setFlowState('app')} onRequireAuth={() => handleRequireAuth({ planToUpgrade: 'agency', nextFlowState: 'app' })} />;
+                 return <Oto3Page onUpgrade={() => handleRequireAuth({ planToUpgrade: 'agency', nextFlowState: 'app' })} onDecline={() => setFlowState('app')} />;
             case 'auth':
                 return <AuthPage />;
             case 'app': // User tried to access dashboard while logged out
@@ -74,7 +74,7 @@ export const AppRouter: React.FC = () => {
         }
     } else {
         // --- USER IS LOGGED IN ---
-        const dashboard = <Dashboard impersonatingClient={impersonatingClient} onLoginAsClient={handleLoginAsClient} onLogoutClientView={handleLogoutClientView} setAppFlowState={setFlowState} />;
+        const dashboard = <Dashboard impersonatingClient={impersonatingClient} onLoginAsClient={handleLoginAsClient} onLogoutClientView={handleLogoutClientView} onNavigate={setFlowState} />;
         
         switch (flowState) {
             case 'sales':
@@ -83,11 +83,11 @@ export const AppRouter: React.FC = () => {
                 setFlowState('app');
                 return dashboard;
             case 'oto1':
-                return <Oto1Page onNavigateToNextStep={() => setFlowState('oto2')} onRequireAuth={() => { /* Not called when logged in */ }} />;
+                return <Oto1Page onUpgrade={() => { authDispatch({ type: 'UPGRADE_PLAN_REQUEST', payload: 'unlimited' }); setFlowState('oto2'); }} onDecline={() => setFlowState('oto2')} />;
             case 'oto2':
-                return <Oto2Page onNavigateToNextStep={() => setFlowState('oto3')} onRequireAuth={() => { /* Not called when logged in */ }} />;
+                return <Oto2Page onUpgrade={() => { authDispatch({ type: 'UPGRADE_PLAN_REQUEST', payload: 'dfy' }); setFlowState('oto3'); }} onDecline={() => setFlowState('oto3')} />;
             case 'oto3':
-                return <Oto3Page onNavigateToDashboard={() => setFlowState('app')} onRequireAuth={() => { /* Not called when logged in */ }} />;
+                return <Oto3Page onUpgrade={() => { authDispatch({ type: 'UPGRADE_PLAN_REQUEST', payload: 'agency' }); setFlowState('app'); }} onDecline={() => setFlowState('app')} />;
             case 'app':
             default:
                 return dashboard;

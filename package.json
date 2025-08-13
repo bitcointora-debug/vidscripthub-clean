@@ -12,6 +12,6 @@
     "@vercel/node": "^3.2.0"
   },
   "overrides": {
-    "@types/react-joyride": "2.5.2"
+    "@types/react-joyride": "2.8.0"
   }
 }

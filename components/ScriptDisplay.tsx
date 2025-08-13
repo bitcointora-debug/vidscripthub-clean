@@ -11,7 +11,6 @@ interface ScriptDisplayProps {
   isScriptSaved: (script: Script) => boolean;
   scoringScriptId: string | null;
   onVisualize: (scriptId: string, artStyle: string) => void;
-  isVisualizing: boolean;
   visualizingScriptId: string | null;
   onToggleSpeech: (script: Script) => void;
   speakingScriptId: string | null;
