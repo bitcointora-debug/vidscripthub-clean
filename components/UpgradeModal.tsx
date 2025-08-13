@@ -1,7 +1,7 @@
 
 import React from 'react';
-import type { Plan } from '../types';
-import { CrownIcon } from './icons/CrownIcon';
+import type { Plan } from '../types.ts';
+import { CrownIcon } from './icons/CrownIcon.tsx';
 
 interface UpgradeModalProps {
   isOpen: boolean;

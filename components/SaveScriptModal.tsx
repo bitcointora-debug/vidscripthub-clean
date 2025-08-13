@@ -1,8 +1,8 @@
 
 
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import type { Script, Folder } from '../types';
-import { DataContext } from '../context/DataContext';
+import type { Script, Folder } from '../types.ts';
+import { DataContext } from '../context/DataContext.tsx';
 
 interface SaveScriptModalProps {
   isOpen: boolean;

@@ -1,7 +1,7 @@
 
 
 import React, { useState, useEffect } from 'react';
-import type { Script } from '../types';
+import type { Script } from '../types.ts';
 
 interface RemixScriptModalProps {
   isOpen: boolean;

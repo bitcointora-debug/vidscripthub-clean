@@ -1,6 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from './database.types';
+import type { Database } from './database.types.ts';
 
 // These values are reconstructed to avoid being flagged by Netlify's secret scanner.
 // The Supabase Anon key is designed to be public and safe for browser-side use.

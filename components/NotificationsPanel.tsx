@@ -1,9 +1,9 @@
 
 
 import React, { useRef, useEffect, useContext } from 'react';
-import type { Notification } from '../types';
+import type { Notification } from '../types.ts';
 import { formatDistanceToNow } from 'date-fns';
-import { DataContext } from '../context/DataContext';
+import { DataContext } from '../context/DataContext.tsx';
 
 interface NotificationsPanelProps {
   isOpen: boolean;

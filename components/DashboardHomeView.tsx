@@ -1,13 +1,13 @@
 
 
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import type { Script, Trend } from '../types';
-import { fetchTrendingTopics, QUOTA_ERROR_MESSAGE } from '../services/geminiService';
-import { ScriptCard } from './ScriptCard';
-import { TrendCard } from './TrendCard';
-import { AuthContext } from '../context/AuthContext';
-import { DataContext } from '../context/DataContext';
-import { UIContext } from '../context/UIContext';
+import type { Script, Trend } from '../types.ts';
+import { fetchTrendingTopics, QUOTA_ERROR_MESSAGE } from '../services/geminiService.ts';
+import { ScriptCard } from './ScriptCard.tsx';
+import { TrendCard } from './TrendCard.tsx';
+import { AuthContext } from '../context/AuthContext.tsx';
+import { DataContext } from '../context/DataContext.tsx';
+import { UIContext } from '../context/UIContext.tsx';
 
 interface DashboardHomeViewProps {
     onNavigate: (view: string) => void;

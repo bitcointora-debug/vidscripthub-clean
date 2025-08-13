@@ -1,12 +1,12 @@
 
 
 import React, { useState, useMemo, useCallback, useEffect, useContext } from 'react';
-import type { Script } from '../types';
-import { ScriptCard } from './ScriptCard';
-import { RemixScriptModal } from './RemixScriptModal';
-import { generateBonusPdf } from '../services/pdfService';
-import { DataContext } from '../context/DataContext';
-import { AuthContext } from '../context/AuthContext';
+import type { Script } from '../types.ts';
+import { ScriptCard } from './ScriptCard.tsx';
+import { RemixScriptModal } from './RemixScriptModal.tsx';
+import { generateBonusPdf } from '../services/pdfService.ts';
+import { DataContext } from '../context/DataContext.tsx';
+import { AuthContext } from '../context/AuthContext.tsx';
 
 const niches = ['All', 'Weight Loss', 'Make Money', 'Fitness', 'Productivity', 'Tech', 'DIY', 'Cooking', 'Pets', 'Travel', 'Real Estate', 'Psychology', 'Personal Finance', 'Gaming', 'Parenting', 'Car Detailing', 'Relationships', 'Philosophy', 'History', 'Career'];
 

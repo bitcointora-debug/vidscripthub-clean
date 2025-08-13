@@ -1,12 +1,12 @@
 
 
 import React, { useState, useContext, useCallback } from 'react';
-import { deconstructVideo, QUOTA_ERROR_MESSAGE } from '../services/geminiService';
-import type { VideoDeconstruction, Script } from '../types';
-import { ScriptCard } from './ScriptCard';
-import { DataContext } from '../context/DataContext';
-import { UIContext } from '../context/UIContext';
-import { AuthContext } from '../context/AuthContext';
+import { deconstructVideo, QUOTA_ERROR_MESSAGE } from '../services/geminiService.ts';
+import type { VideoDeconstruction, Script } from '../types.ts';
+import { ScriptCard } from './ScriptCard.tsx';
+import { DataContext } from '../context/DataContext.tsx';
+import { UIContext } from '../context/UIContext.tsx';
+import { AuthContext } from '../context/AuthContext.tsx';
 
 interface VideoDeconstructorViewProps {
     onOpenSaveModal: (script: Script) => void;

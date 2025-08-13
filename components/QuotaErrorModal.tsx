@@ -1,7 +1,7 @@
 
 
 import React, { useContext } from 'react';
-import { UIContext } from '../context/UIContext';
+import { UIContext } from '../context/UIContext.tsx';
 
 export const QuotaErrorModal: React.FC = () => {
     const { state, dispatch } = useContext(UIContext);

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import type { Script, Folder } from '../types';
+import type { Script, Folder } from '../types.ts';
 
 interface ScriptCardProps {
   script: Script;
