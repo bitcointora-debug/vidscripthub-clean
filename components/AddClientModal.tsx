@@ -1,8 +1,8 @@
 
 
 import React, { useState, useContext } from 'react';
-import type { Client } from '../types';
-import { DataContext } from '../context/DataContext';
+import type { Client } from '../types.ts';
+import { DataContext } from '../context/DataContext.tsx';
 
 interface AddClientModalProps {
   isOpen: boolean;
