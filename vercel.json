@@ -16,7 +16,7 @@
   },
   "rewrites": [
     {
-      "source": "/:path((?!api/|.*\\.).*)",
+      "source": "/((?!api/|.*\\..*).*)",
       "destination": "/index.html"
     }
   ]
