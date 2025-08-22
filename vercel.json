@@ -1,17 +1,4 @@
 {
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    },
-    {
-      "src": "api/gemini-proxy.ts",
-      "use": "@vercel/node"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*\\.tsx)",
@@ -27,10 +14,6 @@
     }
   ],
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/gemini-proxy"
-    },
     {
       "source": "/((?!api/|.*\\.).*)",
       "destination": "/index.html"
