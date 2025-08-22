@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "mkdir dist && cp -r components context data services App.tsx index.css index.html index.tsx metadata.json types.ts dist"
+    "build": "mkdir -p dist && cp -r api components context data services images App.tsx index.css index.html index.tsx metadata.json types.ts vercel.json tsconfig.json package.json README.md dist/"
   },
   "dependencies": {
     "@google/genai": "^1.11.0",
