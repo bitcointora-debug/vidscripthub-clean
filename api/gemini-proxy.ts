@@ -88,68 +88,69 @@ const hasPlan = (userPlan: Plan, requiredPlan: Plan): boolean => {
 
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-    const apiKey = process.env.API_KEY;
-    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Method Not Allowed' });
     }
 
     const { action, payload } = req.body;
-    
-    // --- Authentication and Authorization ---
-    const publicActions = ['getOptimizationTrace', 'enhanceTopic'];
-    const planSpecificActions: Record<string, Plan> = {
-        fetchTrendingTopics: 'unlimited',
-        deconstructVideo: 'unlimited',
-        generateVisualsForScript: 'basic',
-        remixScript: 'dfy',
-        sendClientInvite: 'agency',
-        analyzeScriptVirality: 'basic',
-    };
-    
-    if (!publicActions.includes(action)) {
-        const token = req.headers.authorization?.split(' ')[1];
-        if (!token || token === 'undefined') {
-            return res.status(401).json({ message: 'Authentication token is required for this action.' });
-        }
-        if (!supabaseServiceRoleKey) {
-            return res.status(500).json({ message: "Supabase service role key is not configured on the server." });
-        }
+    console.log(`[API] Received action: ${action}`);
 
-        const supabaseAdmin = createClient<Database>(supabaseUrl, supabaseServiceRoleKey);
-        const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
-
-        if (userError || !user) {
-            return res.status(401).json({ message: userError?.message || 'Invalid or expired token.' });
-        }
-
-        const requiredPlan = planSpecificActions[action];
-        if (requiredPlan) {
-            const { data: profile, error: profileError } = await supabaseAdmin
-                .from('profiles')
-                .select('plan')
-                .eq('id', user.id)
-                .single();
-            
-            if (profileError || !profile) {
-                return res.status(403).json({ message: 'Could not verify user plan.' });
-            }
-
-            if (!hasPlan(profile.plan, requiredPlan)) {
-                return res.status(403).json({ message: `This action requires the '${requiredPlan}' plan or higher.` });
-            }
-        }
-    }
-    // --- End Auth ---
-
-    if (action !== 'sendClientInvite' && !apiKey) {
-        return res.status(500).json({ message: "API_KEY environment variable is not set on the server." });
-    }
-    
-    const ai = (action !== 'sendClientInvite' && apiKey) ? new GoogleGenAI({ apiKey }) : null;
-    
     try {
+        const apiKey = process.env.API_KEY;
+        const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+        
+        // --- Authentication and Authorization ---
+        const publicActions = ['getOptimizationTrace', 'enhanceTopic'];
+        const planSpecificActions: Record<string, Plan> = {
+            fetchTrendingTopics: 'unlimited',
+            deconstructVideo: 'unlimited',
+            generateVisualsForScript: 'basic',
+            remixScript: 'dfy',
+            sendClientInvite: 'agency',
+            analyzeScriptVirality: 'basic',
+        };
+        
+        if (!publicActions.includes(action)) {
+            const token = req.headers.authorization?.split(' ')[1];
+            if (!token || token === 'undefined') {
+                return res.status(401).json({ message: 'Authentication token is required for this action.' });
+            }
+            if (!supabaseServiceRoleKey) {
+                return res.status(500).json({ message: "Supabase service role key is not configured on the server." });
+            }
+
+            const supabaseAdmin = createClient<Database>(supabaseUrl, supabaseServiceRoleKey);
+            const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
+
+            if (userError || !user) {
+                return res.status(401).json({ message: userError?.message || 'Invalid or expired token.' });
+            }
+
+            const requiredPlan = planSpecificActions[action];
+            if (requiredPlan) {
+                const { data: profile, error: profileError } = await supabaseAdmin
+                    .from('profiles')
+                    .select('plan')
+                    .eq('id', user.id)
+                    .single();
+                
+                if (profileError || !profile) {
+                    return res.status(403).json({ message: 'Could not verify user plan.' });
+                }
+
+                if (!hasPlan(profile.plan, requiredPlan)) {
+                    return res.status(403).json({ message: `This action requires the '${requiredPlan}' plan or higher.` });
+                }
+            }
+        }
+        // --- End Auth ---
+
+        if (action !== 'sendClientInvite' && !apiKey) {
+            return res.status(500).json({ message: "API_KEY environment variable is not set on the server." });
+        }
+        
+        const ai = (action !== 'sendClientInvite' && apiKey) ? new GoogleGenAI({ apiKey }) : null;
+
         if (!ai && action !== 'sendClientInvite') {
             throw new Error("AI client could not be initialized.");
         }
@@ -314,6 +315,7 @@ The JSON object MUST be the only thing in your response, wrapped in a single JSO
             }
             case 'sendClientInvite': {
                 const { email } = payload;
+                const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
                 if (!supabaseServiceRoleKey) {
                     return res.status(500).json({ message: "Supabase service role key is not configured for invites." });
                 }
@@ -332,13 +334,13 @@ The JSON object MUST be the only thing in your response, wrapped in a single JSO
                 return res.status(400).json({ message: "Invalid action" });
         }
     } catch (error: unknown) {
-        console.error("Error in Vercel function:", error);
         let message = "An unknown error occurred in the API proxy.";
         if (error instanceof Error) {
             message = error.message;
         } else if (typeof error === 'string') {
             message = error;
         }
+        console.error(`[API ERROR] Action: ${action} | Message: ${message}`, error);
         const errorMessage = message.includes('quota') ? QUOTA_ERROR_MESSAGE : message;
         return res.status(500).json({ message: errorMessage });
     }
