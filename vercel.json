@@ -1,23 +1,12 @@
 {
-  "version": 2,
-  "framework": null,
-  "headers": [
+  "builds": [
     {
-      "source": "/(.*\\.tsx|.*\\.ts)",
-      "headers": [
-        { "key": "Content-Type", "value": "application/javascript; charset=utf-8" }
-      ]
-    }
-  ],
-  "functions": {
-    "api/gemini-proxy.ts": {
-      "maxDuration": 60
-    }
-  },
-  "rewrites": [
+      "src": "api/gemini-proxy.ts",
+      "use": "@vercel/node"
+    },
     {
-      "source": "/((?!api|\\.).*)",
-      "destination": "/index.html"
+      "src": "index.html",
+      "use": "@vercel/static"
     }
   ]
 }
