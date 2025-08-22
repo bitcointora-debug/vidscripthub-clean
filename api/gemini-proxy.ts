@@ -88,6 +88,9 @@ const hasPlan = (userPlan: Plan, requiredPlan: Plan): boolean => {
 
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+    const apiKey = process.env.API_KEY;
+    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Method Not Allowed' });
     }
@@ -104,14 +107,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         sendClientInvite: 'agency',
         analyzeScriptVirality: 'basic',
     };
-
+    
     if (!publicActions.includes(action)) {
         const token = req.headers.authorization?.split(' ')[1];
         if (!token || token === 'undefined') {
             return res.status(401).json({ message: 'Authentication token is required for this action.' });
         }
+        if (!supabaseServiceRoleKey) {
+            return res.status(500).json({ message: "Supabase service role key is not configured on the server." });
+        }
 
-        const supabaseAdmin = createClient<Database>(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY as string);
+        const supabaseAdmin = createClient<Database>(supabaseUrl, supabaseServiceRoleKey);
         const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
 
         if (userError || !user) {
@@ -137,16 +143,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
     // --- End Auth ---
 
-    if (action !== 'sendClientInvite' && !process.env.API_KEY) {
+    if (action !== 'sendClientInvite' && !apiKey) {
         return res.status(500).json({ message: "API_KEY environment variable is not set on the server." });
     }
     
-    let ai: GoogleGenAI | undefined;
-    if (action !== 'sendClientInvite') {
-        ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
-    }
+    const ai = (action !== 'sendClientInvite' && apiKey) ? new GoogleGenAI({ apiKey }) : null;
     
     try {
+        if (!ai && action !== 'sendClientInvite') {
+            throw new Error("AI client could not be initialized.");
+        }
+        
         switch (action) {
             case 'getOptimizationTrace': {
                 const { task } = payload;
@@ -159,8 +166,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                         responseSchema: optimizationTraceSchema,
                     },
                 });
-
-                const trace: { steps: OptimizationStep[] } = JSON.parse(response.text);
+                
+                const text = response.text;
+                if (!text) {
+                    throw new Error("AI returned an empty response for optimization trace.");
+                }
+                const trace: { steps: OptimizationStep[] } = JSON.parse(text);
 
                 // Add a tone property to the final script for saving later
                 if (trace.steps.length > 0) {
@@ -189,7 +200,11 @@ Format the entire response as a single, valid JSON array of these objects. The e
 `;
                 const response = await ai!.models.generateContent({ model: "gemini-2.5-flash", contents: prompt, config: { tools: [{ googleSearch: {} }] } });
                 const text = response.text;
+                if (!text) {
+                    throw new Error("AI returned an empty response for trending topics.");
+                }
                 const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map(chunk => chunk.web).filter((source): source is { uri: string; title: string } => !!source?.uri) ?? [];
+                
                 const jsonMatch = text.match(/```(?:json)?([\s\S]*?)```/);
                 const jsonString = jsonMatch ? jsonMatch[1].trim() : text;
                 
@@ -208,14 +223,24 @@ Format the entire response as a single, valid JSON array of these objects. The e
                 const { script } = payload;
                 const prompt = `Analyze the following script's viral potential: Title: ${script.title}, Hook: ${script.hook}, Script: ${script.script}. Provide a JSON object with a detailed analysis based on the provided schema.`;
                 const response = await ai!.models.generateContent({ model: "gemini-2.5-flash", contents: prompt, config: { responseMimeType: "application/json", responseSchema: viralityAnalysisSchema } });
-                const analysis: ViralScoreBreakdown = JSON.parse(response.text);
+                
+                const text = response.text;
+                if (!text) {
+                    throw new Error("AI returned an empty response for virality analysis.");
+                }
+                const analysis: ViralScoreBreakdown = JSON.parse(text);
                 return res.status(200).json(analysis);
             }
             case 'enhanceTopic': {
                 const { topic } = payload;
                 const prompt = `You are a viral marketing expert. Generate 3-4 specific, viral-friendly angles for this topic: "${topic}". Return a valid JSON array of objects, where each object has "angle" and "rationale".`;
                 const response = await ai!.models.generateContent({ model: "gemini-2.5-flash", contents: prompt, config: { responseMimeType: "application/json", responseSchema: topicEnhancementSchema } });
-                const enhancedTopics: EnhancedTopic[] = JSON.parse(response.text);
+                
+                const text = response.text;
+                if (!text) {
+                    throw new Error("AI returned an empty response for enhancing topic.");
+                }
+                const enhancedTopics: EnhancedTopic[] = JSON.parse(text);
                 return res.status(200).json(enhancedTopics);
             }
              case 'generateVisualsForScript': {
@@ -223,7 +248,9 @@ Format the entire response as a single, valid JSON array of these objects. The e
                 const prompt = `Based on this script, generate 3 distinct, visually compelling storyboard concepts in a ${artStyle} style: Title: "${script.title}", Script: ${script.script}`;
                 const response = await ai!.models.generateImages({ model: 'imagen-3.0-generate-002', prompt, config: { numberOfImages: 3, outputMimeType: 'image/jpeg', aspectRatio: '16:9' } });
                 if (!response.generatedImages || response.generatedImages.length === 0) throw new Error("The AI failed to generate any images.");
-                const visuals = response.generatedImages.map(img => img.image.imageBytes);
+                const visuals = response.generatedImages
+                    .map(img => img.image?.imageBytes)
+                    .filter((bytes): bytes is string => !!bytes);
                 return res.status(200).json(visuals);
             }
             case 'deconstructVideo': {
@@ -252,7 +279,11 @@ Crucially, you should generate ONE new script in the 'generatedScripts' array.
 The JSON object MUST be the only thing in your response, wrapped in a single JSON markdown block (starting with \`\`\`json and ending with \`\`\`). Do not include any other text or explanations.`;
                 const response = await ai!.models.generateContent({ model: "gemini-2.5-flash", contents: prompt, config: { tools: [{ googleSearch: {} }] } });
                 const text = response.text;
+                if (!text) {
+                    throw new Error("AI returned an empty response for video deconstruction.");
+                }
                 const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map(chunk => chunk.web).filter((source): source is { uri: string; title:string } => !!source?.uri) ?? [];
+                
                 const jsonMatch = text.match(/```(?:json)?([\s\S]*?)```/);
                 const jsonString = jsonMatch ? jsonMatch[1].trim() : text;
                 
@@ -272,17 +303,21 @@ The JSON object MUST be the only thing in your response, wrapped in a single JSO
                 const { baseScript, newTopic } = payload;
                 const prompt = `Rewrite this base script to be about a new topic: "${newTopic}", while preserving the original's structure, pacing, and tone. Base Script: Title: "${baseScript.title}", Hook: "${baseScript.hook}", Script: ${baseScript.script}. Return a single, valid JSON object.`;
                 const response = await ai!.models.generateContent({ model: "gemini-2.5-flash", contents: prompt, config: { responseMimeType: "application/json", responseSchema: singleScriptResponseSchema, }, });
-                const remixedPart: Omit<Script, 'id' | 'tone'> = JSON.parse(response.text);
+                
+                const text = response.text;
+                if (!text) {
+                    throw new Error("AI returned an empty response for script remixing.");
+                }
+                const remixedPart: Omit<Script, 'id' | 'tone'> = JSON.parse(text);
                 const newScript: Script = { ...remixedPart, id: crypto.randomUUID(), tone: 'Remixed', isNew: true, };
                 return res.status(200).json(newScript);
             }
             case 'sendClientInvite': {
                 const { email } = payload;
-                if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-                    return res.status(500).json({ message: "Supabase service role key is not configured on the server." });
+                if (!supabaseServiceRoleKey) {
+                    return res.status(500).json({ message: "Supabase service role key is not configured for invites." });
                 }
-                
-                const supabaseAdmin = createClient<Database>(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY);
+                const supabaseAdmin = createClient<Database>(supabaseUrl, supabaseServiceRoleKey);
                 
                 const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email);
 
@@ -307,4 +342,4 @@ The JSON object MUST be the only thing in your response, wrapped in a single JSO
         const errorMessage = message.includes('quota') ? QUOTA_ERROR_MESSAGE : message;
         return res.status(500).json({ message: errorMessage });
     }
-};
+}
