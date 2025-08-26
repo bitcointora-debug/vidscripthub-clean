@@ -36,8 +36,5 @@
   "resolutions": {
     "pixi.js": "6.5.10"
   },
-  "packageManager": "npm@10",
-  "sideEffects": [
-    "@pixi/sound"
-  ]
+  "packageManager": "npm@10"
 }
