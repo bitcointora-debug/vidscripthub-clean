@@ -1,22 +1,9 @@
 {
-  "headers": [
-    {
-      "source": "/(.*\\.tsx)",
-      "headers": [
-        { "key": "Content-Type", "value": "text/javascript; charset=utf-8" }
-      ]
-    },
-    {
-      "source": "/(.*\\.ts)",
-      "headers": [
-        { "key": "Content-Type", "value": "text/javascript; charset=utf-8" }
-      ]
-    }
-  ],
+  "buildCommand": "vite build",
+  "outputDirectory": "dist",
   "rewrites": [
-    {
-      "source": "/((?!api/|.*\\.).*)",
-      "destination": "/index.html"
-    }
+    { "source": "/studio", "destination": "/studio.html" },
+    { "source": "/studio/", "destination": "/studio.html" },
+    { "source": "/((?!api/|assets/|studio\\.html|favicon|robots|manifest).*)", "destination": "/index.html" }
   ]
 }
