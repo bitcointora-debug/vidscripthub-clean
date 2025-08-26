@@ -476,14 +476,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ impersonatingClient, onLog
 
   const handleJoyrideCallback = (data: CallBackProps) => {
     const { status } = data;
-    if (['finished', 'skipped'].includes(status)) {
+    if (['finished', 'skipped'].includes(status) && user) {
         uiDispatch({ type: 'STOP_TOUR' });
-        if (user && !isGuest) {
-            supabase.storage.from('vsh_private_data').upload(`${user.id}/tour_completed.json`, new Blob([JSON.stringify({completed: true})]), {
-                cacheControl: '3600',
-                upsert: true,
-            });
-        }
+        supabase.storage.from('vsh_private_data').upload(`${user.id}/tour_completed.json`, new Blob([JSON.stringify({completed: true})]), {
+            cacheControl: '3600',
+            upsert: true,
+        });
     }
   };
 
@@ -541,6 +539,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ impersonatingClient, onLog
                   isScriptSaved={isScriptSaved}
                   scoringScriptId={scoringScriptId}
                   onVisualize={handleVisualize}
+                  isVisualizing={visualizingScriptId === generatedScript?.id}
                   visualizingScriptId={visualizingScriptId}
                   onToggleSpeech={handleToggleSpeech}
                   speakingScriptId={speakingScriptId}
@@ -705,55 +704,46 @@ export const Dashboard: React.FC<DashboardProps> = ({ impersonatingClient, onLog
             )}
             {renderView()}
         </main>
-      </div>
-
-      <button
-        onClick={() => uiDispatch({ type: 'START_TOUR' })}
-        className="fixed bottom-6 right-6 z-30 bg-[#DAFF00] text-[#1A0F3C] w-14 h-14 rounded-full flex items-center justify-center shadow-lg animate-pulse hover:animate-none transform hover:scale-110 transition-transform duration-200"
-        aria-label="Start Product Tour"
-        title="Start Product Tour"
-      >
-        <i className="fa-solid fa-question text-2xl"></i>
-      </button>
         
-      {/* Modals */}
-      <QuotaErrorModal />
-      <UpgradeModal 
-          isOpen={isUpgradeModalOpen}
-          onClose={() => setIsUpgradeModalOpen(false)}
-          onUpgrade={handleUpgrade}
-          requiredPlan={upgradeModalProps.requiredPlan}
-          featureName={upgradeModalProps.featureName}
-      />
-      <PersonalizationModal 
-          isOpen={isPersonalizationModalOpen}
-          onComplete={handlePersonalizationComplete}
-      />
-      <SaveScriptModal
-          isOpen={isSaveModalOpen}
-          onClose={() => setIsSaveModalOpen(false)}
-          scriptToSave={scriptToSave}
-          onConfirmSave={handleConfirmSave}
-          onAddNewFolder={handleAddFolder}
-      />
-      <AddClientModal
-          isOpen={isAddClientModalOpen}
-          onClose={() => setIsAddClientModalOpen(false)}
-          onAddClient={handleAddClient}
-      />
-      <EditClientModal
-          isOpen={isEditClientModalOpen}
-          onClose={() => setIsEditClientModalOpen(false)}
-          onUpdateClient={handleUpdateClient}
-          client={clientToEdit}
-      />
-      <ConfirmationModal 
-          isOpen={isConfirmationModalOpen}
-          onClose={() => setIsConfirmationModalOpen(false)}
-          onConfirm={confirmationProps.onConfirm}
-          title={confirmationProps.title}
-          message={confirmationProps.message}
-      />
+        {/* Modals */}
+        <QuotaErrorModal />
+        <UpgradeModal 
+            isOpen={isUpgradeModalOpen}
+            onClose={() => setIsUpgradeModalOpen(false)}
+            onUpgrade={handleUpgrade}
+            requiredPlan={upgradeModalProps.requiredPlan}
+            featureName={upgradeModalProps.featureName}
+        />
+        <PersonalizationModal 
+            isOpen={isPersonalizationModalOpen}
+            onComplete={handlePersonalizationComplete}
+        />
+        <SaveScriptModal
+            isOpen={isSaveModalOpen}
+            onClose={() => setIsSaveModalOpen(false)}
+            scriptToSave={scriptToSave}
+            onConfirmSave={handleConfirmSave}
+            onAddNewFolder={handleAddFolder}
+        />
+        <AddClientModal
+            isOpen={isAddClientModalOpen}
+            onClose={() => setIsAddClientModalOpen(false)}
+            onAddClient={handleAddClient}
+        />
+         <EditClientModal
+            isOpen={isEditClientModalOpen}
+            onClose={() => setIsEditClientModalOpen(false)}
+            onUpdateClient={handleUpdateClient}
+            client={clientToEdit}
+        />
+        <ConfirmationModal 
+            isOpen={isConfirmationModalOpen}
+            onClose={() => setIsConfirmationModalOpen(false)}
+            onConfirm={confirmationProps.onConfirm}
+            title={confirmationProps.title}
+            message={confirmationProps.message}
+        />
+      </div>
     </>
   );
 };

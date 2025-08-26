@@ -1,7 +1,17 @@
 {
-  "buildCommand": "vite build",
-  "outputDirectory": "dist",
-  "rewrites": [
-    { "source": "/((?!api/|assets/|favicon|robots|manifest).*)", "destination": "/index.html" }
-  ]
+  "version": 2,
+  "framework": null,
+  "headers": [
+    {
+      "source": "/(.*\\.tsx|.*\\.ts)",
+      "headers": [
+        { "key": "Content-Type", "value": "application/javascript; charset=utf-8" }
+      ]
+    }
+  ],
+  "functions": {
+    "api/gemini-proxy.ts": {
+      "maxDuration": 60
+    }
+  }
 }
