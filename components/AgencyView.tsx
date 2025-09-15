@@ -34,6 +34,35 @@ export const AgencyView: React.FC<AgencyViewProps> = ({ onRemoveClient, onOpenAd
     
     const { state: { user } } = useContext(AuthContext);
     const { state: { clients }, dispatch: dataDispatch } = useContext(DataContext);
+    
+    // Check if user has Agency plan
+    const hasAgencyPlan = user?.plan === 'agency';
+    
+    if (!hasAgencyPlan) {
+        return (
+            <div className="p-6 bg-[#1A0F3C] min-h-screen text-white flex flex-col items-center justify-center">
+                <div className="text-center max-w-2xl">
+                    <div className="mb-8">
+                        <i className="fas fa-crown text-6xl text-yellow-400 mb-4"></i>
+                        <h2 className="text-3xl font-bold mb-4">Agency Dashboard</h2>
+                        <p className="text-purple-300 text-lg">
+                            This feature requires the Agency License plan (OTO3).
+                        </p>
+                    </div>
+                    <div className="bg-[#2A1A5E] p-6 rounded-xl border border-[#4A3F7A]">
+                        <h3 className="text-xl font-bold mb-4">What's Included:</h3>
+                        <ul className="text-left space-y-2 text-purple-200">
+                            <li>• Client Management Dashboard</li>
+                            <li>• Reseller License</li>
+                            <li>• White Label Rights</li>
+                            <li>• 100% Profit Sharing</li>
+                            <li>• Priority Support</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     const addNotification = useCallback((message: string) => {
         if(user) {

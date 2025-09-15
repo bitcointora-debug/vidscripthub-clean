@@ -90,6 +90,34 @@ export const DFYContentView: React.FC<DFYContentViewProps> = ({
 }) => {
     const { state: { user } } = useContext(AuthContext);
     const { dispatch: dataDispatch } = useContext(DataContext);
+    
+    // Check if user has DFY plan
+    const hasDfyPlan = user?.plan === 'dfy' || user?.plan === 'agency';
+    
+    if (!hasDfyPlan) {
+        return (
+            <div className="p-6 bg-[#1A0F3C] min-h-screen text-white flex flex-col items-center justify-center">
+                <div className="text-center max-w-2xl">
+                    <div className="mb-8">
+                        <i className="fas fa-gem text-6xl text-yellow-400 mb-4"></i>
+                        <h2 className="text-3xl font-bold mb-4">DFY Content Vault</h2>
+                        <p className="text-purple-300 text-lg">
+                            This feature requires the Done-For-You Content Vault plan (OTO2).
+                        </p>
+                    </div>
+                    <div className="bg-[#2A1A5E] p-6 rounded-xl border border-[#4A3F7A]">
+                        <h3 className="text-xl font-bold mb-4">What's Inside:</h3>
+                        <ul className="text-left space-y-2 text-purple-200">
+                            <li>• 100+ DFY Viral Scripts</li>
+                            <li>• 50+ Viral Hook Swipe File</li>
+                            <li>• Trending Audio Cheat Sheet</li>
+                            <li>• 20+ New Scripts Added Monthly</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        );
+    }
     const [activeTab, setActiveTab] = useState<Tab>('Scripts');
     const [activeNiche, setActiveNiche] = useState('All');
     const [activeTone, setActiveTone] = useState('All');
