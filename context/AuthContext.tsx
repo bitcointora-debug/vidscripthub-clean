@@ -92,8 +92,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
     useEffect(() => {
         // Listen to authentication state changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-            console.log('Auth state changed:', event, session?.user?.email);
-            console.log('Event details:', { event, hasSession: !!session, userId: session?.user?.id });
+            console.log('🔐 Auth state changed:', event, session?.user?.email);
+            console.log('🔐 Event details:', { event, hasSession: !!session, userId: session?.user?.id });
             
             if (!session) {
                 if (guestPlan) {
@@ -106,10 +106,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
 
             dispatch({ type: 'FETCH_USER_START' });
             try {
+                console.log('🔍 Fetching user profile for:', session.user.id);
                 let user = await fetchUser(session.user.id);
+                console.log('🔍 Profile fetch result:', user ? 'Found' : 'Not found');
                 
                 if (!user) {
-                    console.warn("Profile not found, creating new profile.");
+                    console.warn("⚠️ Profile not found, creating new profile.");
                     const newProfile: Database['public']['Tables']['profiles']['Insert'] = {
                         id: session.user.id,
                         email: session.user.email || '',
@@ -120,9 +122,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
                         access_level: 'standard',
                         plan_level: 'standard'
                     };
+                    console.log('🔧 Creating profile with data:', newProfile);
                     user = await createUser(newProfile);
+                    console.log('✅ Profile created successfully:', user);
                 }
                 
+                console.log('🎉 Dispatching FETCH_USER_SUCCESS with user:', user);
                 dispatch({ type: 'FETCH_USER_SUCCESS', payload: user });
 
             } catch (error: any) {

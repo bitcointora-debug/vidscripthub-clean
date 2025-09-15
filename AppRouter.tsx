@@ -23,21 +23,31 @@ const AppRouterContent: React.FC = () => {
     const [impersonatingClient, setImpersonatingClient] = useState<Client | null>(null);
 
     useEffect(() => {
-        if (isAuthLoading) return;
+        console.log('🚀 AppRouter effect - isAuthLoading:', isAuthLoading, 'user:', user?.email, 'flowState:', flowState);
+        
+        if (isAuthLoading) {
+            console.log('⏳ Still loading auth state...');
+            return;
+        }
 
         if (user) {
+            console.log('✅ User is logged in:', user.email);
             // User is logged in
             if (postAuthAction) {
+                console.log('🔄 Handling post auth action:', postAuthAction);
                 authDispatch({ type: 'UPGRADE_PLAN_REQUEST', payload: postAuthAction.plan });
                 setFlowState(postAuthAction.next);
                 setPostAuthAction(null);
             } else if (['sales', 'auth'].includes(flowState)) {
+                console.log('🎯 Redirecting to app from:', flowState);
                 setFlowState('app');
             }
         } else {
+            console.log('❌ User is logged out');
             // User is logged out
             if (!['sales', 'oto1', 'oto2', 'oto3', 'auth'].includes(flowState)) {
-                 setFlowState('sales');
+                console.log('🔄 Redirecting to sales from:', flowState);
+                setFlowState('sales');
             }
             setImpersonatingClient(null);
         }
