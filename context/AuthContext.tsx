@@ -90,12 +90,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
     const [state, dispatch] = useReducer(authReducer, initialState);
 
     useEffect(() => {
+        console.log('🚀 AuthContext: Setting up auth state listener');
+        
         // Listen to authentication state changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             console.log('🔐 Auth state changed:', event, session?.user?.email);
             console.log('🔐 Event details:', { event, hasSession: !!session, userId: session?.user?.id });
             
             if (!session) {
+                console.log('❌ No session, setting user to null');
                 if (guestPlan) {
                     dispatch({ type: 'SET_GUEST_USER', payload: guestPlan });
                 } else {
@@ -104,10 +107,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
                 return;
             }
 
+            console.log('✅ Session found, processing user:', session.user.email);
             dispatch({ type: 'FETCH_USER_START' });
+            
             try {
                 console.log('🔍 Fetching user profile for:', session.user.id);
-                let user = await fetchUser(session.user.id);
+                
+                // Add timeout to prevent hanging
+                const profilePromise = fetchUser(session.user.id);
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
+                );
+                
+                let user = await Promise.race([profilePromise, timeoutPromise]);
                 console.log('🔍 Profile fetch result:', user ? 'Found' : 'Not found');
                 
                 if (!user) {
@@ -131,13 +143,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
                 dispatch({ type: 'FETCH_USER_SUCCESS', payload: user });
 
             } catch (error: any) {
-                console.error("Auth context error:", error);
-                dispatch({ type: 'FETCH_USER_ERROR', payload: `There was a problem loading your profile: ${error.message}. Please try signing out and back in.` });
+                console.error("❌ Auth context error:", error);
+                console.error("❌ Error details:", error.message, error.code);
+                
+                // If profile fetch fails or times out, create a minimal user object
+                if (error.message?.includes('row-level security') || error.code === '42501' || error.message?.includes('timeout')) {
+                    console.warn("⚠️ Profile fetch failed, creating minimal user object");
+                    const minimalUser = {
+                        id: session.user.id,
+                        email: session.user.email || '',
+                        name: session.user.user_metadata?.name || session.user.user_metadata?.full_name || session.user.email || 'New User',
+                        avatar_url: session.user.user_metadata?.avatar_url || null,
+                        isPersonalized: false,
+                        plan: pendingUpgradePlan || 'basic',
+                        aiCredits: 0,
+                        subscription: { planId: 'basic', status: 'active', endDate: null }
+                    };
+                    console.log('🔧 Using minimal user object:', minimalUser);
+                    dispatch({ type: 'FETCH_USER_SUCCESS', payload: minimalUser });
+                } else {
+                    dispatch({ type: 'FETCH_USER_ERROR', payload: `There was a problem loading your profile: ${error.message}. Please try signing out and back in.` });
+                }
             }
         });
 
         // Cleanup subscription on unmount
-        return () => subscription.unsubscribe();
+        return () => {
+            console.log('🧹 AuthContext: Cleaning up auth listener');
+            subscription.unsubscribe();
+        };
     }, [guestPlan, pendingUpgradePlan]);
 
     const handleAsyncAction = useCallback(async (action: RequestAction) => {
