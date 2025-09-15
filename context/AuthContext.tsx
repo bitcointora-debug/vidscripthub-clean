@@ -2,7 +2,7 @@
 import React, { createContext, useReducer, useEffect, ReactNode, useCallback } from 'react';
 import type { Session, User, Plan } from '../types.ts';
 import { supabase } from '../services/supabaseClient.ts';
-import type { Database } from '../services/database.types.ts';
+import { fetchUser, createUser, updateUser } from '../services/supabaseService.ts';
 
 // --- STATE AND INITIAL VALUES ---
 export interface AuthState {
@@ -101,33 +101,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
         const fetchDataWithRetry = async () => {
             dispatch({ type: 'FETCH_USER_START' });
             try {
-                let profileData: Database['public']['Tables']['profiles']['Row'] | null = null;
+                let user = await fetchUser(session.user.id);
                 
-                for (let i = 0; i < 5; i++) {
-                    const { data, error } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
-                    if (error && error.code !== 'PGRST116') throw new Error(error.message);
-                    if (data) { profileData = data; break; }
-                    await delay(500);
-                }
-
-                if (!profileData) {
+                if (!user) {
                     console.warn("Profile not found, creating new profile.");
-                    const newProfile: Database['public']['Tables']['profiles']['Insert'] = {
+                    const newProfile = {
                         id: session.user.id,
                         email: session.user.email || '',
                         name: String(session.user.user_metadata?.name || session.user.user_metadata?.full_name || 'New User'),
                         avatar_url: (session.user.user_metadata?.avatar_url as string | null) || null,
                         isPersonalized: false,
-                        plan: pendingUpgradePlan || 'basic' // Use pending plan if available
+                        plan: pendingUpgradePlan || 'basic'
                     };
-                    const { data: newProfileData, error: newProfileError } = await supabase.from('profiles').insert([newProfile]).select().single();
-                    
-                    if (newProfileError) throw new Error(`Failed to create profile: ${newProfileError.message}`);
-                    if (newProfileData) profileData = newProfileData;
-                    else throw new Error("Profile creation did not return data.");
+                    user = await createUser(newProfile);
                 }
                 
-                dispatch({ type: 'FETCH_USER_SUCCESS', payload: profileData as User });
+                dispatch({ type: 'FETCH_USER_SUCCESS', payload: user });
 
             } catch (error: any) {
                 console.error("Auth context error:", error);

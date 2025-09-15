@@ -1,8 +1,27 @@
 
 import React, { createContext, useReducer, useEffect, ReactNode, useCallback, useContext } from 'react';
 import type { Script, Folder, WatchedTrend, Client, Trend, Notification } from '../types.ts';
-import { supabase } from '../services/supabaseClient.ts';
-import type { Json, Database } from '../services/database.types.ts';
+import { 
+    fetchScripts, 
+    saveScript, 
+    updateScript, 
+    deleteScript,
+    fetchFolders,
+    createFolder,
+    updateFolder,
+    deleteFolder,
+    fetchClients,
+    createClient,
+    updateClient,
+    deleteClient,
+    fetchNotifications,
+    createNotification,
+    markNotificationAsRead,
+    markAllNotificationsAsRead,
+    fetchWatchedTrends,
+    createWatchedTrend,
+    deleteWatchedTrend
+} from '../services/supabaseService.ts';
 import { AuthContext } from './AuthContext.tsx';
 
 // --- STATE AND INITIAL VALUES ---
@@ -131,26 +150,20 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         const fetchData = async () => {
             dispatch({ type: 'FETCH_DATA_START' });
             try {
-                const [foldersRes, clientsRes, scriptsRes, watchedTrendsRes, notificationsRes] = await Promise.all([
-                    supabase.from('folders').select('*').eq('user_id', user.id).order('created_at', { ascending: true }),
-                    supabase.from('clients').select('*').eq('agency_owner_id', user.id).order('created_at', { ascending: false }),
-                    supabase.from('scripts').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
-                    supabase.from('watched_trends').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
-                    supabase.from('notifications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20),
+                const [folders, clients, scripts, watchedTrends, notifications] = await Promise.all([
+                    fetchFolders(user.id),
+                    fetchClients(user.id),
+                    fetchScripts(user.id),
+                    fetchWatchedTrends(user.id),
+                    fetchNotifications(user.id),
                 ]);
-
-                if (foldersRes.error) throw foldersRes.error;
-                if (clientsRes.error) throw clientsRes.error;
-                if (scriptsRes.error) throw scriptsRes.error;
-                if (watchedTrendsRes.error) throw watchedTrendsRes.error;
-                if (notificationsRes.error) throw notificationsRes.error;
                 
                 dispatch({ type: 'FETCH_DATA_SUCCESS', payload: {
-                    folders: [{ id: 'all', name: 'All Scripts' }, ...(foldersRes.data || [])] as Folder[],
-                    clients: (clientsRes.data || []) as unknown as Client[],
-                    savedScripts: (scriptsRes.data || []) as unknown as Script[],
-                    watchedTrends: (watchedTrendsRes.data || []) as unknown as WatchedTrend[],
-                    notifications: (notificationsRes.data || []) as unknown as Notification[],
+                    folders: [{ id: 'all', name: 'All Scripts' }, ...folders] as Folder[],
+                    clients: clients as unknown as Client[],
+                    savedScripts: scripts as unknown as Script[],
+                    watchedTrends: watchedTrends as unknown as WatchedTrend[],
+                    notifications: notifications as unknown as Notification[],
                 }});
             } catch (error: any) {
                 dispatch({ type: 'FETCH_DATA_ERROR', payload: error.message });
