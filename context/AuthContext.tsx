@@ -113,12 +113,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
                 try {
                     console.log('🔍 Fetching user profile for:', session.user.id);
                     
-                    // Try direct Supabase query first to debug RLS issues
-                    const { data: directData, error: directError } = await supabase
+                    // Add timeout to prevent hanging
+                    const profilePromise = supabase
                         .from('profiles')
                         .select('*')
                         .eq('id', session.user.id)
                         .single();
+                    
+                    const timeoutPromise = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
+                    );
+                    
+                    const { data: directData, error: directError } = await Promise.race([profilePromise, timeoutPromise]) as any;
                     
                     if (directError) {
                         console.error('❌ Direct profile fetch error:', directError);
@@ -148,12 +154,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
                 console.log('🎉 Dispatching FETCH_USER_SUCCESS with user:', user);
                 dispatch({ type: 'FETCH_USER_SUCCESS', payload: user });
 
-            } catch (error: any) {
-                console.error("❌ Auth context error:", error);
-                console.error("❌ Error details:", error.message, error.code);
-                
-                // If profile fetch fails or times out, create a minimal user object
-                if (error.message?.includes('row-level security') || error.code === '42501' || error.message?.includes('timeout')) {
+                } catch (error: any) {
+                    console.error("❌ Auth context error:", error);
+                    console.error("❌ Error details:", error.message, error.code);
+                    
+                    // Always create a minimal user object to prevent hanging
                     console.warn("⚠️ Profile fetch failed, creating minimal user object");
                     const minimalUser = {
                         id: session.user.id,
@@ -167,10 +172,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
                     };
                     console.log('🔧 Using minimal user object:', minimalUser);
                     dispatch({ type: 'FETCH_USER_SUCCESS', payload: minimalUser });
-                } else {
-                    dispatch({ type: 'FETCH_USER_ERROR', payload: `There was a problem loading your profile: ${error.message}. Please try signing out and back in.` });
                 }
-            }
         });
 
         // Cleanup subscription on unmount
