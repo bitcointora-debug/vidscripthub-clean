@@ -1,9 +1,41 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '../services/supabaseClient';
 
 export const AuthPage: React.FC = () => {
+    // Listen for auth state changes and create profile if needed
+    useEffect(() => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_UP' && session?.user) {
+                console.log('User signed up, creating profile...');
+                try {
+                    // Create profile for new user
+                    const { error } = await supabase
+                        .from('profiles')
+                        .insert({
+                            id: session.user.id,
+                            email: session.user.email || '',
+                            name: session.user.user_metadata?.name || session.user.user_metadata?.full_name || 'New User',
+                            avatar_url: session.user.user_metadata?.avatar_url || null,
+                            isPersonalized: false,
+                            plan: 'basic'
+                        });
+                    
+                    if (error) {
+                        console.error('Error creating profile:', error);
+                    } else {
+                        console.log('Profile created successfully');
+                    }
+                } catch (error) {
+                    console.error('Error in profile creation:', error);
+                }
+            }
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
     return (
         <div className="min-h-screen bg-[#1A0F3C] flex flex-col items-center justify-center p-4">
             <div className="w-full max-w-md mx-auto">
