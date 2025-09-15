@@ -44,16 +44,18 @@ export const AuthPage: React.FC = () => {
                         return;
                     }
                     
-                    // Create profile for new user
+                    // Create profile for new user with all required fields
                     const { error } = await supabase
                         .from('profiles')
                         .insert({
                             id: session.user.id,
                             email: session.user.email || '',
-                            name: session.user.user_metadata?.name || session.user.user_metadata?.full_name || 'New User',
+                            name: session.user.user_metadata?.name || session.user.user_metadata?.full_name || session.user.email || 'New User',
                             avatar_url: session.user.user_metadata?.avatar_url || null,
                             isPersonalized: false,
-                            plan: 'basic'
+                            plan: 'basic',
+                            access_level: 'standard',
+                            plan_level: 'standard'
                         });
                     
                     if (error) {
@@ -62,11 +64,13 @@ export const AuthPage: React.FC = () => {
                         const { error: updateError } = await supabase
                             .from('profiles')
                             .update({
-                                name: session.user.user_metadata?.name || session.user.user_metadata?.full_name || 'New User',
+                                name: session.user.user_metadata?.name || session.user.user_metadata?.full_name || session.user.email || 'New User',
                                 email: session.user.email || '',
                                 avatar_url: session.user.user_metadata?.avatar_url || null,
                                 isPersonalized: false,
-                                plan: 'basic'
+                                plan: 'basic',
+                                access_level: 'standard',
+                                plan_level: 'standard'
                             })
                             .eq('id', session.user.id);
                         
