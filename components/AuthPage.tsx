@@ -26,14 +26,15 @@ export const AuthPage: React.FC = () => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             console.log('Auth event:', event, 'User:', session?.user?.email);
             
-            if (event === 'SIGNED_UP' && session?.user) {
-                console.log('User signed up, creating profile...');
+            // Handle both SIGNED_UP and SIGNED_IN events
+            if ((event === 'SIGNED_UP' || event === 'SIGNED_IN') && session?.user) {
+                console.log(`User ${event.toLowerCase()}, checking profile...`);
                 try {
                     // Wait a moment for any existing trigger to complete
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     
                     // Check if profile already exists
-                    const { data: existingProfile } = await supabase
+                    const { data: existingProfile, error: fetchError } = await supabase
                         .from('profiles')
                         .select('id')
                         .eq('id', session.user.id)
@@ -44,7 +45,14 @@ export const AuthPage: React.FC = () => {
                         return;
                     }
                     
-                    // Create profile for new user with all required fields
+                    if (fetchError && fetchError.code !== 'PGRST116') {
+                        console.error('Error checking profile:', fetchError);
+                        return;
+                    }
+                    
+                    console.log('Profile does not exist, creating...');
+                    
+                    // Create profile for user with all required fields
                     const { error } = await supabase
                         .from('profiles')
                         .insert({
