@@ -3,6 +3,7 @@ import React, { createContext, useReducer, useEffect, ReactNode, useCallback } f
 import type { Session, User, Plan } from '../types.ts';
 import { supabase } from '../services/supabaseClient.ts';
 import { fetchUser, createUser, updateUser } from '../services/supabaseService.ts';
+import type { Database } from '../services/database.types.ts';
 
 // --- STATE AND INITIAL VALUES ---
 export interface AuthState {
@@ -89,16 +90,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
     const [state, dispatch] = useReducer(authReducer, initialState);
 
     useEffect(() => {
-        if (!session) {
-            if (guestPlan) {
-                dispatch({ type: 'SET_GUEST_USER', payload: guestPlan });
-            } else {
-                dispatch({ type: 'FETCH_USER_SUCCESS', payload: null });
+        // Listen to authentication state changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            console.log('Auth state changed:', event, session?.user?.email);
+            
+            if (!session) {
+                if (guestPlan) {
+                    dispatch({ type: 'SET_GUEST_USER', payload: guestPlan });
+                } else {
+                    dispatch({ type: 'FETCH_USER_SUCCESS', payload: null });
+                }
+                return;
             }
-            return;
-        }
 
-        const fetchDataWithRetry = async () => {
             dispatch({ type: 'FETCH_USER_START' });
             try {
                 let user = await fetchUser(session.user.id);
@@ -122,10 +126,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
                 console.error("Auth context error:", error);
                 dispatch({ type: 'FETCH_USER_ERROR', payload: `There was a problem loading your profile: ${error.message}. Please try signing out and back in.` });
             }
-        };
+        });
 
-        fetchDataWithRetry();
-    }, [session, guestPlan, pendingUpgradePlan]);
+        // Cleanup subscription on unmount
+        return () => subscription.unsubscribe();
+    }, [guestPlan, pendingUpgradePlan]);
 
     const handleAsyncAction = useCallback(async (action: RequestAction) => {
         if (!state.user || state.user.id.startsWith('guest-')) {
