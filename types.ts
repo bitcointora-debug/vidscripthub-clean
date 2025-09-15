@@ -58,7 +58,16 @@ export interface WatchedTrend {
     created_at?: string;
 }
 
-export type Plan = 'basic' | 'unlimited' | 'dfy' | 'agency';
+export type PlanId = 'free' | 'pro' | 'viralyzaier' | 'basic' | 'unlimited' | 'dfy' | 'agency';
+
+export interface Plan {
+    id: PlanId;
+    name: string;
+    price: number;
+    creditLimit: number;
+    features: string[];
+    isMostPopular?: boolean;
+}
 
 export interface User {
     id: string;
@@ -69,7 +78,18 @@ export interface User {
     platforms: ('tiktok' | 'instagram' | 'youtube')[] | null;
     preferred_tone: string | null;
     isPersonalized: boolean;
-    plan: Plan;
+    plan: PlanId;
+    aiCredits?: number;
+    channelAudit?: any;
+    cloned_voices?: any;
+    content_pillars?: string[];
+    subscription?: Subscription;
+}
+
+export interface Subscription {
+    planId: PlanId;
+    status: 'active' | 'inactive' | 'cancelled';
+    endDate: string | null;
 }
 
 export interface Notification {
@@ -78,6 +98,186 @@ export interface Notification {
     message: string;
     created_at: string;
     read: boolean;
+    project_id?: string;
+}
+
+export interface Platform {
+    id: string;
+    name: string;
+    icon: string;
+}
+
+export interface SceneAssets {
+    id: string;
+    type: 'image' | 'video' | 'audio';
+    url: string;
+    duration?: number;
+}
+
+export interface SoundDesign {
+    id: string;
+    name: string;
+    url: string;
+    duration: number;
+    type: 'music' | 'sfx' | 'voice';
+}
+
+export interface Json {
+    [key: string]: any;
+}
+
+export interface NormalizedStockAsset {
+    id: string;
+    title: string;
+    url: string;
+    thumbnail: string;
+    duration?: number;
+    type: 'image' | 'video' | 'audio';
+    source: string;
+}
+
+export interface JamendoTrack {
+    id: string;
+    name: string;
+    artist_name: string;
+    audio: string;
+    audiodownload: string;
+    duration: number;
+    image: string;
+}
+
+export interface ChannelStats {
+    subscriberCount: number;
+    viewCount: number;
+    videoCount: number;
+    avgViews: number;
+    engagementRate: number;
+}
+
+export interface VideoPerformance {
+    videoId: string;
+    title: string;
+    views: number;
+    likes: number;
+    comments: number;
+    shares: number;
+    engagementRate: number;
+    publishedAt: string;
+}
+
+export interface Project {
+    id: string;
+    user_id: string;
+    title: string;
+    description: string;
+    status: ProjectStatus;
+    platform: Platform;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ProjectStatus {
+    id: string;
+    name: string;
+    color: string;
+}
+
+export interface WorkflowStep {
+    id: string;
+    name: string;
+    description: string;
+    order: number;
+    completed: boolean;
+}
+
+export interface Analysis {
+    id: string;
+    project_id: string;
+    type: string;
+    data: Json;
+    created_at: string;
+}
+
+export interface CompetitorAnalysisResult {
+    competitor: string;
+    strengths: string[];
+    weaknesses: string[];
+    opportunities: string[];
+    threats: string[];
+}
+
+export interface LaunchPlan {
+    id: string;
+    project_id: string;
+    title: string;
+    description: string;
+    steps: WorkflowStep[];
+    created_at: string;
+}
+
+export interface ChannelAudit {
+    id: string;
+    user_id: string;
+    channel_url: string;
+    stats: ChannelStats;
+    performance: VideoPerformance[];
+    created_at: string;
+}
+
+export interface ClonedVoice {
+    id: string;
+    user_id: string;
+    name: string;
+    voice_id: string;
+    created_at: string;
+}
+
+export interface BrandIdentity {
+    id: string;
+    user_id: string;
+    name: string;
+    description: string;
+    colors: string[];
+    fonts: string[];
+    tone: string;
+    created_at: string;
+}
+
+export interface Database {
+    public: {
+        Tables: {
+            profiles: {
+                Row: User;
+                Insert: Partial<User>;
+                Update: Partial<User>;
+            };
+            folders: {
+                Row: Folder;
+                Insert: Partial<Folder>;
+                Update: Partial<Folder>;
+            };
+            clients: {
+                Row: Client;
+                Insert: Partial<Client>;
+                Update: Partial<Client>;
+            };
+            notifications: {
+                Row: Notification;
+                Insert: Partial<Notification>;
+                Update: Partial<Notification>;
+            };
+            scripts: {
+                Row: Script;
+                Insert: Partial<Script>;
+                Update: Partial<Script>;
+            };
+            watched_trends: {
+                Row: WatchedTrend;
+                Insert: Partial<WatchedTrend>;
+                Update: Partial<WatchedTrend>;
+            };
+        };
+    };
 }
 
 export interface EnhancedTopic {

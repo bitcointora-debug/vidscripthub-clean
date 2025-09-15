@@ -12,6 +12,7 @@ interface ScriptDisplayProps {
   scoringScriptId: string | null;
   onVisualize: (scriptId: string, artStyle: string) => void;
   visualizingScriptId: string | null;
+  isVisualizing?: boolean;
   onToggleSpeech: (script: Script) => void;
   speakingScriptId: string | null;
 }

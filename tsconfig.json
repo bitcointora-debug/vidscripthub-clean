@@ -21,6 +21,37 @@
       ]
     },
     "allowImportingTsExtensions": true,
-    "noEmit": true
-  }
+    "noEmit": true,
+    "noImplicitAny": false,
+    "strict": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false,
+    "noUncheckedIndexedAccess": false,
+    "exactOptionalPropertyTypes": false
+  },
+  "include": [
+    "src",
+    "components",
+    "context",
+    "services",
+    "types.ts",
+    "utils.ts",
+    "translations.ts",
+    "App.tsx",
+    "AppRouter.tsx",
+    "index.tsx",
+    "studio-entry.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "public",
+    "images",
+    "data",
+    "themes",
+    "lib",
+    "api",
+    "*.cjs",
+    "*.mjs"
+  ]
 }

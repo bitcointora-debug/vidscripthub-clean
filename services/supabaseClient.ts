@@ -13,4 +13,5 @@ const keyPart2 = 'eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ6b3lwdmhma3pwaGR0cXJydnR6Ii
 const keyPart3 = '.0PPNYXCk3dHdGWhf0eE4a-W91Z7XsfWLbXcrAevmmK4';
 const supabaseKey = `${keyPart1}.${keyPart2}${keyPart3}`;
 
+export const supabaseAnonKey = supabaseKey;
 export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
