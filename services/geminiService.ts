@@ -2,9 +2,9 @@ import type { Script, Trend, EnhancedTopic, VideoDeconstruction, ViralScoreBreak
 
 export const QUOTA_ERROR_MESSAGE = "API quota exceeded for the 'gemini-2.5-flash' model. Your Google Cloud project has paid limits, but they might not be applied to this specific model. Please go to the Quotas page in your Google Cloud Console, filter for the 'generativelanguage.googleapis.com' service, and request a quota increase for the 'gemini-2.5-flash' model.";
 
-// Helper function to call our Vercel function
+// Helper function to call our Netlify function
 async function callApi(action: string, payload: any) {
-    const response = await fetch(`/api/gemini-proxy`, {
+    const response = await fetch(`/.netlify/functions/gemini-proxy`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
