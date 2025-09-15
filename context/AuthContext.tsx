@@ -93,6 +93,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
         // Listen to authentication state changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             console.log('Auth state changed:', event, session?.user?.email);
+            console.log('Event details:', { event, hasSession: !!session, userId: session?.user?.id });
             
             if (!session) {
                 if (guestPlan) {

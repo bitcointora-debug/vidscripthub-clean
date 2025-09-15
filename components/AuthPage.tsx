@@ -15,6 +15,7 @@ export const AuthPage: React.FC = () => {
                 <div className="bg-[#2A1A5E] p-8 rounded-xl border border-[#4A3F7A]">
                      <Auth
                         supabaseClient={supabase}
+                        redirectTo={window.location.origin}
                         appearance={{ 
                             theme: ThemeSupa,
                             variables: {
@@ -51,7 +52,7 @@ export const AuthPage: React.FC = () => {
                                 }
                             }
                         }}
-                        providers={['google']}
+                        providers={[]}
                         theme="dark"
                         localization={{
                             variables: {
