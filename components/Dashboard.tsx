@@ -671,7 +671,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ impersonatingClient, onLog
             {/* User Profile / Logout */}
             <div className="p-4 border-t border-[#4A3F7A]/30 flex-shrink-0">
                 <div className="flex items-center">
-                    <img className="h-9 w-9 rounded-full object-cover" src={user.avatar_url || `https://ui-avatars.com/api/?name=${user.name}&background=DAFF00&color=1A0F3C`} alt="User avatar" />
+                    <img className="h-9 w-9 rounded-full object-cover" src={user.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.name)}&backgroundColor=DAFF00&textColor=1A0F3C`} alt="User avatar" />
                     <div className="ml-3">
                         <p className="text-sm font-semibold text-white truncate">{impersonatingClient ? impersonatingClient.name : user.name}</p>
                         <p className="text-xs text-purple-300 truncate">{impersonatingClient ? `Viewing as client` : user.email}</p>
