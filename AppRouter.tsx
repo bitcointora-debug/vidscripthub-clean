@@ -1,6 +1,8 @@
 
 import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from './context/AuthContext';
+import { AuthContext, AuthProvider } from './context/AuthContext';
+import { UIProvider } from './context/UIContext';
+import { DataProvider } from './context/DataContext';
 import type { Plan, Client } from './types';
 import { SalesPage } from './components/SalesPage';
 import { Oto1Page } from './components/Oto1Page';
@@ -12,7 +14,7 @@ import { Dashboard } from './components/Dashboard';
 type FlowState = 'sales' | 'oto1' | 'oto2' | 'oto3' | 'app' | 'auth';
 type PostAuthAction = { plan: Plan; next: FlowState };
 
-export const AppRouter: React.FC = () => {
+const AppRouterContent: React.FC = () => {
     const { state: authState, dispatch: authDispatch } = useContext(AuthContext);
     const { user, isLoading: isAuthLoading } = authState;
 
@@ -110,4 +112,16 @@ export const AppRouter: React.FC = () => {
                 return <AuthPage />;
         }
     }
+};
+
+export const AppRouter: React.FC = () => {
+    return (
+        <AuthProvider session={null} guestPlan={null} pendingUpgradePlan={null}>
+            <UIProvider>
+                <DataProvider>
+                    <AppRouterContent />
+                </DataProvider>
+            </UIProvider>
+        </AuthProvider>
+    );
 };
