@@ -4,12 +4,46 @@ import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '../services/supabaseClient';
 
 export const AuthPage: React.FC = () => {
+    // Test Supabase connection on mount
+    useEffect(() => {
+        const testConnection = async () => {
+            try {
+                const { data, error } = await supabase.from('profiles').select('count').limit(1);
+                if (error) {
+                    console.error('Supabase connection error:', error);
+                } else {
+                    console.log('✅ Supabase connected successfully');
+                }
+            } catch (err) {
+                console.error('❌ Supabase connection failed:', err);
+            }
+        };
+        testConnection();
+    }, []);
+
     // Listen for auth state changes and create profile if needed
     useEffect(() => {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            console.log('Auth event:', event, 'User:', session?.user?.email);
+            
             if (event === 'SIGNED_UP' && session?.user) {
                 console.log('User signed up, creating profile...');
                 try {
+                    // Wait a moment for any existing trigger to complete
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Check if profile already exists
+                    const { data: existingProfile } = await supabase
+                        .from('profiles')
+                        .select('id')
+                        .eq('id', session.user.id)
+                        .single();
+                    
+                    if (existingProfile) {
+                        console.log('Profile already exists');
+                        return;
+                    }
+                    
                     // Create profile for new user
                     const { error } = await supabase
                         .from('profiles')
@@ -24,6 +58,23 @@ export const AuthPage: React.FC = () => {
                     
                     if (error) {
                         console.error('Error creating profile:', error);
+                        // Try to update existing profile if insert failed
+                        const { error: updateError } = await supabase
+                            .from('profiles')
+                            .update({
+                                name: session.user.user_metadata?.name || session.user.user_metadata?.full_name || 'New User',
+                                email: session.user.email || '',
+                                avatar_url: session.user.user_metadata?.avatar_url || null,
+                                isPersonalized: false,
+                                plan: 'basic'
+                            })
+                            .eq('id', session.user.id);
+                        
+                        if (updateError) {
+                            console.error('Error updating profile:', updateError);
+                        } else {
+                            console.log('Profile updated successfully');
+                        }
                     } else {
                         console.log('Profile created successfully');
                     }
