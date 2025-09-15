@@ -1,10 +1,9 @@
-
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenAI, Type } from "@google/genai";
 import { createClient } from '@supabase/supabase-js';
-import { supabaseUrl } from '../services/supabaseClient.js';
-import type { Database } from '../services/database.types.js';
-import type { Script, Trend, EnhancedTopic, VideoDeconstruction, ViralScoreBreakdown, OptimizationStep, Plan } from '../types.js';
+import { supabaseUrl } from '../services/supabaseClient.ts';
+import type { Database } from '../services/database.types.ts';
+import type { Script, Trend, EnhancedTopic, VideoDeconstruction, ViralScoreBreakdown, OptimizationStep } from '../types.ts';
 
 // Schemas
 const viralityAnalysisSchema = { type: Type.OBJECT, properties: { overallScore: { type: Type.NUMBER, description: "A score from 1-100 for overall viral potential." }, hookAnalysis: { type: Type.STRING, description: "1-sentence analysis of the hook's strength and attention-grabbing power." }, pacingAnalysis: { type: Type.STRING, description: "1-sentence analysis of the script's pacing, flow, and ability to hold attention." }, valueAnalysis: { type: Type.STRING, description: "1-sentence analysis of the value (entertainment, education, emotion) delivered to the viewer." }, ctaAnalysis: { type: Type.STRING, description: "1-sentence analysis of the call-to-action's effectiveness and clarity." }, finalVerdict: { type: Type.STRING, description: "A concluding one-sentence rationale for the overall score, summarizing the script's strongest and weakest points." } }, required: ["overallScore", "hookAnalysis", "pacingAnalysis", "valueAnalysis", "ctaAnalysis", "finalVerdict"] };
@@ -80,12 +79,6 @@ Return only the JSON object.
     }
 }
 
-// Helper to check user plan against required plan
-const hasPlan = (userPlan: Plan, requiredPlan: Plan): boolean => {
-    const planHierarchy: Plan[] = ['basic', 'unlimited', 'dfy', 'agency'];
-    return planHierarchy.indexOf(userPlan) >= planHierarchy.indexOf(requiredPlan);
-};
-
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== 'POST') {
@@ -93,49 +86,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const { action, payload } = req.body;
-    
-    // --- Authentication and Authorization ---
-    const publicActions = ['getOptimizationTrace', 'enhanceTopic'];
-    const planSpecificActions: Record<string, Plan> = {
-        fetchTrendingTopics: 'unlimited',
-        deconstructVideo: 'unlimited',
-        generateVisualsForScript: 'basic',
-        remixScript: 'dfy',
-        sendClientInvite: 'agency',
-        analyzeScriptVirality: 'basic',
-    };
-
-    if (!publicActions.includes(action)) {
-        const token = req.headers.authorization?.split(' ')[1];
-        if (!token || token === 'undefined') {
-            return res.status(401).json({ message: 'Authentication token is required for this action.' });
-        }
-
-        const supabaseAdmin = createClient<Database>(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY as string);
-        const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
-
-        if (userError || !user) {
-            return res.status(401).json({ message: userError?.message || 'Invalid or expired token.' });
-        }
-
-        const requiredPlan = planSpecificActions[action];
-        if (requiredPlan) {
-            const { data: profile, error: profileError } = await supabaseAdmin
-                .from('profiles')
-                .select('plan')
-                .eq('id', user.id)
-                .single();
-            
-            if (profileError || !profile) {
-                return res.status(403).json({ message: 'Could not verify user plan.' });
-            }
-
-            if (!hasPlan(profile.plan, requiredPlan)) {
-                return res.status(403).json({ message: `This action requires the '${requiredPlan}' plan or higher.` });
-            }
-        }
-    }
-    // --- End Auth ---
 
     if (action !== 'sendClientInvite' && !process.env.API_KEY) {
         return res.status(500).json({ message: "API_KEY environment variable is not set on the server." });
