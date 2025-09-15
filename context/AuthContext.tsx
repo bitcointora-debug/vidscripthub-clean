@@ -110,13 +110,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
                 
                 if (!user) {
                     console.warn("Profile not found, creating new profile.");
-                    const newProfile = {
+                    const newProfile: Database['public']['Tables']['profiles']['Insert'] = {
                         id: session.user.id,
                         email: session.user.email || '',
-                        name: String(session.user.user_metadata?.name || session.user.user_metadata?.full_name || 'New User'),
+                        name: String(session.user.user_metadata?.name || session.user.user_metadata?.full_name || session.user.email || 'New User'),
                         avatar_url: (session.user.user_metadata?.avatar_url as string | null) || null,
                         isPersonalized: false,
-                        plan: pendingUpgradePlan || 'basic'
+                        plan: pendingUpgradePlan || 'basic',
+                        access_level: 'standard',
+                        plan_level: 'standard'
                     };
                     user = await createUser(newProfile);
                 }
