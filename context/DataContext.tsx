@@ -1,6 +1,7 @@
 
 import React, { createContext, useReducer, useEffect, ReactNode, useCallback, useContext } from 'react';
 import type { Script, Folder, WatchedTrend, Client, Trend, Notification } from '../types.ts';
+import { supabase } from '../services/supabaseClient.ts';
 import { 
     fetchScripts, 
     saveScript, 

@@ -2,7 +2,7 @@
 import React, { createContext, useReducer, useEffect, ReactNode, useCallback } from 'react';
 import type { Session, User, Plan } from '../types.ts';
 import { supabase } from '../services/supabaseClient.ts';
-import { fetchUser, createUser, updateUser } from '../services/supabaseService.ts';
+import { fetchUser, createUser, updateUser, profileRowToUser } from '../services/supabaseService.ts';
 import type { Database } from '../services/database.types.ts';
 
 // --- STATE AND INITIAL VALUES ---
@@ -110,17 +110,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
             console.log('✅ Session found, processing user:', session.user.email);
             dispatch({ type: 'FETCH_USER_START' });
             
-            try {
-                console.log('🔍 Fetching user profile for:', session.user.id);
-                
-                    // Add timeout to prevent hanging (increased to 15 seconds)
-                    const profilePromise = fetchUser(session.user.id);
-                    const timeoutPromise = new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('Profile fetch timeout')), 15000)
-                    );
-                
-                let user = await Promise.race([profilePromise, timeoutPromise]);
-                console.log('🔍 Profile fetch result:', user ? 'Found' : 'Not found');
+                try {
+                    console.log('🔍 Fetching user profile for:', session.user.id);
+                    
+                    // Try direct Supabase query first to debug RLS issues
+                    const { data: directData, error: directError } = await supabase
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', session.user.id)
+                        .single();
+                    
+                    if (directError) {
+                        console.error('❌ Direct profile fetch error:', directError);
+                        throw new Error(`Profile fetch failed: ${directError.message}`);
+                    }
+                    
+                    let user = directData ? profileRowToUser(directData) : null;
+                    console.log('🔍 Profile fetch result:', user ? 'Found' : 'Not found');
                 
                 if (!user) {
                     console.warn("⚠️ Profile not found, creating new profile.");
