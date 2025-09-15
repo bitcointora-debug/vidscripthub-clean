@@ -113,11 +113,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
             try {
                 console.log('🔍 Fetching user profile for:', session.user.id);
                 
-                // Add timeout to prevent hanging
-                const profilePromise = fetchUser(session.user.id);
-                const timeoutPromise = new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
-                );
+                    // Add timeout to prevent hanging (increased to 15 seconds)
+                    const profilePromise = fetchUser(session.user.id);
+                    const timeoutPromise = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Profile fetch timeout')), 15000)
+                    );
                 
                 let user = await Promise.race([profilePromise, timeoutPromise]);
                 console.log('🔍 Profile fetch result:', user ? 'Found' : 'Not found');

@@ -200,8 +200,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ impersonatingClient, onLog
    useEffect(() => {
     const checkTourStatus = async () => {
         if (user && !isGuest) {
-            const { data } = await supabase.storage.from('vsh_private_data').download(`${user.id}/tour_completed.json`).catch(() => ({data: null}));
-            if (!data) {
+            // Use localStorage instead of storage bucket
+            const tourCompleted = localStorage.getItem(`tour_completed_${user.id}`);
+            if (!tourCompleted) {
                 uiDispatch({ type: 'START_TOUR' });
             }
         }
@@ -478,10 +479,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ impersonatingClient, onLog
     const { status } = data;
     if (['finished', 'skipped'].includes(status) && user) {
         uiDispatch({ type: 'STOP_TOUR' });
-        supabase.storage.from('vsh_private_data').upload(`${user.id}/tour_completed.json`, new Blob([JSON.stringify({completed: true})]), {
-            cacheControl: '3600',
-            upsert: true,
-        });
+        // Use localStorage instead of storage bucket
+        localStorage.setItem(`tour_completed_${user.id}`, JSON.stringify({completed: true}));
     }
   };
 
