@@ -112,6 +112,9 @@ Return only the JSON object.
 }
 
 exports.handler = async (event, context) => {
+    // Set timeout to prevent 504 errors
+    context.callbackWaitsForEmptyEventLoop = false;
+    
     // Handle CORS
     const headers = {
         'Access-Control-Allow-Origin': '*',
@@ -136,7 +139,18 @@ exports.handler = async (event, context) => {
         };
     }
 
-    const { action, payload } = JSON.parse(event.body);
+    let action, payload;
+    try {
+        const body = JSON.parse(event.body);
+        action = body.action;
+        payload = body.payload;
+    } catch (error) {
+        return {
+            statusCode: 400,
+            headers,
+            body: JSON.stringify({ message: 'Invalid JSON in request body' })
+        };
+    }
 
     if (action !== 'sendClientInvite' && !process.env.GEMINI_API_KEY) {
         return {
@@ -151,8 +165,41 @@ exports.handler = async (event, context) => {
         ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
     }
     
+    // Add timeout wrapper
+    const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Function timeout')), 25000); // 25 second timeout
+    });
+
     try {
-        switch (action) {
+        const result = await Promise.race([
+            executeAction(action, payload, ai),
+            timeoutPromise
+        ]);
+        
+        return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(result)
+        };
+    } catch (error) {
+        console.error("Error in Netlify function:", error);
+        let message = "An unknown error occurred in the API proxy.";
+        if (error instanceof Error) {
+            message = error.message;
+        } else if (typeof error === 'string') {
+            message = error;
+        }
+        const errorMessage = message.includes('quota') ? QUOTA_ERROR_MESSAGE : message;
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ message: errorMessage })
+        };
+    }
+};
+
+async function executeAction(action, payload, ai) {
+    switch (action) {
             case 'getOptimizationTrace': {
                 const { task } = payload;
                 const prompt = getOptimizationPrompt(task);
@@ -173,11 +220,7 @@ exports.handler = async (event, context) => {
                     finalStep.script.tone = task.mode === 'generate' ? task.data.tone : 'Optimized';
                 }
 
-                return {
-                    statusCode: 200,
-                    headers,
-                    body: JSON.stringify(trace)
-                };
+                return trace;
             }
             case 'fetchTrendingTopics': {
                 const { niche } = payload;
@@ -215,11 +258,7 @@ Format the entire response as a single, valid JSON array of these objects. The e
                     throw new Error("The AI returned a response in an unexpected format. Please try again.");
                 }
 
-                return {
-                    statusCode: 200,
-                    headers,
-                    body: JSON.stringify({ trends, sources })
-                };
+                return { trends, sources };
             }
             case 'analyzeScriptVirality': {
                 const { script } = payload;
@@ -233,11 +272,7 @@ Format the entire response as a single, valid JSON array of these objects. The e
                     } 
                 });
                 const analysis = JSON.parse(response.text);
-                return {
-                    statusCode: 200,
-                    headers,
-                    body: JSON.stringify(analysis)
-                };
+                return analysis;
             }
             case 'enhanceTopic': {
                 const { topic } = payload;
@@ -251,11 +286,7 @@ Format the entire response as a single, valid JSON array of these objects. The e
                     } 
                 });
                 const enhancedTopics = JSON.parse(response.text);
-                return {
-                    statusCode: 200,
-                    headers,
-                    body: JSON.stringify(enhancedTopics)
-                };
+                return enhancedTopics;
             }
             case 'generateVisualsForScript': {
                 const { script, artStyle } = payload;
@@ -273,11 +304,7 @@ Format the entire response as a single, valid JSON array of these objects. The e
                     throw new Error("The AI failed to generate any images.");
                 }
                 const visuals = response.generatedImages.map(img => img.image.imageBytes);
-                return {
-                    statusCode: 200,
-                    headers,
-                    body: JSON.stringify(visuals)
-                };
+                return visuals;
             }
             case 'deconstructVideo': {
                 const { videoUrl } = payload;
@@ -327,11 +354,7 @@ The JSON object MUST be the only thing in your response, wrapped in a single JSO
                     id: require('crypto').randomUUID(), 
                     tone: 'Viral Formula' 
                 }));
-                return {
-                    statusCode: 200,
-                    headers,
-                    body: JSON.stringify({ deconstruction, sources })
-                };
+                return { deconstruction, sources };
             }
             case 'remixScript': {
                 const { baseScript, newTopic } = payload;
@@ -351,11 +374,7 @@ The JSON object MUST be the only thing in your response, wrapped in a single JSO
                     tone: 'Remixed', 
                     isNew: true, 
                 };
-                return {
-                    statusCode: 200,
-                    headers,
-                    body: JSON.stringify(newScript)
-                };
+                return newScript;
             }
             case 'sendClientInvite': {
                 const { email } = payload;
@@ -380,32 +399,9 @@ The JSON object MUST be the only thing in your response, wrapped in a single JSO
                     };
                 }
                 
-                return {
-                    statusCode: 200,
-                    headers,
-                    body: JSON.stringify({ message: "Invitation sent successfully.", data })
-                };
+                return { message: "Invitation sent successfully.", data };
             }
             default:
-                return {
-                    statusCode: 400,
-                    headers,
-                    body: JSON.stringify({ message: "Invalid action" })
-                };
+                throw new Error("Invalid action");
         }
-    } catch (error) {
-        console.error("Error in Netlify function:", error);
-        let message = "An unknown error occurred in the API proxy.";
-        if (error instanceof Error) {
-            message = error.message;
-        } else if (typeof error === 'string') {
-            message = error;
-        }
-        const errorMessage = message.includes('quota') ? QUOTA_ERROR_MESSAGE : message;
-        return {
-            statusCode: 500,
-            headers,
-            body: JSON.stringify({ message: errorMessage })
-        };
-    }
-};
+}

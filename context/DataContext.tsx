@@ -262,7 +262,13 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     break;
                 }
                 case 'ADD_NOTIFICATION_REQUEST': {
-                    const newNotification = await createNotification(action.payload);
+                    const notificationData = {
+                        message: action.payload.message,
+                        user_id: action.payload.userId,
+                        read: false,
+                        type: 'info' as const
+                    };
+                    const newNotification = await createNotification(notificationData);
                     dispatch({ type: 'ADD_NOTIFICATION_SUCCESS', payload: newNotification });
                     break;
                 }
