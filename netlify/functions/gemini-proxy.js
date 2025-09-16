@@ -181,7 +181,11 @@ exports.handler = async (event, context) => {
     });
 
     try {
-        console.log("Executing action:", action, "with payload:", JSON.stringify(payload, null, 2));
+        console.log("=== FUNCTION START ===");
+        console.log("Action:", action);
+        console.log("Payload:", JSON.stringify(payload, null, 2));
+        console.log("Environment check - GEMINI_API_KEY exists:", !!process.env.GEMINI_API_KEY);
+        console.log("Environment check - SUPABASE_URL exists:", !!process.env.SUPABASE_URL);
         
         const result = await Promise.race([
             executeAction(action, payload, ai),
@@ -217,12 +221,22 @@ exports.handler = async (event, context) => {
 async function executeAction(action, payload, ai) {
     switch (action) {
             case 'getOptimizationTrace': {
+                console.log("=== GET OPTIMIZATION TRACE START ===");
+                console.log("Payload received:", JSON.stringify(payload, null, 2));
+                
                 const { task } = payload;
-                console.log("Starting optimization trace for task:", task?.mode);
+                console.log("Task extracted:", JSON.stringify(task, null, 2));
+                console.log("Task mode:", task?.mode);
                 
                 // Validate task object
-                if (!task || !task.mode) {
+                if (!task) {
+                    throw new Error("Invalid payload: missing task property");
+                }
+                if (!task.mode) {
                     throw new Error("Invalid task object: missing mode property");
+                }
+                if (!task.data) {
+                    throw new Error("Invalid task object: missing data property");
                 }
                 
                 try {
