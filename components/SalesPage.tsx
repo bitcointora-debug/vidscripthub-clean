@@ -450,22 +450,22 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                     
                     <div className="container mx-auto max-w-5xl px-4 relative z-10">
                         {/* Headline */}
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#F0F0F0]" style={{ fontFamily: "'Poppins', sans-serif", lineHeight: 1.3 }}>
+                        <div className="text-center mb-16">
+                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#F0F0F0]" style={{ fontFamily: "'Poppins', sans-serif", lineHeight: 1.2 }}>
                                PROOF: See How Regular People Are Turning A Single Keyword Into 10,000+ Views... <span className="text-[#DAFF00]">In Their First 24 Hours.</span>
                             </h2>
-                            <p className="mt-4 text-lg md:text-xl text-purple-200/80 max-w-3xl mx-auto">
+                            <p className="mt-6 text-xl md:text-2xl text-purple-200/80 max-w-4xl mx-auto">
                                 This isn't theory. This is what our members are posting right now.
                             </p>
                         </div>
 
                         {/* Wall of Proof Placeholder */}
-                        <div className="my-12 md:my-16 shadow-2xl shadow-black/50 rounded-lg border-2 border-[#4A3F7A]/80">
+                        <div className="my-16 md:my-20 shadow-2xl shadow-black/50 rounded-lg border-2 border-[#4A3F7A]/80">
                            <img src="/images/wall-of-proof.png" alt="A collage of testimonials and positive results" className="w-full h-full object-cover rounded-md" />
                         </div>
                         
                         {/* Dynamic Testimonials */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-16">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-20">
                             {testimonials.map((testimonial, index) => (
                                 <TestimonialCard 
                                     key={index}

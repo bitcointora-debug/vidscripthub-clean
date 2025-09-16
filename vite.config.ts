@@ -25,10 +25,8 @@ export default defineConfig(({ mode }) => {
               router: ['react-router-dom']
             }
           }
-        },
-        copyPublicDir: true
+        }
       },
-      publicDir: 'images',
       server: {
         port: 3000,
         open: true
