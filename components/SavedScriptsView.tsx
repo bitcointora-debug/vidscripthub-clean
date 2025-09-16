@@ -100,7 +100,7 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
     };
 
     const handleRenameSubmit = (folderId: string) => {
-        if (tempFolderName.trim() && tempFolderName.trim() !== folders.find(f => f.id === folderId)?.name) {
+        if (tempFolderName.trim() && tempFolderName.trim() !== (folders || []).find(f => f.id === folderId)?.name) {
             onRenameFolder(folderId, tempFolderName.trim());
         }
         setRenamingFolderId(null);
@@ -176,7 +176,7 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
     
     const handleBatchMove = (folderId: string | null) => {
         if (selectedScriptIds.length === 0) return;
-        const folderName = folderId ? folders.find(f => f.id === folderId)?.name : 'main library';
+        const folderName = folderId ? (folders || []).find(f => f.id === folderId)?.name : 'main library';
         dataDispatch({ type: 'BATCH_MOVE_SCRIPTS_REQUEST', payload: { scriptIds: selectedScriptIds, folderId } });
         addNotification(`${selectedScriptIds.length} scripts moved to "${folderName}".`);
         setSelectedScriptIds([]);
@@ -201,7 +201,7 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
                      <button onClick={handleAddNewFolderClick} className="w-full flex items-center justify-center bg-[#DAFF00] text-[#1A0F3C] font-bold py-2.5 px-4 rounded-md hover:bg-opacity-90 transition-all duration-200 text-sm mb-4"><i className="fa-solid fa-plus mr-2"></i>New Folder</button>
                     <nav className="space-y-1">
                         <h3 className="px-3 text-xs font-semibold text-purple-300 uppercase tracking-wider mb-2">Folders</h3>
-                        {folders.map(folder => {
+                        {(folders || []).map(folder => {
                             const isDropTarget = dragOverFolderId === folder.id;
                             return (
                                 <div key={folder.id} className={`group flex items-center text-sm font-medium rounded-md transition-all duration-200 ${activeFolderId === folder.id ? 'bg-[#1A0F3C]' : ''} ${isDropTarget ? 'bg-[#DAFF00]/20 ring-2 ring-[#DAFF00]' : ''}`}>
@@ -317,7 +317,7 @@ export const SavedScriptsView: React.FC<SavedScriptsViewProps> = ({
                                     <i className="fa-regular fa-clone w-4 mr-2"></i>All Scripts (no folder)
                                 </button>
                                 <div className="border-t border-[#4A3F7A] my-1"></div>
-                                {folders.filter(f => f.id !== 'all').map(folder => (
+                                {(folders || []).filter(f => f.id !== 'all').map(folder => (
                                     <button key={folder.id} onClick={() => handleBatchMove(folder.id)} className="w-full text-left block px-3 py-2 text-sm text-purple-200 hover:bg-[#2A1A5E] hover:text-white rounded-md">
                                         <i className="fa-regular fa-folder w-4 mr-2"></i>{folder.name}
                                     </button>

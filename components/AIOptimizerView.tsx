@@ -115,7 +115,7 @@ export const AIOptimizerView: React.FC<AIOptimizerViewProps> = ({ trace, onCompl
     }, [trace, onComplete, isTurbo]);
     
     const renderDiff = (diffs: { value: string, type: 'added' | 'removed' | 'same' }[]) => {
-      return diffs.map((part, index) => {
+      return (diffs || []).map((part, index) => {
           if (part.type === 'added') return <ins key={index} className="diff">{part.value}</ins>;
           if (part.type === 'removed') return <del key={index} className="diff">{part.value}</del>;
           return <span key={index}>{part.value}</span>;
@@ -177,7 +177,7 @@ export const AIOptimizerView: React.FC<AIOptimizerViewProps> = ({ trace, onCompl
                     <div className="bg-[#2A1A5E]/50 rounded-xl border border-[#4A3F7A]/30 p-6">
                         <h4 className="text-sm font-semibold text-purple-200 uppercase tracking-wider mb-4">Optimization Log</h4>
                         <ul className="space-y-3">
-                            {trace.map((step, index) => {
+                            {(trace || []).map((step, index) => {
                                 const isDone = index < stepIndex;
                                 const isActive = index === stepIndex;
                                 const isPending = index > stepIndex;
