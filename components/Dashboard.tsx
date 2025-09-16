@@ -255,7 +255,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ impersonatingClient, onLog
       setEnhancedTopics([]);
       try {
           const suggestions = await enhanceTopic(topic);
-          setEnhancedTopics(suggestions);
+          // Ensure suggestions is always an array
+          setEnhancedTopics(Array.isArray(suggestions) ? suggestions : []);
       } catch (err) {
           const errorMessage = err instanceof Error ? err.message : "An unknown error occurred.";
           if (errorMessage === QUOTA_ERROR_MESSAGE) {
@@ -263,6 +264,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ impersonatingClient, onLog
           } else {
             addNotification(`Error enhancing topic: ${errorMessage}`);
           }
+          // Ensure enhancedTopics is always an array even on error
+          setEnhancedTopics([]);
       } finally {
           setIsEnhancing(false);
       }

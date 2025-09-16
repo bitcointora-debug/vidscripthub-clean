@@ -128,7 +128,7 @@ export const InputForm: React.FC<InputFormProps> = ({
                  <div className="bg-[#1A0F3C]/50 rounded-lg p-4 space-y-3">
                      <h4 className="text-sm font-semibold text-purple-200 text-center">AI Suggested Angles (Click to Generate)</h4>
                      {isEnhancing && <div className="text-center text-purple-300 text-sm animate-pulse">Analyzing topic...</div>}
-                     {enhancedTopics.map((suggestion, index) => (
+                     {(enhancedTopics || []).map((suggestion, index) => (
                         <button key={index} type="button" onClick={() => handleSelectAndGenerate(suggestion.angle)} className="w-full text-left p-3 bg-[#2A1A5E] rounded-md hover:bg-[#4A3F7A]/50 transition-colors duration-200">
                             <p className="font-semibold text-white">{suggestion.angle}</p>
                             <p className="text-xs text-purple-300/80 mt-1">{suggestion.rationale}</p>
@@ -144,7 +144,7 @@ export const InputForm: React.FC<InputFormProps> = ({
 
               <div>
                 <label className="block text-sm font-medium text-purple-200 mb-3">Select Script Tone</label>
-                <div className="flex flex-wrap gap-2">{tones.map(t => renderToneButton(t))}</div>
+                <div className="flex flex-wrap gap-2">{(tones || []).map(t => renderToneButton(t))}</div>
               </div>
               
               <div className="pt-4 px-4 pb-4 relative">
@@ -167,7 +167,7 @@ export const InputForm: React.FC<InputFormProps> = ({
                   )}
                   <div className={isAdvancedLocked ? 'opacity-30 blur-sm' : ''}>
                     <label className="block text-sm font-medium text-white mb-3 text-center tracking-wide">Advanced Tonal Styles</label>
-                    <div className="flex flex-wrap gap-2 justify-center">{advancedTones.map(t => renderToneButton(t, true))}</div>
+                    <div className="flex flex-wrap gap-2 justify-center">{(advancedTones || []).map(t => renderToneButton(t, true))}</div>
                   </div>
                 </div>
               </div>
