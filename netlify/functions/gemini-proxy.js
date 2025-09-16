@@ -153,10 +153,20 @@ exports.handler = async (event, context) => {
     }
 
     if (action !== 'sendClientInvite' && !process.env.GEMINI_API_KEY) {
+        console.error("GEMINI_API_KEY environment variable is not set");
         return {
             statusCode: 500,
             headers,
             body: JSON.stringify({ message: "GEMINI_API_KEY environment variable is not set on the server." })
+        };
+    }
+    
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+        console.error("Supabase environment variables are not set");
+        return {
+            statusCode: 500,
+            headers,
+            body: JSON.stringify({ message: "Supabase environment variables are not set on the server." })
         };
     }
     
@@ -167,7 +177,7 @@ exports.handler = async (event, context) => {
     
     // Add timeout wrapper
     const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Function timeout')), 25000); // 25 second timeout
+        setTimeout(() => reject(new Error('Function timeout')), 15000); // 15 second timeout
     });
 
     try {
@@ -229,6 +239,7 @@ async function executeAction(action, payload, ai) {
                 return trace;
             }
             case 'fetchTrendingTopics': {
+                console.log("Fetching trending topics for niche:", payload.niche);
                 const { niche } = payload;
                 const nichePrompt = niche ? `Focus specifically on trends relevant to the "${niche}" niche.` : `Find trends across a variety of popular niches like fitness, tech, finance, and food.`;
                 const prompt = `
@@ -245,11 +256,13 @@ For each trend, you MUST provide a JSON object with the following fields:
 
 Format the entire response as a single, valid JSON array of these objects. The entire response must be enclosed in a single JSON markdown block (starting with \`\`\`json and ending with \`\`\`). Do not include any text outside of this block.
 `;
+                console.log("Calling Gemini API for trending topics...");
                 const response = await ai.models.generateContent({ 
                     model: "gemini-2.5-flash", 
                     contents: prompt, 
                     config: { tools: [{ googleSearch: {} }] } 
                 });
+                console.log("Gemini API response received for trending topics");
                 const text = response.text;
                 const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map(chunk => chunk.web).filter(source => !!source?.uri) ?? [];
                 const jsonMatch = text.match(/```(?:json)?([\s\S]*?)```/);
