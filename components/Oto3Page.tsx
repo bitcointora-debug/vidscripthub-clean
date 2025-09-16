@@ -62,7 +62,7 @@ export const Oto3Page: React.FC<Oto3PageProps> = ({ onUpgrade, onDecline }) => {
                     <div className="my-12">
                          <h3 className="text-2xl font-bold text-white mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>You Get The Official License To Do Both!</h3>
                          <img 
-                            src="images/oto3-license.png" 
+                            src="images/oto3-license-certificate.png" 
                             alt="Official Agency & Reseller License Certificate" 
                             className="max-w-2xl h-auto mx-auto rounded-lg shadow-2xl border-2 border-[#DAFF00]/50"
                         />
