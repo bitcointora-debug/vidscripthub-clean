@@ -217,10 +217,16 @@ exports.handler = async (event, context) => {
 async function executeAction(action, payload, ai) {
     switch (action) {
             case 'getOptimizationTrace': {
-                console.log("Starting optimization trace for task:", task.mode);
                 const { task } = payload;
+                console.log("Starting optimization trace for task:", task?.mode);
+                
+                // Validate task object
+                if (!task || !task.mode) {
+                    throw new Error("Invalid task object: missing mode property");
+                }
                 
                 try {
+                    console.log("Task details:", JSON.stringify(task, null, 2));
                     const prompt = getOptimizationPrompt(task);
                     console.log("Calling Gemini API for optimization trace...");
                     const response = await ai.models.generateContent({
