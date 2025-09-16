@@ -171,11 +171,14 @@ exports.handler = async (event, context) => {
     });
 
     try {
+        console.log("Executing action:", action, "with payload:", JSON.stringify(payload, null, 2));
+        
         const result = await Promise.race([
             executeAction(action, payload, ai),
             timeoutPromise
         ]);
         
+        console.log("Action completed successfully:", action);
         return {
             statusCode: 200,
             headers,
@@ -183,6 +186,9 @@ exports.handler = async (event, context) => {
         };
     } catch (error) {
         console.error("Error in Netlify function:", error);
+        console.error("Error stack:", error.stack);
+        console.error("Action:", action, "Payload:", JSON.stringify(payload, null, 2));
+        
         let message = "An unknown error occurred in the API proxy.";
         if (error instanceof Error) {
             message = error.message;
@@ -193,7 +199,7 @@ exports.handler = async (event, context) => {
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ message: errorMessage })
+            body: JSON.stringify({ message: errorMessage, error: error.message, stack: error.stack })
         };
     }
 };
