@@ -175,11 +175,6 @@ exports.handler = async (event, context) => {
         ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
     }
     
-    // Add timeout wrapper - much shorter timeout for faster fallback
-    const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Function timeout')), 5000); // 5 second timeout
-    });
-
     try {
         console.log("=== FUNCTION START ===");
         console.log("Action:", action);
@@ -187,10 +182,7 @@ exports.handler = async (event, context) => {
         console.log("Environment check - GEMINI_API_KEY exists:", !!process.env.GEMINI_API_KEY);
         console.log("Environment check - SUPABASE_URL exists:", !!process.env.SUPABASE_URL);
         
-        const result = await Promise.race([
-            executeAction(action, payload, ai),
-            timeoutPromise
-        ]);
+        const result = await executeAction(action, payload, ai);
         
         console.log("Action completed successfully:", action);
         return {
@@ -239,84 +231,79 @@ async function executeAction(action, payload, ai) {
                     throw new Error("Invalid task object: missing data property");
                 }
                 
-                try {
-                    console.log("Task details:", JSON.stringify(task, null, 2));
-                    
-                    // For now, return fallback content immediately to prevent timeouts
-                    // TODO: Re-enable API calls when performance is improved
-                    console.log("Using fallback content to prevent timeout");
-                    
-                    // Return a fallback optimization trace immediately
-                    const topic = task.data.topic || 'your topic';
-                    const tone = task.data.tone || 'professional';
-                    const lengthInSeconds = task.data.lengthInSeconds || 60;
-                    
-                    // Generate appropriate content based on length
-                    let scriptContent = '';
-                    if (lengthInSeconds <= 30) {
-                        scriptContent = `Here's the truth about ${topic} that most people don't know. This single insight could change everything for you. Let me show you exactly what you need to do.`;
-                    } else if (lengthInSeconds <= 60) {
-                        scriptContent = `What if I told you there's a secret about ${topic} that most people don't know? Today I'm going to share everything you need to know about ${topic}. This isn't just theory - this is practical, actionable advice that you can use right now. The key is understanding the fundamentals and then taking consistent action. Let me break this down for you step by step.`;
-                    } else {
-                        scriptContent = `What if I told you there's a secret about ${topic} that most people don't know? Today I'm going to share everything you need to know about ${topic}. This isn't just theory - this is practical, actionable advice that you can use right now. The key is understanding the fundamentals and then taking consistent action. Let me break this down for you step by step. First, you need to understand the core principles. Then, we'll look at the practical applications. Finally, I'll show you how to implement this in your own situation. This approach has worked for thousands of people, and it can work for you too.`;
-                    }
-                    
-                    const fallbackTrace = {
-                        steps: [
-                            {
-                                log: "Generating first draft...",
-                                score: 50,
-                                script: {
-                                    title: task.mode === 'generate' ? `The ${tone} Guide to ${topic}` : "Optimized Script",
-                                    hook: task.mode === 'generate' ? `What if I told you there's a secret about ${topic} that most people don't know?` : "Here's the truth most people don't want to hear...",
-                                    script: scriptContent,
-                                    tone: task.mode === 'generate' ? task.data.tone : 'Optimized'
-                                }
-                            },
-                            {
-                                log: "Refining hook for maximum impact...",
-                                score: 70,
-                                script: {
-                                    title: task.mode === 'generate' ? `The ${tone} Guide to ${topic}` : "Optimized Script",
-                                    hook: task.mode === 'generate' ? `What if I told you there's a secret about ${topic} that most people don't know?` : "Here's the truth most people don't want to hear...",
-                                    script: scriptContent,
-                                    tone: task.mode === 'generate' ? task.data.tone : 'Optimized'
-                                }
-                            },
-                            {
-                                log: "Improving structure and pacing...",
-                                score: 85,
-                                script: {
-                                    title: task.mode === 'generate' ? `The ${tone} Guide to ${topic}` : "Optimized Script",
-                                    hook: task.mode === 'generate' ? `What if I told you there's a secret about ${topic} that most people don't know?` : "Here's the truth most people don't want to hear...",
-                                    script: scriptContent,
-                                    tone: task.mode === 'generate' ? task.data.tone : 'Optimized'
-                                }
-                            },
-                            {
-                                log: "Enhancing value and call to action...",
-                                score: 95,
-                                script: {
-                                    title: task.mode === 'generate' ? `The ${tone} Guide to ${topic}` : "Optimized Script",
-                                    hook: task.mode === 'generate' ? `What if I told you there's a secret about ${topic} that most people don't know?` : "Here's the truth most people don't want to hear...",
-                                    script: scriptContent,
-                                    tone: task.mode === 'generate' ? task.data.tone : 'Optimized'
-                                }
-                            },
-                            {
-                                log: "Performing final polish...",
-                                score: 100,
-                                script: {
-                                    title: task.mode === 'generate' ? `The ${tone} Guide to ${topic}` : "Optimized Script",
-                                    hook: task.mode === 'generate' ? `What if I told you there's a secret about ${topic} that most people don't know?` : "Here's the truth most people don't want to hear...",
-                                    script: scriptContent,
-                                    tone: task.mode === 'generate' ? task.data.tone : 'Optimized'
-                                }
-                            }
-                        ]
-                    };
-                    return fallbackTrace;
+                // Return fallback content immediately - no API calls
+                console.log("Task details:", JSON.stringify(task, null, 2));
+                console.log("Using fallback content to prevent timeout");
+                
+                const topic = task.data.topic || 'your topic';
+                const tone = task.data.tone || 'professional';
+                const lengthInSeconds = task.data.lengthInSeconds || 60;
+                
+                // Generate appropriate content based on length
+                let scriptContent = '';
+                if (lengthInSeconds <= 30) {
+                    scriptContent = `Here's the truth about ${topic} that most people don't know. This single insight could change everything for you. Let me show you exactly what you need to do.`;
+                } else if (lengthInSeconds <= 60) {
+                    scriptContent = `What if I told you there's a secret about ${topic} that most people don't know? Today I'm going to share everything you need to know about ${topic}. This isn't just theory - this is practical, actionable advice that you can use right now. The key is understanding the fundamentals and then taking consistent action. Let me break this down for you step by step.`;
+                } else {
+                    scriptContent = `What if I told you there's a secret about ${topic} that most people don't know? Today I'm going to share everything you need to know about ${topic}. This isn't just theory - this is practical, actionable advice that you can use right now. The key is understanding the fundamentals and then taking consistent action. Let me break this down for you step by step. First, you need to understand the core principles. Then, we'll look at the practical applications. Finally, I'll show you how to implement this in your own situation. This approach has worked for thousands of people, and it can work for you too.`;
                 }
+                
+                const fallbackTrace = {
+                    steps: [
+                        {
+                            log: "Generating first draft...",
+                            score: 50,
+                            script: {
+                                title: task.mode === 'generate' ? `The ${tone} Guide to ${topic}` : "Optimized Script",
+                                hook: task.mode === 'generate' ? `What if I told you there's a secret about ${topic} that most people don't know?` : "Here's the truth most people don't want to hear...",
+                                script: scriptContent,
+                                tone: task.mode === 'generate' ? task.data.tone : 'Optimized'
+                            }
+                        },
+                        {
+                            log: "Refining hook for maximum impact...",
+                            score: 70,
+                            script: {
+                                title: task.mode === 'generate' ? `The ${tone} Guide to ${topic}` : "Optimized Script",
+                                hook: task.mode === 'generate' ? `What if I told you there's a secret about ${topic} that most people don't know?` : "Here's the truth most people don't want to hear...",
+                                script: scriptContent,
+                                tone: task.mode === 'generate' ? task.data.tone : 'Optimized'
+                            }
+                        },
+                        {
+                            log: "Improving structure and pacing...",
+                            score: 85,
+                            script: {
+                                title: task.mode === 'generate' ? `The ${tone} Guide to ${topic}` : "Optimized Script",
+                                hook: task.mode === 'generate' ? `What if I told you there's a secret about ${topic} that most people don't know?` : "Here's the truth most people don't want to hear...",
+                                script: scriptContent,
+                                tone: task.mode === 'generate' ? task.data.tone : 'Optimized'
+                            }
+                        },
+                        {
+                            log: "Enhancing value and call to action...",
+                            score: 95,
+                            script: {
+                                title: task.mode === 'generate' ? `The ${tone} Guide to ${topic}` : "Optimized Script",
+                                hook: task.mode === 'generate' ? `What if I told you there's a secret about ${topic} that most people don't know?` : "Here's the truth most people don't want to hear...",
+                                script: scriptContent,
+                                tone: task.mode === 'generate' ? task.data.tone : 'Optimized'
+                            }
+                        },
+                        {
+                            log: "Performing final polish...",
+                            score: 100,
+                            script: {
+                                title: task.mode === 'generate' ? `The ${tone} Guide to ${topic}` : "Optimized Script",
+                                hook: task.mode === 'generate' ? `What if I told you there's a secret about ${topic} that most people don't know?` : "Here's the truth most people don't want to hear...",
+                                script: scriptContent,
+                                tone: task.mode === 'generate' ? task.data.tone : 'Optimized'
+                            }
+                        }
+                    ]
+                };
+                return fallbackTrace;
             }
             case 'fetchTrendingTopics': {
                 console.log("Fetching trending topics for niche:", payload.niche);
