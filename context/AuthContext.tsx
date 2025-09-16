@@ -113,7 +113,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
                 try {
                     console.log('🔍 Fetching user profile for:', session.user.id);
                     
-                    // Add timeout to prevent hanging
+                    // Try to fetch profile with a shorter timeout
                     const profilePromise = supabase
                         .from('profiles')
                         .select('*')
@@ -121,14 +121,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
                         .single();
                     
                     const timeoutPromise = new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('Profile fetch timeout')), 5000)
+                        setTimeout(() => reject(new Error('Profile fetch timeout')), 3000)
                     );
                     
                     const { data: directData, error: directError } = await Promise.race([profilePromise, timeoutPromise]) as any;
                     
                     if (directError) {
-                        console.error('❌ Direct profile fetch error:', directError);
-                        throw new Error(`Profile fetch failed: ${directError.message}`);
+                        console.warn('⚠️ Profile fetch error (will create profile):', directError.message);
+                        // Don't throw error, just create profile
+                        const newProfile: Database['public']['Tables']['profiles']['Insert'] = {
+                            id: session.user.id,
+                            email: session.user.email || '',
+                            name: String(session.user.user_metadata?.name || session.user.user_metadata?.full_name || session.user.email || 'New User'),
+                            avatar_url: (session.user.user_metadata?.avatar_url as string | null) || null,
+                            isPersonalized: false,
+                            plan: pendingUpgradePlan || 'basic',
+                            access_level: 'standard',
+                            plan_level: 'standard'
+                        };
+                        
+                        console.log('🔧 Creating profile directly:', newProfile);
+                        const { data: createdData, error: createError } = await supabase
+                            .from('profiles')
+                            .insert(newProfile)
+                            .select()
+                            .single();
+                        
+                        if (createError) {
+                            console.warn('⚠️ Profile creation failed, using minimal user:', createError.message);
+                            throw new Error('Profile creation failed');
+                        }
+                        
+                        const user = profileRowToUser(createdData);
+                        console.log('✅ Profile created successfully:', user);
+                        dispatch({ type: 'FETCH_USER_SUCCESS', payload: user });
+                        return;
                     }
                     
                     let user = directData ? profileRowToUser(directData) : null;
@@ -155,11 +182,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
                 dispatch({ type: 'FETCH_USER_SUCCESS', payload: user });
 
                 } catch (error: any) {
-                    console.error("❌ Auth context error:", error);
-                    console.error("❌ Error details:", error.message, error.code);
+                    console.warn("⚠️ Profile setup failed, using minimal user:", error.message);
                     
-                    // Always create a minimal user object to prevent hanging
-                    console.warn("⚠️ Profile fetch failed, creating minimal user object");
+                    // Create a minimal user object to prevent hanging
                     const minimalUser = {
                         id: session.user.id,
                         email: session.user.email || '',
@@ -170,7 +195,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
                         aiCredits: 0,
                         subscription: { planId: 'basic', status: 'active', endDate: null }
                     };
-                    console.log('🔧 Using minimal user object:', minimalUser);
+                    console.log('✅ Using minimal user object for:', minimalUser.email);
                     dispatch({ type: 'FETCH_USER_SUCCESS', payload: minimalUser });
                 }
         });
