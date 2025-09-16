@@ -299,7 +299,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ impersonatingClient, onLog
   }, [dataDispatch, addNotification]);
 
   const isScriptSaved = useCallback((script: Script) => {
-    return savedScripts.some(s => s.id === script.id || (s.title === script.title && s.script === script.script));
+    return (savedScripts || []).some(s => s.id === script.id || (s.title === script.title && s.script === script.script));
   }, [savedScripts]);
 
   const handleAddFolder = useCallback((folderName: string): string => {
@@ -379,7 +379,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ impersonatingClient, onLog
 
   const handleVisualize = useCallback(async (scriptId: string, artStyle: string) => {
     setVisualizingScriptId(scriptId);
-    const scriptToVisualize = savedScripts.find(s => s.id === scriptId) || (generatedScript?.id === scriptId ? generatedScript : null);
+    const scriptToVisualize = (savedScripts || []).find(s => s.id === scriptId) || (generatedScript?.id === scriptId ? generatedScript : null);
     if (!scriptToVisualize) return;
     
     addNotification(`Generating visuals for "${scriptToVisualize.title}"...`);
@@ -469,7 +469,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ impersonatingClient, onLog
   }, [dataDispatch, addNotification]);
 
   const isTrendWatched = useCallback((topic: string) => {
-      return watchedTrends.some(t => t.trend_data.topic === topic);
+      return (watchedTrends || []).some(t => t.trend_data.topic === topic);
   }, [watchedTrends]);
   
   const handlePersonalizationComplete = (data: { niche: string, platforms: any, tone: string }) => {
@@ -494,20 +494,20 @@ export const Dashboard: React.FC<DashboardProps> = ({ impersonatingClient, onLog
       case 'Dashboard':
         return <DashboardHomeView
                   onNavigate={setActiveView}
-                  recentScripts={savedScripts.slice(0, 3)}
+                  recentScripts={(savedScripts || []).slice(0, 3)}
                   onOpenSaveModal={handleOpenSaveModal}
                   onUnsaveScript={handleUnsaveScript}
                   isScriptSaved={isScriptSaved}
                   scoringScriptId={scoringScriptId}
                   onGenerateForTrend={handleGenerateForTrend}
-                  agencyClientCount={clients.length}
-                  watchedTrends={watchedTrends.map(wt => wt.trend_data)}
+                  agencyClientCount={(clients || []).length}
+                  watchedTrends={(watchedTrends || []).map(wt => wt.trend_data)}
                   onWatchTrend={handleWatchTrend}
                   onUnwatchTrend={handleUnwatchTrend}
                   isTrendWatched={isTrendWatched}
                   onVisualize={handleVisualize}
                   visualizingScriptId={visualizingScriptId}
-                  scriptOfTheDay={savedScripts.find(s => s.niche === user?.primary_niche)}
+                  scriptOfTheDay={(savedScripts || []).find(s => s.niche === user?.primary_niche)}
                   onToggleSpeech={handleToggleSpeech}
                   speakingScriptId={speakingScriptId}
                 />;
