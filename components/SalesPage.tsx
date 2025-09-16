@@ -145,9 +145,9 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
     ];
     
     const bonuses = [
-        { title: "The 'Profit-Ready' Niche Database", description: "A curated database of 50+ low-competition, high-demand niches ready for you to dominate.", value: 997, icon: 'fa-solid fa-database', tier: 'FAST-ACTION BONUS' },
-        { title: "The Viral Monetization Blueprint", description: "Learn 5 easy ways to turn your newfound views into actual, spendable cash.", value: 497, icon: 'fa-solid fa-sack-dollar', tier: 'FAST-ACTION BONUS' },
-        { title: "The Ultimate Viral Hook Swipe File", description: "50+ proven, copy-paste hooks you can use to make any script instantly more engaging. A taste of our DFY vault!", value: 297, icon: 'fa-solid fa-file-lines', tier: 'FAST-ACTION BONUS' },
+        { title: "The 'Profit-Ready' Niche Database", description: "A curated database of 50+ low-competition, high-demand niches ready for you to dominate.", value: 97, icon: 'fa-solid fa-database', tier: 'FAST-ACTION BONUS' },
+        { title: "The Viral Monetization Blueprint", description: "Learn 5 easy ways to turn your newfound views into actual, spendable cash.", value: 47, icon: 'fa-solid fa-sack-dollar', tier: 'FAST-ACTION BONUS' },
+        { title: "The Ultimate Viral Hook Swipe File", description: "50+ proven, copy-paste hooks you can use to make any script instantly more engaging. A taste of our DFY vault!", value: 27, icon: 'fa-solid fa-file-lines', tier: 'FAST-ACTION BONUS' },
     ];
     const mainProductValue = 497;
     const totalBonusValue = bonuses.reduce((sum, item) => sum + item.value, 0);
@@ -572,7 +572,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                                 Here's Everything You're Getting Today
                             </h2>
                             <p className="mt-4 text-lg text-gray-700 max-w-3xl mx-auto">
-                                When you act now, you don't just get the core VidScriptHub app. You get the entire <span className="font-bold">Launch VIP Package</span>, worth over $2,290, absolutely free.
+                                When you act now, you don't just get the core VidScriptHub app. You get the entire <span className="font-bold">Launch VIP Package</span>, worth over $668, absolutely free.
                             </p>
                         </div>
                         
