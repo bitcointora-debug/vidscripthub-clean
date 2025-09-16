@@ -244,9 +244,37 @@ async function executeAction(action, payload, ai) {
                 if (lengthInSeconds <= 30) {
                     scriptContent = `Here's the truth about ${topic} that most people don't know. This single insight could change everything for you. Let me show you exactly what you need to do.`;
                 } else if (lengthInSeconds <= 60) {
-                    scriptContent = `What if I told you there's a secret about ${topic} that most people don't know? Today I'm going to share everything you need to know about ${topic}. This isn't just theory - this is practical, actionable advice that you can use right now. The key is understanding the fundamentals and then taking consistent action. Let me break this down for you step by step.`;
+                    // 1-minute script - much longer content (150-200 words)
+                    scriptContent = `What if I told you there's a secret about ${topic} that most people don't know? Today I'm going to share everything you need to know about ${topic}. This isn't just theory - this is practical, actionable advice that you can use right now.
+
+The key is understanding the fundamentals and then taking consistent action. Let me break this down for you step by step.
+
+First, you need to understand the core principles. Most people jump straight into tactics without understanding the foundation. That's why they fail. The foundation is everything. Without a solid foundation, you're just building on sand.
+
+Second, we'll look at the practical applications. How do you actually implement this in your daily life? What are the specific steps you need to take? I'll show you exactly what to do, when to do it, and how to measure your progress.
+
+Third, I'll give you a simple framework that you can follow. This framework has worked for thousands of people, and it can work for you too. But you have to take action. Knowledge without action is useless. You can read all the books in the world, but if you don't apply what you learn, nothing will change.
+
+Fourth, let's talk about common mistakes. Most people make these same mistakes over and over again. Once you know what they are, you can avoid them completely and save yourself months or even years of frustration.
+
+The secret most people don't know is that success in ${topic} isn't about luck or talent. It's about following a proven system and taking consistent action. Are you ready to get started? Because if you're not taking action right now, you're just wasting time.`;
                 } else {
-                    scriptContent = `What if I told you there's a secret about ${topic} that most people don't know? Today I'm going to share everything you need to know about ${topic}. This isn't just theory - this is practical, actionable advice that you can use right now. The key is understanding the fundamentals and then taking consistent action. Let me break this down for you step by step. First, you need to understand the core principles. Then, we'll look at the practical applications. Finally, I'll show you how to implement this in your own situation. This approach has worked for thousands of people, and it can work for you too.`;
+                    // Longer scripts - even more detailed content (200+ words)
+                    scriptContent = `What if I told you there's a secret about ${topic} that most people don't know? Today I'm going to share everything you need to know about ${topic}. This isn't just theory - this is practical, actionable advice that you can use right now.
+
+The key is understanding the fundamentals and then taking consistent action. Let me break this down for you step by step.
+
+First, you need to understand the core principles. Most people jump straight into tactics without understanding the foundation. That's why they fail. The foundation is everything. Without a solid foundation, you're just building on sand. And when the storms come, and they will come, your house will collapse.
+
+Second, we'll look at the practical applications. How do you actually implement this in your daily life? What are the specific steps you need to take? I'll show you exactly what to do, when to do it, and how to measure your progress. This is where most people get stuck because they don't have a clear roadmap.
+
+Third, I'll give you a simple framework that you can follow. This framework has worked for thousands of people, and it can work for you too. But you have to take action. Knowledge without action is useless. You can read all the books in the world, but if you don't apply what you learn, nothing will change.
+
+Fourth, let's talk about common mistakes. Most people make these same mistakes over and over again. Once you know what they are, you can avoid them completely and save yourself months or even years of frustration. I've made these mistakes myself, and I don't want you to repeat them.
+
+Fifth, I'll show you how to measure your progress. You can't improve what you don't measure. This is crucial for long-term success. Without measurement, you're just guessing and hoping.
+
+The secret most people don't know is that success in ${topic} isn't about luck or talent. It's about following a proven system and taking consistent action. Are you ready to get started? Because if you're not taking action right now, you're just wasting time.`;
                 }
                 
                 const fallbackTrace = {
