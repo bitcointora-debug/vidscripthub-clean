@@ -28,8 +28,6 @@ export const Oto1Page: React.FC<Oto1PageProps> = ({ onUpgrade, onDecline }) => {
 
     return (
         <div className="bg-[#1A0F3C] text-[#F0F0F0] antialiased min-h-screen flex items-center justify-center py-12 px-4 relative overflow-hidden">
-            <img src="/images/oto1-flying-infinity.png" alt="Floating 3D infinity symbol" className="absolute top-1/4 -left-12 w-32 h-32 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '7s'}} />
-            <img src="/images/oto1-flying-chart.png" alt="Floating 3D upward chart" className="absolute bottom-1/4 -right-12 w-32 h-32 opacity-10 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '9s'}} />
 
             <div className="w-full max-w-4xl mx-auto text-center relative z-10">
                 {/* Pattern Interrupt Headline */}

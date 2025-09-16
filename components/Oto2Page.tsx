@@ -31,8 +31,6 @@ export const Oto2Page: React.FC<Oto2PageProps> = ({ onUpgrade, onDecline }) => {
 
     return (
         <div className="bg-[#F7F8FC] text-[#1A1A1A] antialiased min-h-screen flex flex-col justify-center py-12 px-4 relative overflow-hidden">
-            <img src="/images/oto2-flying-folder.png" alt="Floating 3D folder icon" className="absolute top-1/4 -left-12 w-32 h-32 opacity-5 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '9s'}} />
-            <img src="/images/oto2-flying-star.png" alt="Floating 3D star icon" className="absolute bottom-1/3 -right-12 w-28 h-28 opacity-5 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '7s'}} />
 
             <div className="w-full max-w-5xl mx-auto text-center relative z-10">
 

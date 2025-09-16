@@ -25,8 +25,6 @@ export const Oto3Page: React.FC<Oto3PageProps> = ({ onUpgrade, onDecline }) => {
 
     return (
         <div className="bg-[#1A0F3C] text-[#F0F0F0] antialiased min-h-screen flex flex-col items-center justify-center py-12 px-4 relative overflow-hidden">
-            <img src="/images/oto3-flying-crown.png" alt="Floating 3D crown icon" className="absolute top-20 -left-12 w-28 h-28 opacity-10 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '9s'}} />
-            <img src="/images/oto3-floating-briefcase-3d.png" alt="Floating 3D briefcase icon" className="absolute bottom-1/4 -right-16 w-32 h-32 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '7s'}} />
 
             <div className="w-full max-w-5xl mx-auto text-center relative z-10">
 
