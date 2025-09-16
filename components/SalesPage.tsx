@@ -283,7 +283,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-6 filter grayscale opacity-75" />
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-5 filter grayscale opacity-75" />
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-7 filter grayscale opacity-75" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f3/American_Express_logo.svg" alt="American Express" className="h-7 filter grayscale opacity-75" />
+                                <img src="/images/american-express-logo.svg" alt="American Express" className="h-7 filter grayscale opacity-75" />
                                 </div>
                                 <div className="mt-6 inline-flex items-center space-x-2 bg-[#2A1A5E] text-purple-200 text-sm px-4 py-2 rounded-full border border-[#4A3F7A]">
                                     <svg className="w-5 h-5 text-[#DAFF00]" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>
@@ -618,7 +618,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-6 filter grayscale opacity-60" />
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-5 filter grayscale opacity-60" />
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-7 filter grayscale opacity-60" />
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f3/American_Express_logo.svg" alt="American Express" className="h-7 filter grayscale opacity-60" />
+                                <img src="/images/american-express-logo.svg" alt="American Express" className="h-7 filter grayscale opacity-60" />
                                 </div>
                                 <div className="mt-6 inline-flex items-center space-x-2 bg-white text-gray-700 text-sm px-4 py-2 rounded-full border border-gray-300">
                                     <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>
