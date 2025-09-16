@@ -90,20 +90,20 @@
     <script>
         function downloadBonus(bonusType) {
             const bonusFiles = {
-                'niche-database': 'Profit-Ready-Niche-Database.md',
-                'monetization-blueprint': 'Viral-Monetization-Blueprint.md',
-                'hook-swipe-file': 'Ultimate-Viral-Hook-Swipe-File.md'
+                'niche-database': '/bonuses/Profit-Ready-Niche-Database.pdf',
+                'monetization-blueprint': '/bonuses/Viral-Monetization-Blueprint.pdf',
+                'hook-swipe-file': '/bonuses/Ultimate-Viral-Hook-Swipe-File.pdf'
             };
 
-            const fileName = bonusFiles[bonusType];
-            if (fileName) {
-                // For now, we'll just show an alert. In production, you'd serve the actual PDF files
-                alert(`Downloading ${fileName}...\n\nNote: In production, this would download the actual PDF file.`);
-                
-                // In production, you would:
-                // 1. Convert the markdown files to PDF
-                // 2. Serve them from your server
-                // 3. Track downloads for analytics
+            const fileUrl = bonusFiles[bonusType];
+            if (fileUrl) {
+                // Create a temporary link element and trigger download
+                const link = document.createElement('a');
+                link.href = fileUrl;
+                link.download = fileUrl.split('/').pop();
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             }
         }
     </script>
