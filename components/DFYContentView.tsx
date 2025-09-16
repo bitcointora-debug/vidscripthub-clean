@@ -345,18 +345,13 @@ export const DFYContentView: React.FC<DFYContentViewProps> = ({
                                     </div>
                                     <button onClick={() => {
                                         const bonusFiles = {
-                                            "The 'Profit-Ready' Niche Database": '/bonuses/Profit-Ready-Niche-Database.pdf',
-                                            "The Viral Monetization Blueprint": '/bonuses/Viral-Monetization-Blueprint.pdf',
-                                            "The Ultimate Viral Hook Swipe File": '/bonuses/Ultimate-Viral-Hook-Swipe-File.pdf'
+                                            "The 'Profit-Ready' Niche Database": 'https://vidscripthub.netlify.app/bonuses/Profit-Ready-Niche-Database.pdf',
+                                            "The Viral Monetization Blueprint": 'https://vidscripthub.netlify.app/bonuses/Viral-Monetization-Blueprint.pdf',
+                                            "The Ultimate Viral Hook Swipe File": 'https://vidscripthub.netlify.app/bonuses/Ultimate-Viral-Hook-Swipe-File.pdf'
                                         };
                                         const fileUrl = bonusFiles[bonus.title];
                                         if (fileUrl) {
-                                            const link = document.createElement('a');
-                                            link.href = fileUrl;
-                                            link.download = fileUrl.split('/').pop();
-                                            document.body.appendChild(link);
-                                            link.click();
-                                            document.body.removeChild(link);
+                                            window.open(fileUrl, '_blank');
                                         }
                                     }} className="w-full md:w-auto flex-shrink-0 bg-[#DAFF00] text-[#1A0F3C] font-bold py-3 px-6 rounded-lg hover:bg-[#a8c400] transition-colors duration-200">
                                         <i className="fa-solid fa-download mr-2"></i>Download PDF

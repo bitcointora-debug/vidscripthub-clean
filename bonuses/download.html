@@ -90,20 +90,15 @@
     <script>
         function downloadBonus(bonusType) {
             const bonusFiles = {
-                'niche-database': '/bonuses/Profit-Ready-Niche-Database.pdf',
-                'monetization-blueprint': '/bonuses/Viral-Monetization-Blueprint.pdf',
-                'hook-swipe-file': '/bonuses/Ultimate-Viral-Hook-Swipe-File.pdf'
+                'niche-database': 'https://vidscripthub.netlify.app/bonuses/Profit-Ready-Niche-Database.pdf',
+                'monetization-blueprint': 'https://vidscripthub.netlify.app/bonuses/Viral-Monetization-Blueprint.pdf',
+                'hook-swipe-file': 'https://vidscripthub.netlify.app/bonuses/Ultimate-Viral-Hook-Swipe-File.pdf'
             };
 
             const fileUrl = bonusFiles[bonusType];
             if (fileUrl) {
-                // Create a temporary link element and trigger download
-                const link = document.createElement('a');
-                link.href = fileUrl;
-                link.download = fileUrl.split('/').pop();
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                // Open in new tab to trigger download
+                window.open(fileUrl, '_blank');
             }
         }
     </script>
