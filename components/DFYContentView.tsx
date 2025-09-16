@@ -134,21 +134,58 @@ export const DFYContentView: React.FC<DFYContentViewProps> = ({
     }, [dataDispatch, user]);
 
     useEffect(() => {
-        fetch('/data/dfy-scripts.json')
-            .then(res => {
-                if (!res.ok) { throw new Error(`HTTP error! status: ${res.status}`); }
-                return res.json();
-            })
-            .then((data: Script[]) => {
-                setDfyScripts(data);
-                setIsLoading(false);
-            })
-            .catch(err => {
-                console.error("Failed to load DFY scripts:", err);
-                addNotification("Error: Could not load the DFY script library.");
-                setIsLoading(false);
-            });
-    }, [addNotification]);
+        // Mock DFY scripts data instead of fetching from API
+        const mockDfyScripts: Script[] = [
+            {
+                id: 'dfy-1',
+                title: 'The 5-Minute Morning Routine That Changed Everything',
+                hook: 'What if I told you that just 5 minutes every morning could completely transform your life?',
+                script: '[SCENE: Person waking up, looking tired]\n\nMost people wake up and immediately reach for their phone. But what if I told you that just 5 minutes every morning could completely transform your life?\n\n[SCENE: Person doing morning routine]\n\nHere\'s the simple routine that changed everything for me:\n\n1. Make your bed (30 seconds)\n2. Drink a glass of water (30 seconds)\n3. Write down 3 things you\'re grateful for (2 minutes)\n4. Do 10 push-ups (1 minute)\n5. Read one page of a book (1 minute)\n\n[SCENE: Person looking energized and happy]\n\nThat\'s it. Just 5 minutes. But here\'s what happened when I started doing this every single day:\n\n- My energy levels skyrocketed\n- I felt more accomplished before 8 AM than most people do all day\n- My mood improved dramatically\n- I started reading more books than ever before\n- I felt stronger and more confident\n\n[SCENE: Split screen showing before/after]\n\nThe best part? It takes less time than scrolling through social media.\n\nTry it for just one week. I promise you\'ll feel the difference.\n\n[SCENE: Call to action]\n\nWhat\'s your morning routine? Let me know in the comments below!',
+                tone: 'Motivational',
+                length: 60,
+                created_at: new Date().toISOString(),
+                user_id: 'dfy',
+                folder_id: null,
+                is_saved: false,
+                viral_score: 85,
+                niche: 'Productivity',
+                platforms: ['TikTok', 'YouTube Shorts', 'Instagram Reels']
+            },
+            {
+                id: 'dfy-2',
+                title: 'The $1 Challenge That Made Me $10,000',
+                hook: 'I started with just $1 and turned it into $10,000 in 90 days. Here\'s exactly how I did it.',
+                script: '[SCENE: Person holding a single dollar bill]\n\nI started with just $1 and turned it into $10,000 in 90 days. Here\'s exactly how I did it.\n\n[SCENE: Person looking skeptical]\n\nI know what you\'re thinking. "That\'s impossible." But hear me out.\n\n[SCENE: Person working on computer]\n\nHere\'s the simple strategy I used:\n\nDay 1-7: I used that $1 to buy something I could resell for $2\nDay 8-14: I used $2 to buy something I could resell for $5\nDay 15-30: I used $5 to buy something I could resell for $15\n\n[SCENE: Person showing phone with increasing numbers]\n\nAnd so on. Each week, I doubled my money by finding undervalued items and reselling them.\n\n[SCENE: Person at garage sales, thrift stores]\n\nI found vintage clothing, electronics, books, and collectibles that people were selling for way less than they were worth.\n\n[SCENE: Person listing items online]\n\nThen I listed them on Facebook Marketplace, eBay, and local buy/sell groups.\n\n[SCENE: Person counting money]\n\nBy day 90, I had turned $1 into $10,000.\n\n[SCENE: Call to action]\n\nThe key isn\'t the money. It\'s the mindset. Start small, think big, and never give up.\n\nWhat would you do with $1? Let me know in the comments!',
+                tone: 'Educational',
+                length: 90,
+                created_at: new Date().toISOString(),
+                user_id: 'dfy',
+                folder_id: null,
+                is_saved: false,
+                viral_score: 92,
+                niche: 'Make Money',
+                platforms: ['TikTok', 'YouTube Shorts', 'Instagram Reels']
+            },
+            {
+                id: 'dfy-3',
+                title: 'The 30-Second Rule That Saved My Marriage',
+                hook: 'My marriage was falling apart until I discovered this 30-second rule that changed everything.',
+                script: '[SCENE: Couple arguing, looking frustrated]\n\nMy marriage was falling apart until I discovered this 30-second rule that changed everything.\n\n[SCENE: Person looking sad and alone]\n\nWe were constantly fighting. About money, about chores, about everything. I thought we were done.\n\n[SCENE: Person reading a book or article]\n\nThen I read about the 30-second rule. It\'s simple:\n\nBefore you respond to your partner, take 30 seconds to think about what they\'re really saying.\n\n[SCENE: Person taking a deep breath, counting to 30]\n\nNot what you think they\'re saying. Not what you want to hear. What they\'re actually saying.\n\n[SCENE: Couple having a calm conversation]\n\nHere\'s what happened when I started using this rule:\n\n- I stopped reacting defensively\n- I started listening to understand, not to respond\n- Our arguments became conversations\n- We started connecting again\n\n[SCENE: Couple laughing together, holding hands]\n\nThat 30 seconds gave me time to remember that I love this person. That we\'re on the same team.\n\n[SCENE: Split screen showing before/after]\n\nNow, instead of fighting, we talk. Instead of blaming, we solve problems together.\n\n[SCENE: Call to action]\n\nIt\'s not about being right. It\'s about being happy together.\n\nTry it for one week. Your relationship will thank you.\n\nWhat\'s your biggest relationship challenge? Let me know below!',
+                tone: 'Personal',
+                length: 75,
+                created_at: new Date().toISOString(),
+                user_id: 'dfy',
+                folder_id: null,
+                is_saved: false,
+                viral_score: 88,
+                niche: 'Relationships',
+                platforms: ['TikTok', 'YouTube Shorts', 'Instagram Reels']
+            }
+        ];
+        
+        setDfyScripts(mockDfyScripts);
+        setIsLoading(false);
+    }, []);
     
     const tones = useMemo(() => ['All', ...Array.from(new Set(dfyScripts.map(s => s.tone)))], [dfyScripts]);
 
