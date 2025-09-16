@@ -186,14 +186,14 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
             location: "Fitness Creator"
         },
         {
-            image: "/images/testimonial-02.png",
+            image: "/images/testimonial-02.jpg",
             alt: "Testimonial from Mike P.",
             quote: "The amount of time this saves me is insane. I used to spend a full day on research and writing for one video. Now I can generate a week's worth of proven ideas in about 5 minutes. My productivity has 10x'd.",
             name: "Mike P.",
             location: "Marketing Coach"
         },
         {
-            image: "/images/testimonial-03.png",
+            image: "/images/testimonial-03.jpg",
             alt: "Testimonial from Chloe T.",
             quote: "I'm not a creative person naturally, so writer's block was my biggest enemy. VidScriptHub is like having a viral marketing genius on my team 24/7. I finally feel confident hitting 'post'!",
             name: "Chloe T.",
