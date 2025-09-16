@@ -103,7 +103,7 @@ export const AuthPage: React.FC = () => {
         <div className="min-h-screen bg-[#1A0F3C] flex flex-col items-center justify-center p-4">
             <div className="w-full max-w-md mx-auto">
                 <div className="text-center mb-8">
-                    <img src="images/dashboard-logo.png" alt="Vid Script Hub Logo" className="h-10 w-auto mx-auto mb-4" />
+                    <img src="/images/dashboard-logo.png" alt="Vid Script Hub Logo" className="h-10 w-auto mx-auto mb-4" />
                     <h1 className="text-3xl font-bold text-white">Welcome to Vid Script Hub</h1>
                     <p className="text-purple-300">Sign up or sign in to continue.</p>
                 </div>

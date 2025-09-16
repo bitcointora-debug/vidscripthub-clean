@@ -10,19 +10,19 @@ export const Oto2Page: React.FC<Oto2PageProps> = ({ onUpgrade, onDecline }) => {
 
     const features = [
         {
-            icon: "images/oto2-icon-scripts.png",
+            icon: "/images/oto2-icon-scripts.png",
             alt: "Icon of stacked scripts",
             headline: "100+ DFY Viral Scripts",
             text: "Get instant access to our vault of proven scripts in the hottest niches like Make Money, Weight Loss, and Fitness."
         },
         {
-            icon: "images/oto2-icon-hooks.png",
+            icon: "/images/oto2-icon-hooks.png",
             alt: "Icon of a fishing hook",
             headline: "50+ 'Viral Hook' Swipe File",
             text: "A fill-in-the-blank library of scroll-stopping hooks you can use to make any video instantly more engaging."
         },
         {
-            icon: "images/oto2-icon-audio.png",
+            icon: "/images/oto2-icon-audio.png",
             alt: "Icon of sound waves",
             headline: "Trending Audio Cheat Sheet",
             text: "Our simple guide to spotting and using trending sounds on TikTok & Reels to trick the algorithm into giving you views."
@@ -31,8 +31,8 @@ export const Oto2Page: React.FC<Oto2PageProps> = ({ onUpgrade, onDecline }) => {
 
     return (
         <div className="bg-[#F7F8FC] text-[#1A1A1A] antialiased min-h-screen flex flex-col justify-center py-12 px-4 relative overflow-hidden">
-            <img src="images/oto2-flying-folder.png" alt="Floating 3D folder icon" className="absolute top-1/4 -left-12 w-32 h-32 opacity-5 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '9s'}} />
-            <img src="images/oto2-flying-star.png" alt="Floating 3D star icon" className="absolute bottom-1/3 -right-12 w-28 h-28 opacity-5 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '7s'}} />
+            <img src="/images/oto2-flying-folder.png" alt="Floating 3D folder icon" className="absolute top-1/4 -left-12 w-32 h-32 opacity-5 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '9s'}} />
+            <img src="/images/oto2-flying-star.png" alt="Floating 3D star icon" className="absolute bottom-1/3 -right-12 w-28 h-28 opacity-5 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '7s'}} />
 
             <div className="w-full max-w-5xl mx-auto text-center relative z-10">
 
@@ -55,7 +55,7 @@ export const Oto2Page: React.FC<Oto2PageProps> = ({ onUpgrade, onDecline }) => {
                     {/* The Solution Image */}
                     <div className="my-10">
                         <img 
-                            src="images/oto2-dfy-vault.png" 
+                            src="/images/oto2-dfy-vault.png" 
                             alt="VidScriptHub DFY Content Vault" 
                             className="max-w-xl h-auto mx-auto rounded-lg shadow-2xl"
                         />

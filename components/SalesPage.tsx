@@ -98,21 +98,21 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
     
     const painPoints = [
         {
-            image: "images/pain-graveyard.png",
+            image: "/images/pain-graveyard.png",
             alt: "A graveyard for videos with low views.",
             title: "The Content Graveyard",
             text: "You spend hours on what you think is a brilliant video... only to see it die a quiet death with less than 200 views. Another masterpiece, buried.",
             imagePosition: 'left' as const
         },
         {
-            image: "images/pain-maze.png",
+            image: "/images/pain-maze.png",
             alt: "A person lost in a maze representing the algorithm.",
             title: "Lost in the Algorithm Maze",
             text: "You see what works for others but can't replicate it. You're lost, just throwing content at the wall, completely guessing what the mysterious algorithm wants to see.",
             imagePosition: 'right' as const
         },
         {
-            image: "images/pain-jail.png",
+            image: "/images/pain-jail.png",
             alt: "A video post trapped behind bars.",
             title: "Trapped in the '100-View Jail'",
             text: "It feels like you're permanently stuck. No matter how good your content is, you can't break out and reach a real audience. It's the most frustrating feeling in the world.",
@@ -123,21 +123,21 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
     const steps = [
         {
             label: "STEP 1",
-            icon: "images/step-icon-01-niche.png",
+            icon: "/images/step-icon-01-niche.png",
             alt: "Target icon",
             title: "Enter Your Niche",
             text: "Simply tell the AI what your channel is about. It can be anything from \"Dog Training\" to \"Crypto Investing\" or \"Weight Loss for Moms.\""
         },
         {
             label: "STEP 2",
-            icon: "images/step-icon-02-analyze.png",
+            icon: "/images/step-icon-02-analyze.png",
             alt: "AI Brain icon",
             title: "AI Analyzes The Winners",
             text: "Our Google-powered AI instantly scans YouTube for the top-performing videos in your niche, reverse-engineering what's already proven to go viral."
         },
         {
             label: "STEP 3",
-            icon: "images/step-icon-03-scripts.png",
+            icon: "/images/step-icon-03-scripts.png",
             alt: "Script icon",
             title: "Get Your Perfect Script",
             text: "Watch as our AI crafts and perfects a single, high-virality script for you in real-time, taking it from a rough idea to a 100% optimized masterpiece."
@@ -179,21 +179,21 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
     
     const testimonials = [
         {
-            image: "images/testimonial-01.png",
+            image: "/images/testimonial-01.png",
             alt: "Testimonial from Sarah K.",
             quote: "I was stuck at 200 views for MONTHS. My first video using a VidScriptHub script hit 15,000 views overnight. I'm not exaggerating. This tool is a complete game-changer.",
             name: "Sarah K.",
             location: "Fitness Creator"
         },
         {
-            image: "images/testimonial-02.png",
+            image: "/images/testimonial-02.png",
             alt: "Testimonial from Mike P.",
             quote: "The amount of time this saves me is insane. I used to spend a full day on research and writing for one video. Now I can generate a week's worth of proven ideas in about 5 minutes. My productivity has 10x'd.",
             name: "Mike P.",
             location: "Marketing Coach"
         },
         {
-            image: "images/testimonial-03.png",
+            image: "/images/testimonial-03.png",
             alt: "Testimonial from Chloe T.",
             quote: "I'm not a creative person naturally, so writer's block was my biggest enemy. VidScriptHub is like having a viral marketing genius on my team 24/7. I finally feel confident hitting 'post'!",
             name: "Chloe T.",
@@ -232,10 +232,10 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                  {/* 'Above the Fold' Section */}
                  <section className="relative overflow-hidden pt-12 pb-16">
                     {/* Floating Shapes */}
-                    <img src="images/shape-sparkle-1.png" alt="abstract sparkle shape" className="absolute top-1/4 -left-8 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '6s'}} />
-                    <img src="images/shape-sparkle-2.png" alt="abstract sparkle shape" className="absolute bottom-0 -right-10 opacity-5 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '8s'}}/>
-                    <img src="images/sales-floating-rocket.png" alt="Floating 3D rocket icon" className="absolute top-1/2 -right-12 w-32 h-32 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '7s'}} />
-                    <img src="images/sales-floating-gem.png" alt="Floating 3D gem icon" className="absolute top-1/3 -left-16 w-32 h-32 opacity-10 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '9s'}} />
+                    <img src="/images/shape-sparkle-1.png" alt="abstract sparkle shape" className="absolute top-1/4 -left-8 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '6s'}} />
+                    <img src="/images/shape-sparkle-2.png" alt="abstract sparkle shape" className="absolute bottom-0 -right-10 opacity-5 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '8s'}}/>
+                    <img src="/images/sales-floating-rocket.png" alt="Floating 3D rocket icon" className="absolute top-1/2 -right-12 w-32 h-32 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '7s'}} />
+                    <img src="/images/sales-floating-gem.png" alt="Floating 3D gem icon" className="absolute top-1/3 -left-16 w-32 h-32 opacity-10 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '9s'}} />
 
                     <div className="container mx-auto max-w-6xl px-4 relative z-10">
                         {/* Headline & Sub-headline */}
@@ -316,7 +316,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                         <div className="mt-12 max-w-4xl mx-auto">
                             {/* Video Player Placeholder */}
                             <div className="aspect-video bg-black rounded-xl shadow-2xl shadow-[#DAFF00]/10 overflow-hidden border-2 border-[#4A3F7A] flex items-center justify-center relative group cursor-pointer">
-                                <img src="images/video-thumbnail-placeholder.png" alt="Video demo thumbnail" className="absolute w-full h-full object-cover opacity-40 group-hover:opacity-50 transition-opacity duration-300" />
+                                <img src="/images/video-thumbnail-placeholder.png" alt="Video demo thumbnail" className="absolute w-full h-full object-cover opacity-40 group-hover:opacity-50 transition-opacity duration-300" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                                 <div className="relative z-10 flex flex-col items-center">
                                     <div className="w-20 h-20 md:w-24 md:h-24 bg-white/10 rounded-full flex items-center justify-center border-2 border-white/20 backdrop-blur-sm group-hover:scale-110 group-hover:bg-white/20 transition-transform duration-300">
@@ -332,8 +332,8 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                 {/* 'Problem & Agitation' Section */}
                 <section className="py-16 md:py-24 bg-[#F7F8FC] relative overflow-hidden">
                     {/* Floating Shapes */}
-                    <img src="images/shape-blob-1.png" alt="abstract shape" className="absolute -top-8 -left-12 opacity-[0.03] transform-gpu rotate-45 hidden lg:block"/>
-                    <img src="images/shape-blob-2.png" alt="abstract shape" className="absolute bottom-10 -right-20 opacity-[0.03] transform-gpu -rotate-12 hidden lg:block"/>
+                    <img src="/images/shape-blob-1.png" alt="abstract shape" className="absolute -top-8 -left-12 opacity-[0.03] transform-gpu rotate-45 hidden lg:block"/>
+                    <img src="/images/shape-blob-2.png" alt="abstract shape" className="absolute bottom-10 -right-20 opacity-[0.03] transform-gpu -rotate-12 hidden lg:block"/>
                     
                     <div className="container mx-auto max-w-5xl px-4 relative z-10">
                         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center text-[#1A1A1A] mb-16 md:mb-20" style={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -362,9 +362,9 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
 
                 {/* 'Solution & Reveal' Section */}
                 <section className="py-16 md:py-24 bg-[#1A0F3C] relative overflow-hidden">
-                     <img src="images/shape-sparkle-3.png" alt="abstract sparkle shape" className="absolute top-20 left-10 opacity-10 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '4s'}} />
-                     <img src="images/shape-sparkle-4.png" alt="abstract sparkle shape" className="absolute bottom-16 right-8 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '5s'}} />
-                     <img src="images/shape-sparkle-5.png" alt="abstract sparkle shape" className="absolute top-1/2 -right-4 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '3s'}}/>
+                     <img src="/images/shape-sparkle-3.png" alt="abstract sparkle shape" className="absolute top-20 left-10 opacity-10 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '4s'}} />
+                     <img src="/images/shape-sparkle-4.png" alt="abstract sparkle shape" className="absolute bottom-16 right-8 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '5s'}} />
+                     <img src="/images/shape-sparkle-5.png" alt="abstract sparkle shape" className="absolute top-1/2 -right-4 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '3s'}}/>
                     
                     <div className="container mx-auto max-w-6xl px-4 relative z-10">
                         <div className="bg-[#2A1A5E] rounded-2xl p-8 md:p-12 lg:p-16 shadow-2xl shadow-[#DAFF00]/5 border border-[#4A3F7A]/50">
@@ -383,7 +383,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
 
                             {/* Hero Mockup */}
                             <div className="my-12 md:my-16 shadow-2xl shadow-black/50 rounded-lg border-2 border-[#4A3F7A]/80">
-                                <img src="images/hero-dashboard-mockup.png" alt="Vid Script Hub Dashboard Mockup" className="w-full h-full object-cover rounded-md" />
+                                <img src="/images/hero-dashboard-mockup.png" alt="Vid Script Hub Dashboard Mockup" className="w-full h-full object-cover rounded-md" />
                             </div>
                             
                             {/* The "3 Simple Steps" Structure */}
@@ -412,11 +412,11 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                  <section className="py-24 md:py-32 bg-[#F7F8FC]">
                     <div className="container mx-auto max-w-6xl px-4">
                         <div className="relative">
-                            <img src="images/icon-product.png" alt="Vid Script Hub product icon" className="hidden lg:block absolute -top-24 left-1/2 -translate-x-1/2 w-28 h-28 z-0 transform-gpu hover:scale-110 transition-transform duration-300" />
-                            <img src="images/icon-money-stack.png" alt="Stack of money icon" className="hidden lg:block absolute -top-16 left-0 w-24 h-24 z-0 transform-gpu -rotate-12 hover:rotate-0 transition-transform duration-300" />
-                            <img src="images/icon-rocket.png" alt="Rocket icon representing viral growth" className="hidden lg:block absolute -top-16 right-0 w-24 h-24 z-0 transform-gpu rotate-12 hover:rotate-0 transition-transform duration-300" />
-                            <img src="images/character-pointing.png" alt="Character pointing to the features" className="hidden lg:block absolute -bottom-24 left-0 w-48 h-auto z-20" />
-                            <img src="images/character-amazed.png" alt="Character amazed by the features" className="hidden lg:block absolute -bottom-24 right-0 w-48 h-auto z-20" />
+                            <img src="/images/icon-product.png" alt="Vid Script Hub product icon" className="hidden lg:block absolute -top-24 left-1/2 -translate-x-1/2 w-28 h-28 z-0 transform-gpu hover:scale-110 transition-transform duration-300" />
+                            <img src="/images/icon-money-stack.png" alt="Stack of money icon" className="hidden lg:block absolute -top-16 left-0 w-24 h-24 z-0 transform-gpu -rotate-12 hover:rotate-0 transition-transform duration-300" />
+                            <img src="/images/icon-rocket.png" alt="Rocket icon representing viral growth" className="hidden lg:block absolute -top-16 right-0 w-24 h-24 z-0 transform-gpu rotate-12 hover:rotate-0 transition-transform duration-300" />
+                            <img src="/images/character-pointing.png" alt="Character pointing to the features" className="hidden lg:block absolute -bottom-24 left-0 w-48 h-auto z-20" />
+                            <img src="/images/character-amazed.png" alt="Character amazed by the features" className="hidden lg:block absolute -bottom-24 right-0 w-48 h-auto z-20" />
 
                             <div className="relative z-10 max-w-3xl mx-auto bg-white text-[#1A1A1A] rounded-2xl shadow-2xl p-8 md:p-12 lg:p-16 border border-gray-200">
                                 <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-8" style={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -445,8 +445,8 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                 {/* 'Social Proof & Trust' Section */}
                 <section className="py-16 md:py-24 bg-[#1A0F3C] relative overflow-hidden">
                     {/* Floating Shapes */}
-                    <img src="images/shape-sparkle-6.png" alt="abstract sparkle shape" className="absolute top-10 -right-10 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '5s'}} />
-                    <img src="images/shape-sparkle-7.png" alt="abstract sparkle shape" className="absolute bottom-24 -left-5 opacity-10 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '7s'}}/>
+                    <img src="/images/shape-sparkle-6.png" alt="abstract sparkle shape" className="absolute top-10 -right-10 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '5s'}} />
+                    <img src="/images/shape-sparkle-7.png" alt="abstract sparkle shape" className="absolute bottom-24 -left-5 opacity-10 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '7s'}}/>
                     
                     <div className="container mx-auto max-w-5xl px-4 relative z-10">
                         {/* Headline */}
@@ -461,7 +461,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
 
                         {/* Wall of Proof Placeholder */}
                         <div className="my-12 md:my-16 shadow-2xl shadow-black/50 rounded-lg border-2 border-[#4A3F7A]/80">
-                           <img src="images/wall-of-proof.png" alt="A collage of testimonials and positive results" className="w-full h-full object-cover rounded-md" />
+                           <img src="/images/wall-of-proof.png" alt="A collage of testimonials and positive results" className="w-full h-full object-cover rounded-md" />
                         </div>
                         
                         {/* Dynamic Testimonials */}
@@ -497,16 +497,16 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                                     </p>
                                 </div>
                                 <div className="relative flex justify-center items-center">
-                                    <img src="images/float-shape-01.png" alt="abstract floating shape" className="absolute w-full max-w-md h-auto opacity-10 -z-1" />
-                                    <img src="images/human-element-01.png" alt="A content creator feeling confident" className="relative z-10 rounded-lg shadow-2xl shadow-black/30 max-w-sm w-full" />
+                                    <img src="/images/float-shape-01.png" alt="abstract floating shape" className="absolute w-full max-w-md h-auto opacity-10 -z-1" />
+                                    <img src="/images/human-element-01.png" alt="A content creator feeling confident" className="relative z-10 rounded-lg shadow-2xl shadow-black/30 max-w-sm w-full" />
                                 </div>
                             </div>
 
                             {/* Row 2 */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
                                  <div className="relative flex justify-center items-center md:order-1">
-                                    <img src="images/float-shape-02.png" alt="abstract floating shape" className="absolute w-full max-w-md h-auto opacity-10 -z-1" />
-                                    <img src="images/human-element-02.png" alt="A person analyzing data on a screen" className="relative z-10 rounded-lg shadow-2xl shadow-black/30 max-w-sm w-full" />
+                                    <img src="/images/float-shape-02.png" alt="abstract floating shape" className="absolute w-full max-w-md h-auto opacity-10 -z-1" />
+                                    <img src="/images/human-element-02.png" alt="A person analyzing data on a screen" className="relative z-10 rounded-lg shadow-2xl shadow-black/30 max-w-sm w-full" />
                                 </div>
                                 <div className="text-center md:text-left md:order-2">
                                     <h3 className="text-3xl font-bold text-[#DAFF00] mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -534,7 +534,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                         </h3>
                         <div className="mt-12 max-w-4xl mx-auto">
                             <img 
-                                src="images/income-proof.png" 
+                                src="/images/income-proof.png" 
                                 alt="Analytics screenshot showing over 508,084 views in 90 days from faceless videos" 
                                 className="rounded-xl shadow-2xl w-full h-auto border-4 border-[#4A3F7A]"
                             />
@@ -547,7 +547,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                     <div className="container mx-auto max-w-4xl px-4">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
                             <div className="md:col-span-1 flex justify-center">
-                                <img src="images/founder-alex-jego.png" alt="Alex Jego, Founder of Vid Script Hub" className="w-48 h-48 rounded-full object-cover border-4 border-[#DAFF00] shadow-2xl" />
+                                <img src="/images/founder-alex-jego.png" alt="Alex Jego, Founder of Vid Script Hub" className="w-48 h-48 rounded-full object-cover border-4 border-[#DAFF00] shadow-2xl" />
                             </div>
                             <div className="md:col-span-2 text-center md:text-left">
                                 <h2 className="text-3xl font-bold mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>A Message From The Creator</h2>

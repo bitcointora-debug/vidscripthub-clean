@@ -635,7 +635,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ impersonatingClient, onLog
         {/* Sidebar */}
         <aside className="w-64 bg-[#2A1A5E]/30 flex-shrink-0 flex flex-col border-r border-[#4A3F7A]/30">
             <div className="h-20 flex items-center justify-center px-4 border-b border-[#4A3F7A]/30 flex-shrink-0">
-               <img src="images/dashboard-logo.png" alt="Vid Script Hub Logo" className="h-8 w-auto" />
+               <img src="/images/dashboard-logo.png" alt="Vid Script Hub Logo" className="h-8 w-auto" />
             </div>
             <div className="flex-1 flex flex-col overflow-y-auto">
                 <div className="p-4">

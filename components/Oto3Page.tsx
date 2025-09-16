@@ -11,13 +11,13 @@ export const Oto3Page: React.FC<Oto3PageProps> = ({ onUpgrade, onDecline }) => {
     const profitPaths = [
         {
             headline: "Your Own Turnkey Software Business",
-            image: "images/oto3-funnel.png",
+            image: "/images/oto3-sales-funnel.png",
             alt: "A sales funnel diagram",
             text: "We will give you a special link. You just send traffic to it. We've already built the high-converting sales pages, we handle the product delivery, and we handle all the customer support. You simply collect 100% of the profits from every sale in the funnel."
         },
         {
             headline: "Your Own Script-Writing Agency",
-            image: "images/oto3-agency-dashboard.png",
+            image: "/images/oto3-agency-dashboard.png",
             alt: "An agency dashboard showing multiple clients",
             text: "Instantly unlock the Agency Dashboard inside your account, allowing you to add up to 10 clients. Charge them monthly for viral script services and use VidScriptHub to do all the work for you in minutes. A true business-in-a-box."
         }
@@ -25,8 +25,8 @@ export const Oto3Page: React.FC<Oto3PageProps> = ({ onUpgrade, onDecline }) => {
 
     return (
         <div className="bg-[#1A0F3C] text-[#F0F0F0] antialiased min-h-screen flex flex-col items-center justify-center py-12 px-4 relative overflow-hidden">
-            <img src="images/oto3-flying-crown.png" alt="Floating 3D crown icon" className="absolute top-20 -left-12 w-28 h-28 opacity-10 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '9s'}} />
-            <img src="images/oto3-flying-briefcase.png" alt="Floating 3D briefcase icon" className="absolute bottom-1/4 -right-16 w-32 h-32 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '7s'}} />
+            <img src="/images/oto3-flying-crown.png" alt="Floating 3D crown icon" className="absolute top-20 -left-12 w-28 h-28 opacity-10 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '9s'}} />
+            <img src="/images/oto3-floating-briefcase-3d.png" alt="Floating 3D briefcase icon" className="absolute bottom-1/4 -right-16 w-32 h-32 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '7s'}} />
 
             <div className="w-full max-w-5xl mx-auto text-center relative z-10">
 
@@ -62,7 +62,7 @@ export const Oto3Page: React.FC<Oto3PageProps> = ({ onUpgrade, onDecline }) => {
                     <div className="my-12">
                          <h3 className="text-2xl font-bold text-white mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>You Get The Official License To Do Both!</h3>
                          <img 
-                            src="images/oto3-license-certificate.png" 
+                            src="/images/oto3-license-certificate.png" 
                             alt="Official Agency & Reseller License Certificate" 
                             className="max-w-2xl h-auto mx-auto rounded-lg shadow-2xl border-2 border-[#DAFF00]/50"
                         />
@@ -77,7 +77,7 @@ export const Oto3Page: React.FC<Oto3PageProps> = ({ onUpgrade, onDecline }) => {
                             Our top resellers are already seeing results like this. With a proven, high-converting offer, your affiliate dashboard could look like this too.
                         </p>
                         <img 
-                            src="images/oto3-earnings-proof.png" 
+                            src="/images/oto3-earnings-dashboard.png" 
                             alt="A dashboard showing reseller earnings of over $1,500" 
                             className="max-w-2xl h-auto mx-auto rounded-lg shadow-2xl border-2 border-[#4A3F7A]/80 [filter:drop-shadow(0_10px_15px_rgba(218,255,0,0.1))]"
                         />
