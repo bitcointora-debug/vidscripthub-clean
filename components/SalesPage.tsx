@@ -231,10 +231,6 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
             <main>
                  {/* 'Above the Fold' Section */}
                  <section className="relative overflow-hidden pt-12 pb-16">
-                    {/* Floating Shapes */}
-                    <img src="/images/shape-sparkle-1.png" alt="abstract sparkle shape" className="absolute top-1/4 -left-8 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '6s'}} />
-                    <img src="/images/sales-floating-rocket.png" alt="Floating 3D rocket icon" className="absolute top-1/2 -right-12 w-32 h-32 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '7s'}} />
-                    <img src="/images/sales-floating-gem.png" alt="Floating 3D gem icon" className="absolute top-1/3 -left-16 w-32 h-32 opacity-10 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '9s'}} />
 
                     <div className="container mx-auto max-w-6xl px-4 relative z-10">
                         {/* Headline & Sub-headline */}
@@ -329,9 +325,6 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
 
                 {/* 'Problem & Agitation' Section */}
                 <section className="py-16 md:py-24 bg-[#F7F8FC] relative overflow-hidden">
-                    {/* Floating Shapes */}
-                    <img src="/images/shape-blob-1.png" alt="abstract shape" className="absolute -top-8 -left-12 opacity-[0.03] transform-gpu rotate-45 hidden lg:block"/>
-                    <img src="/images/shape-blob-2.png" alt="abstract shape" className="absolute bottom-10 -right-20 opacity-[0.03] transform-gpu -rotate-12 hidden lg:block"/>
                     
                     <div className="container mx-auto max-w-5xl px-4 relative z-10">
                         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center text-[#1A1A1A] mb-16 md:mb-20" style={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -360,9 +353,6 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
 
                 {/* 'Solution & Reveal' Section */}
                 <section className="py-16 md:py-24 bg-[#1A0F3C] relative overflow-hidden">
-                     <img src="/images/shape-sparkle-3.png" alt="abstract sparkle shape" className="absolute top-20 left-10 opacity-10 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '4s'}} />
-                     <img src="/images/shape-sparkle-4.png" alt="abstract sparkle shape" className="absolute bottom-16 right-8 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '5s'}} />
-                     <img src="/images/shape-sparkle-5.png" alt="abstract sparkle shape" className="absolute top-1/2 -right-4 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '3s'}}/>
                     
                     <div className="container mx-auto max-w-6xl px-4 relative z-10">
                         <div className="bg-[#2A1A5E] rounded-2xl p-8 md:p-12 lg:p-16 shadow-2xl shadow-[#DAFF00]/5 border border-[#4A3F7A]/50">
@@ -442,9 +432,6 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                 
                 {/* 'Social Proof & Trust' Section */}
                 <section className="py-16 md:py-24 bg-[#1A0F3C] relative overflow-hidden">
-                    {/* Floating Shapes */}
-                    <img src="/images/shape-sparkle-6.png" alt="abstract sparkle shape" className="absolute top-10 -right-10 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '5s'}} />
-                    <img src="/images/shape-sparkle-7.png" alt="abstract sparkle shape" className="absolute bottom-24 -left-5 opacity-10 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '7s'}}/>
                     
                     <div className="container mx-auto max-w-5xl px-4 relative z-10">
                         {/* Headline */}
@@ -495,7 +482,6 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                                     </p>
                                 </div>
                                 <div className="relative flex justify-center items-center">
-                                    <img src="/images/float-shape-01.png" alt="abstract floating shape" className="absolute w-full max-w-md h-auto opacity-10 -z-1" />
                                     <img src="/images/human-element-01.png" alt="A content creator feeling confident" className="relative z-10 rounded-lg shadow-2xl shadow-black/30 max-w-sm w-full" />
                                 </div>
                             </div>
