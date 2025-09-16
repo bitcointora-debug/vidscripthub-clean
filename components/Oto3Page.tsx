@@ -17,8 +17,8 @@ export const Oto3Page: React.FC<Oto3PageProps> = ({ onUpgrade, onDecline }) => {
         },
         {
             headline: "Your Own Script-Writing Agency",
-            image: "/images/oto3-agency-dashboard.png",
-            alt: "An agency dashboard showing multiple clients",
+            image: "/images/hublogo.png",
+            alt: "Vid Script Hub Product Mockup",
             text: "Instantly unlock the Agency Dashboard inside your account, allowing you to add up to 10 clients. Charge them monthly for viral script services and use VidScriptHub to do all the work for you in minutes. A true business-in-a-box."
         }
     ];
