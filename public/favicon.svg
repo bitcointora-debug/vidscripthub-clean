@@ -5,24 +5,18 @@
       <stop offset="0%" style="stop-color:#1A0F3C;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#2A1A5E;stop-opacity:1" />
     </linearGradient>
-    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#DAFF00;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#a8c400;stop-opacity:1" />
-    </linearGradient>
   </defs>
   
   <!-- Background circle -->
   <circle cx="16" cy="16" r="16" fill="url(#bgGradient)"/>
   
-  <!-- Video play icon -->
-  <path d="M12 8L24 16L12 24V8Z" fill="url(#accentGradient)" stroke="#DAFF00" stroke-width="1"/>
+  <!-- Split V Logo - Left side (dark purple) -->
+  <path d="M8 12L16 8L20 12L16 24L8 12Z" fill="#1A0F3C"/>
   
-  <!-- Script lines -->
-  <rect x="6" y="6" width="8" height="1" rx="0.5" fill="#DAFF00" opacity="0.8"/>
-  <rect x="6" y="9" width="6" height="1" rx="0.5" fill="#DAFF00" opacity="0.6"/>
-  <rect x="6" y="12" width="7" height="1" rx="0.5" fill="#DAFF00" opacity="0.4"/>
+  <!-- Split V Logo - Right side (bright yellow) -->
+  <path d="M16 8L24 12L20 12L16 24L16 8Z" fill="#DAFF00"/>
   
-  <!-- Sparkle effect -->
+  <!-- Small accent dots -->
   <circle cx="22" cy="10" r="1" fill="#DAFF00" opacity="0.8"/>
   <circle cx="26" cy="14" r="0.8" fill="#DAFF00" opacity="0.6"/>
   <circle cx="20" cy="22" r="0.6" fill="#DAFF00" opacity="0.7"/>
