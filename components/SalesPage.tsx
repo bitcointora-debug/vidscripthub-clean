@@ -194,9 +194,9 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
         },
         {
             image: "/images/testimonial-03.jpg",
-            alt: "Testimonial from Chloe T.",
+            alt: "Testimonial from Rohan Sharma",
             quote: "I'm not a creative person naturally, so writer's block was my biggest enemy. VidScriptHub is like having a viral marketing genius on my team 24/7. I finally feel confident hitting 'post'!",
-            name: "Chloe T.",
+            name: "Rohan Sharma",
             location: "DIY Channel"
         }
     ];
