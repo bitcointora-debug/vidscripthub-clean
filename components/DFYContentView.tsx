@@ -64,8 +64,6 @@ const viralHooks = {
 };
 
 const bonuses = [
-    { title: "LIVE Training: The 5-Figure Script Agency Blueprint", description: "Join our exclusive live training where we reveal how to land your first 3 high-paying script-writing clients this month.", icon: "fa-solid fa-chalkboard-user", value: "$1,997" },
-    { title: "Private 'Viral Creators' Facebook Group", description: "Get direct access to our team, network with other creators, and get feedback on your videos in our private community.", icon: "fa-solid fa-users", value: "$1,197" },
     { title: "The 'Profit-Ready' Niche Database", description: "A curated database of 50+ low-competition, high-demand niches ready for you to dominate.", icon: "fa-solid fa-database", value: "$997" },
     { title: "The Viral Monetization Blueprint", description: "Learn 5 easy ways to turn your newfound views into actual, spendable cash.", icon: "fa-solid fa-sack-dollar", value: "$497" },
     { title: "The Ultimate Viral Hook Swipe File", description: "50+ proven, copy-paste hooks you can use to make any script instantly more engaging. A taste of our DFY vault!", icon: "fa-solid fa-file-lines", value: "$297" },
