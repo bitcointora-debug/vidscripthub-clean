@@ -50,7 +50,7 @@ export const Oto1Page: React.FC<Oto1PageProps> = ({ onUpgrade, onDecline }) => {
                     {/* The Solution Image */}
                     <div className="my-10">
                          <img 
-                            src="/images/oto1-unlimited-concept.png" 
+                            src="/images/hublogo.png" 
                             alt="VidScriptHub Unlimited Concept" 
                             className="max-w-md h-auto mx-auto rounded-lg shadow-xl shadow-black/30"
                         />

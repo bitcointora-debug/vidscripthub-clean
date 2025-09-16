@@ -370,7 +370,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
 
                             {/* Hero Mockup */}
                             <div className="my-12 md:my-16 shadow-2xl shadow-black/50 rounded-lg border-2 border-[#4A3F7A]/80">
-                                <img src="/images/hero-dashboard-mockup.png" alt="Vid Script Hub Dashboard Mockup" className="w-full h-full object-cover rounded-md" />
+                                <img src="/images/hublogo.png" alt="Vid Script Hub Product Mockup" className="w-full h-full object-cover rounded-md" />
                             </div>
                             
                             {/* The "3 Simple Steps" Structure */}
