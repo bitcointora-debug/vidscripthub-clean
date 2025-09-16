@@ -233,7 +233,6 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                  <section className="relative overflow-hidden pt-12 pb-16">
                     {/* Floating Shapes */}
                     <img src="/images/shape-sparkle-1.png" alt="abstract sparkle shape" className="absolute top-1/4 -left-8 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '6s'}} />
-                    <img src="/images/shape-sparkle-2.png" alt="abstract sparkle shape" className="absolute bottom-0 -right-10 opacity-5 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '8s'}}/>
                     <img src="/images/sales-floating-rocket.png" alt="Floating 3D rocket icon" className="absolute top-1/2 -right-12 w-32 h-32 opacity-10 transform-gpu animate-pulse hidden lg:block" style={{animationDuration: '7s'}} />
                     <img src="/images/sales-floating-gem.png" alt="Floating 3D gem icon" className="absolute top-1/3 -left-16 w-32 h-32 opacity-10 transform-gpu animate-bounce hidden lg:block" style={{animationDuration: '9s'}} />
 
@@ -316,7 +315,6 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                         <div className="mt-12 max-w-4xl mx-auto">
                             {/* Video Player Placeholder */}
                             <div className="aspect-video bg-black rounded-xl shadow-2xl shadow-[#DAFF00]/10 overflow-hidden border-2 border-[#4A3F7A] flex items-center justify-center relative group cursor-pointer">
-                                <img src="/images/video-thumbnail-placeholder.png" alt="Video demo thumbnail" className="absolute w-full h-full object-cover opacity-40 group-hover:opacity-50 transition-opacity duration-300" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                                 <div className="relative z-10 flex flex-col items-center">
                                     <div className="w-20 h-20 md:w-24 md:h-24 bg-white/10 rounded-full flex items-center justify-center border-2 border-white/20 backdrop-blur-sm group-hover:scale-110 group-hover:bg-white/20 transition-transform duration-300">
@@ -505,7 +503,6 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                             {/* Row 2 */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
                                  <div className="relative flex justify-center items-center md:order-1">
-                                    <img src="/images/float-shape-02.png" alt="abstract floating shape" className="absolute w-full max-w-md h-auto opacity-10 -z-1" />
                                     <img src="/images/human-element-02.png" alt="A person analyzing data on a screen" className="relative z-10 rounded-lg shadow-2xl shadow-black/30 max-w-sm w-full" />
                                 </div>
                                 <div className="text-center md:text-left md:order-2">
