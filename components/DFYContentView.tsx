@@ -64,9 +64,11 @@ const viralHooks = {
 };
 
 const bonuses = [
-    { title: "Profit Niches Exposed", description: "Our secret list of 20+ underexploited niches where you can go viral fast.", icon: "fa-solid fa-lightbulb" },
-    { title: "The 60-Second Video Toolkit", description: "A simple checklist for shooting high-quality viral videos with just your smartphone.", icon: "fa-solid fa-camera" },
-    { title: "The Viral Monetization Blueprint", description: "Learn 5 easy ways to turn your newfound views into actual, spendable cash.", icon: "fa-solid fa-sack-dollar" },
+    { title: "LIVE Training: The 5-Figure Script Agency Blueprint", description: "Join our exclusive live training where we reveal how to land your first 3 high-paying script-writing clients this month.", icon: "fa-solid fa-chalkboard-user", value: "$1,997" },
+    { title: "Private 'Viral Creators' Facebook Group", description: "Get direct access to our team, network with other creators, and get feedback on your videos in our private community.", icon: "fa-solid fa-users", value: "$1,197" },
+    { title: "The 'Profit-Ready' Niche Database", description: "A curated database of 50+ low-competition, high-demand niches ready for you to dominate.", icon: "fa-solid fa-database", value: "$997" },
+    { title: "The Viral Monetization Blueprint", description: "Learn 5 easy ways to turn your newfound views into actual, spendable cash.", icon: "fa-solid fa-sack-dollar", value: "$497" },
+    { title: "The Ultimate Viral Hook Swipe File", description: "50+ proven, copy-paste hooks you can use to make any script instantly more engaging. A taste of our DFY vault!", icon: "fa-solid fa-file-lines", value: "$297" },
 ];
 
 type Tab = 'Scripts' | 'Hooks' | 'Audio' | 'Bonuses';
@@ -330,17 +332,20 @@ export const DFYContentView: React.FC<DFYContentViewProps> = ({
                             <h2 className="text-3xl font-bold text-white mb-2">Your Launch Bonuses</h2>
                             <p className="text-purple-200 max-w-2xl mx-auto">Thank you for your purchase! Here are the special bonuses included with your order.</p>
                         </div>
-                        <div className="space-y-6 max-w-3xl mx-auto">
+                        <div className="space-y-6 max-w-4xl mx-auto">
                             {bonuses.map(bonus => (
-                                <div key={bonus.title} className="bg-[#1A0F3C] rounded-lg p-5 flex flex-col md:flex-row items-center justify-between gap-4">
-                                    <div className="flex items-center gap-4">
-                                        <i className={`${bonus.icon} text-2xl text-[#DAFF00] w-8 text-center`}></i>
-                                        <div>
-                                            <h3 className="font-bold text-white">{bonus.title}</h3>
-                                            <p className="text-xs text-purple-200">{bonus.description}</p>
+                                <div key={bonus.title} className="bg-[#1A0F3C] rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-4 border border-[#4A3F7A]/30">
+                                    <div className="flex items-center gap-4 flex-grow">
+                                        <i className={`${bonus.icon} text-3xl text-[#DAFF00] w-10 text-center`}></i>
+                                        <div className="flex-grow">
+                                            <h3 className="font-bold text-white text-lg mb-1">{bonus.title}</h3>
+                                            <p className="text-sm text-purple-200 mb-2">{bonus.description}</p>
+                                            <span className="inline-block bg-[#DAFF00] text-[#1A0F3C] text-xs font-bold px-2 py-1 rounded-full">
+                                                Value: {bonus.value}
+                                            </span>
                                         </div>
                                     </div>
-                                    <button onClick={() => handleDownloadBonus(bonus.title)} className="w-full md:w-auto flex-shrink-0 bg-[#DAFF00] text-[#1A0F3C] font-bold py-2 px-4 rounded-md text-sm hover:bg-opacity-90 transition-all">
+                                    <button onClick={() => handleDownloadBonus(bonus.title)} className="w-full md:w-auto flex-shrink-0 bg-[#DAFF00] text-[#1A0F3C] font-bold py-3 px-6 rounded-lg hover:bg-[#a8c400] transition-colors duration-200">
                                         <i className="fa-solid fa-download mr-2"></i>Download PDF
                                     </button>
                                 </div>
