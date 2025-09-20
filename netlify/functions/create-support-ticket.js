@@ -1,6 +1,6 @@
 const { Resend } = require('resend');
 
-const resend = new Resend('re_AF4EQg7d_2DT8dE4zoXaRbYBGXy7Q8bS4');
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Support ticket email template
 const supportTicketTemplate = {
