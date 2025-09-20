@@ -1,3 +1,9 @@
+/* Import mobile optimization styles */
+@import './src/mobile-optimization.css';
+
+/* Import animation styles */
+@import './src/styles/animations.css';
+
 /* This file is intentionally left blank to resolve a 404 error. */
 /* Added a dummy rule to prevent potential issues with empty files on some servers. */
 body {}

@@ -5,12 +5,18 @@ import { DataProvider } from './context/DataContext.tsx';
 import { UIProvider } from './context/UIContext.tsx';
 import { supabase } from './services/supabaseClient.ts';
 import type { Session, Plan, Client } from './types.ts';
-import { SalesPage } from './components/SalesPage.tsx';
+import { WorldClassSalesPage } from './components/WorldClassSalesPage.tsx';
 import { Oto1Page } from './components/Oto1Page.tsx';
 import { Oto2Page } from './components/Oto2Page.tsx';
 import { Oto3Page } from './components/Oto3Page.tsx';
 import { AuthPage } from './components/AuthPage.tsx';
 import { Dashboard } from './components/Dashboard.tsx';
+import { SEOHead } from './components/SEOHead.tsx';
+import { PerformanceOptimizer } from './components/PerformanceOptimizer.tsx';
+import { AnalyticsTracker } from './components/AnalyticsTracker.tsx';
+import { GoogleAnalytics } from './components/GoogleAnalytics.tsx';
+import { SecurityMonitor } from './components/SecurityUtils.tsx';
+// import { ABTestingProvider } from './components/ABTestingFramework.tsx';
 
 type FlowState = 'sales' | 'oto1' | 'oto2' | 'oto3' | 'app' | 'auth';
 type PendingUpgrade = { plan: Plan, nextState: FlowState };
@@ -104,7 +110,7 @@ const App: React.FC = () => {
       // Logged-out (guest) user flow
       switch (flowState) {
           case 'sales':
-              return <SalesPage onPurchaseClick={() => setFlowState('oto1')} onDashboardClick={() => setFlowState('auth')} />;
+              return <WorldClassSalesPage onPurchaseClick={() => setFlowState('oto1')} onDashboardClick={() => setFlowState('auth')} />;
           case 'oto1':
               return <Oto1Page onUpgrade={() => handleUpgradeClick('unlimited', 'oto2')} onDecline={() => setFlowState('oto2')} />;
           case 'oto2':
@@ -125,7 +131,7 @@ const App: React.FC = () => {
                   />
               );
           default:
-              return <SalesPage onPurchaseClick={() => setFlowState('oto1')} onDashboardClick={() => setFlowState('auth')} />;
+              return <WorldClassSalesPage onPurchaseClick={() => setFlowState('oto1')} onDashboardClick={() => setFlowState('auth')} />;
       }
   };
 
@@ -142,13 +148,20 @@ const App: React.FC = () => {
   }
 
   return (
-    <AuthProvider session={session} guestPlan={guestPlan} pendingUpgradePlan={pendingUpgrade?.plan}>
-        <UIProvider>
-            <DataProvider>
-                {renderFlow()}
-            </DataProvider>
-        </UIProvider>
-    </AuthProvider>
+    <>
+      <SEOHead />
+      <PerformanceOptimizer />
+      <GoogleAnalytics measurementId="G-T9R97Q7LD8" />
+      <AnalyticsTracker />
+      <SecurityMonitor />
+      <AuthProvider session={session} guestPlan={guestPlan} pendingUpgradePlan={pendingUpgrade?.plan}>
+          <UIProvider>
+              <DataProvider>
+                  {renderFlow()}
+              </DataProvider>
+          </UIProvider>
+      </AuthProvider>
+    </>
   );
 };
 

@@ -34,6 +34,17 @@ export const Oto2Page: React.FC<Oto2PageProps> = ({ onUpgrade, onDecline }) => {
 
             <div className="w-full max-w-5xl mx-auto text-center relative z-10">
 
+                {/* Urgency Banner */}
+                <div className="bg-red-600 text-white py-3 px-6 rounded-lg mb-8 animate-pulse">
+                    <p className="text-lg font-bold">⚠️ FINAL CHANCE: This Vault Closes Forever in 24 Hours!</p>
+                    <div className="text-2xl font-mono mt-2">
+                        <span className="bg-black px-2 py-1 rounded">00</span> DAYS : 
+                        <span className="bg-black px-2 py-1 rounded ml-2">23</span> HOURS : 
+                        <span className="bg-black px-2 py-1 rounded ml-2">45</span> MINS : 
+                        <span className="bg-black px-2 py-1 rounded ml-2">12</span> SECS
+                    </div>
+                </div>
+
                 {/* Headline */}
                 <h1 className="text-4xl md:text-6xl font-extrabold" style={{ fontFamily: "'Poppins', sans-serif" }}>
                     Want To Put VidScriptHub On <span className="text-[#2A1A5E]">Complete Autopilot?</span>
@@ -42,6 +53,20 @@ export const Oto2Page: React.FC<Oto2PageProps> = ({ onUpgrade, onDecline }) => {
                     This Is Your ONE CHANCE To Clone Our Private "Done-For-You" Vault of Profit-Ready Scripts & Viral Assets...
                 </p>
                 <div className="w-24 h-1.5 bg-gray-300 mx-auto my-12 rounded-full"></div>
+
+                {/* Social Proof */}
+                <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-4 px-6 rounded-lg mb-8">
+                    <div className="flex justify-between items-center">
+                        <span className="text-lg font-bold">📈 1,247+ Creators Already Unlocked This Vault</span>
+                        <span className="text-sm bg-green-500 px-3 py-1 rounded-full">Last unlock: Tokyo, Japan (7 minutes ago)</span>
+                    </div>
+                </div>
+
+                {/* Value Proposition */}
+                <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black py-6 px-8 rounded-xl mb-8 shadow-lg">
+                    <h2 className="text-3xl font-bold mb-2">🎯 Why This Vault is Worth $197/Month (But You Get It For $47)</h2>
+                    <p className="text-lg">Professional copywriters charge $500+ per script. This vault contains 100+ proven scripts that would cost $50,000+ to create from scratch!</p>
+                </div>
 
                 {/* Core Offer */}
                 <div className="bg-white rounded-2xl p-8 md:p-12 shadow-xl border border-gray-200">
@@ -113,12 +138,12 @@ export const Oto2Page: React.FC<Oto2PageProps> = ({ onUpgrade, onDecline }) => {
 
                     {/* Call to Action (CTA) Block */}
                     <div className="max-w-xl mx-auto">
-                        <button 
-                            onClick={onUpgrade}
-                            className="block w-full bg-[#DAFF00] text-[#1A0F3C] font-bold text-xl md:text-2xl uppercase py-5 px-6 rounded-lg shadow-[0_5px_0px_0px_#a8c400] hover:translate-y-1 hover:shadow-[0_4px_0px_0px_#a8c400] transition-all duration-150 ease-in-out"
+                        <a 
+                            href="https://warriorplus.com/o2/buy/kyd6mp/yfcyq9/cn135b"
+                            className="block w-full bg-[#DAFF00] text-[#1A0F3C] font-bold text-xl md:text-2xl uppercase py-5 px-6 rounded-lg shadow-[0_5px_0px_0px_#a8c400] hover:translate-y-1 hover:shadow-[0_4px_0px_0px_#a8c400] transition-all duration-150 ease-in-out text-center"
                         >
                             YES! Add The DFY Content Bank To My Order!
-                        </button>
+                        </a>
                         <button 
                             onClick={onDecline}
                             className="block mt-6 text-gray-500 hover:text-black transition-colors duration-200 text-sm underline"

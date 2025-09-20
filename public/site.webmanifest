@@ -1,0 +1,93 @@
+{
+    "name": "VidScriptHub - AI Viral Script Generator",
+    "short_name": "VidScriptHub",
+    "description": "Generate unlimited viral video scripts with Google-powered AI. Create engaging content for YouTube, TikTok, Instagram, and more.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0F0A2A",
+    "theme_color": "#DAFF00",
+    "orientation": "portrait-primary",
+    "scope": "/",
+    "lang": "en",
+    "dir": "ltr",
+    "categories": ["business", "productivity", "entertainment"],
+    "icons": [
+        {
+            "src": "/favicon-16x16.png",
+            "sizes": "16x16",
+            "type": "image/png"
+        },
+        {
+            "src": "/favicon-32x32.png",
+            "sizes": "32x32",
+            "type": "image/png"
+        },
+        {
+            "src": "/apple-touch-icon.png",
+            "sizes": "180x180",
+            "type": "image/png"
+        },
+        {
+            "src": "/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/images/screenshot-desktop.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "VidScriptHub Desktop View"
+        },
+        {
+            "src": "/images/screenshot-mobile.png",
+            "sizes": "390x844",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "VidScriptHub Mobile View"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Generate Script",
+            "short_name": "Generate",
+            "description": "Quickly generate a viral video script",
+            "url": "/dashboard?action=generate",
+            "icons": [
+                {
+                    "src": "/favicon-32x32.png",
+                    "sizes": "32x32"
+                }
+            ]
+        },
+        {
+            "name": "View Dashboard",
+            "short_name": "Dashboard",
+            "description": "Access your VidScriptHub dashboard",
+            "url": "/dashboard",
+            "icons": [
+                {
+                    "src": "/favicon-32x32.png",
+                    "sizes": "32x32"
+                }
+            ]
+        }
+    ],
+    "related_applications": [],
+    "prefer_related_applications": false
+}
+
+
+
+
+
+

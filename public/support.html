@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - VidScriptHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-[#1A0F3C] text-white min-h-screen">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-[#2A1A5E] to-[#1A0F3C] border-b border-[#4A3F7A]">
+        <div class="container mx-auto max-w-6xl px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-2xl font-bold text-[#DAFF00]">
+                        VidScriptHub
+                    </a>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="/" class="text-purple-200 hover:text-[#DAFF00] transition-colors">Home</a>
+                    <a href="/#app" class="text-purple-200 hover:text-[#DAFF00] transition-colors">Dashboard</a>
+                    <a href="mailto:support@vidscripthub.com" class="text-purple-200 hover:text-[#DAFF00] transition-colors">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto max-w-4xl px-4 py-12">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+                <span class="text-[#DAFF00]">Support</span> Center
+            </h1>
+            <p class="text-xl text-purple-200/80 max-w-2xl mx-auto">
+                We're here to help you get the most out of VidScriptHub
+            </p>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="bg-gradient-to-r from-[#2A1A5E] to-[#1A0F3C] rounded-2xl p-8 md:p-12 border border-[#4A3F7A] shadow-2xl mb-12">
+            <h2 class="text-3xl font-bold text-[#DAFF00] mb-6 text-center">
+                <i class="fas fa-envelope mr-3"></i>Contact Support
+            </h2>
+            
+            <form action="mailto:support@vidscripthub.com" method="post" enctype="text/plain" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-purple-200 mb-2">Your Name</label>
+                        <input type="text" id="name" name="name" required 
+                               class="w-full bg-[#1A0F3C] border border-[#4A3F7A] rounded-lg py-3 px-4 text-white placeholder-purple-300/50 focus:ring-2 focus:ring-[#DAFF00] focus:border-[#DAFF00] focus:outline-none transition duration-200"
+                               placeholder="Enter your name">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-purple-200 mb-2">Email Address</label>
+                        <input type="email" id="email" name="email" required 
+                               class="w-full bg-[#1A0F3C] border border-[#4A3F7A] rounded-lg py-3 px-4 text-white placeholder-purple-300/50 focus:ring-2 focus:ring-[#DAFF00] focus:border-[#DAFF00] focus:outline-none transition duration-200"
+                               placeholder="your@email.com">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="subject" class="block text-sm font-medium text-purple-200 mb-2">Subject</label>
+                    <select id="subject" name="subject" required 
+                            class="w-full bg-[#1A0F3C] border border-[#4A3F7A] rounded-lg py-3 px-4 text-white focus:ring-2 focus:ring-[#DAFF00] focus:border-[#DAFF00] focus:outline-none transition duration-200">
+                        <option value="">Select a topic</option>
+                        <option value="Technical Issue">Technical Issue</option>
+                        <option value="Account Access">Account Access</option>
+                        <option value="Billing Question">Billing Question</option>
+                        <option value="Feature Request">Feature Request</option>
+                        <option value="General Question">General Question</option>
+                        <option value="Refund Request">Refund Request</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="message" class="block text-sm font-medium text-purple-200 mb-2">Message</label>
+                    <textarea id="message" name="message" rows="6" required 
+                              class="w-full bg-[#1A0F3C] border border-[#4A3F7A] rounded-lg py-3 px-4 text-white placeholder-purple-300/50 focus:ring-2 focus:ring-[#DAFF00] focus:border-[#DAFF00] focus:outline-none transition duration-200 resize-vertical"
+                              placeholder="Please describe your issue or question in detail..."></textarea>
+                </div>
+                
+                <div class="text-center">
+                    <button type="submit" 
+                            class="bg-[#DAFF00] text-[#1A0F3C] font-bold py-4 px-8 rounded-lg hover:bg-[#DAFF00]/90 transition-colors duration-200 text-lg">
+                        <i class="fas fa-paper-plane mr-2"></i>Send Message
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="bg-gradient-to-r from-[#2A1A5E] to-[#1A0F3C] rounded-2xl p-8 md:p-12 border border-[#4A3F7A] shadow-2xl mb-12">
+            <h2 class="text-3xl font-bold text-[#DAFF00] mb-8 text-center">
+                <i class="fas fa-question-circle mr-3"></i>Frequently Asked Questions
+            </h2>
+            
+            <div class="space-y-6">
+                <div class="bg-[#1A0F3C]/50 rounded-lg p-6 border border-[#4A3F7A]/50">
+                    <h3 class="text-xl font-bold text-white mb-3">How do I access VidScriptHub after purchase?</h3>
+                    <p class="text-purple-200/80">Simply visit <a href="/#app" class="text-[#DAFF00] hover:underline">https://vidscripthub.com/#app</a> to access your VidScriptHub dashboard immediately. No login required!</p>
+                </div>
+                
+                <div class="bg-[#1A0F3C]/50 rounded-lg p-6 border border-[#4A3F7A]/50">
+                    <h3 class="text-xl font-bold text-white mb-3">What types of scripts can VidScriptHub generate?</h3>
+                    <p class="text-purple-200/80">VidScriptHub can generate viral scripts for any niche including fitness, crypto, weight loss, business, lifestyle, and more. Just enter your niche and let our AI do the rest!</p>
+                </div>
+                
+                <div class="bg-[#1A0F3C]/50 rounded-lg p-6 border border-[#4A3F7A]/50">
+                    <h3 class="text-xl font-bold text-white mb-3">Is there a refund policy?</h3>
+                    <p class="text-purple-200/80">Yes! We offer a 30-day money-back guarantee. If you're not completely satisfied, contact us within 30 days for a full refund.</p>
+                </div>
+                
+                <div class="bg-[#1A0F3C]/50 rounded-lg p-6 border border-[#4A3F7A]/50">
+                    <h3 class="text-xl font-bold text-white mb-3">How long does it take to generate a script?</h3>
+                    <p class="text-purple-200/80">Script generation is instant! Our AI creates your viral script in real-time, usually within 10-30 seconds depending on the complexity.</p>
+                </div>
+                
+                <div class="bg-[#1A0F3C]/50 rounded-lg p-6 border border-[#4A3F7A]/50">
+                    <h3 class="text-xl font-bold text-white mb-3">Can I use the scripts commercially?</h3>
+                    <p class="text-purple-200/80">Yes! All scripts generated by VidScriptHub are yours to use for any commercial purpose, including monetizing your YouTube channel or other content platforms.</p>
+                </div>
+                
+                <div class="bg-[#1A0F3C]/50 rounded-lg p-6 border border-[#4A3F7A]/50">
+                    <h3 class="text-xl font-bold text-white mb-3">What if I need help with a specific niche?</h3>
+                    <p class="text-purple-200/80">Our AI is trained on thousands of viral videos across all niches. If you need help with a specific topic, just describe it in detail and our AI will create the perfect script for you.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="bg-gradient-to-r from-[#2A1A5E] to-[#1A0F3C] rounded-2xl p-8 md:p-12 border border-[#4A3F7A] shadow-2xl">
+            <h2 class="text-3xl font-bold text-[#DAFF00] mb-8 text-center">
+                <i class="fas fa-info-circle mr-3"></i>Contact Information
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="text-center">
+                    <div class="bg-[#DAFF00]/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-envelope text-[#DAFF00] text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Email Support</h3>
+                    <p class="text-purple-200/80 mb-4">Get help via email</p>
+                    <a href="mailto:support@vidscripthub.com" class="text-[#DAFF00] hover:underline font-semibold">
+                        support@vidscripthub.com
+                    </a>
+                </div>
+                
+                <div class="text-center">
+                    <div class="bg-[#DAFF00]/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-clock text-[#DAFF00] text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Response Time</h3>
+                    <p class="text-purple-200/80 mb-4">We respond quickly</p>
+                    <p class="text-[#DAFF00] font-semibold">24-48 hours</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-[#2A1A5E] to-[#1A0F3C] border-t border-[#4A3F7A] mt-16">
+        <div class="container mx-auto max-w-6xl px-4 py-8">
+            <div class="text-center">
+                <p class="text-purple-200/80">
+                    © 2024 VidScriptHub. All rights reserved.
+                </p>
+                <p class="text-purple-200/60 text-sm mt-2">
+                    Powered by AI • Built for Creators
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+
+

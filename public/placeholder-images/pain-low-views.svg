@@ -1,0 +1,50 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e1b4b;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0.8" />
+    </linearGradient>
+    <linearGradient id="chart" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ef4444;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#dc2626;stop-opacity:0.9" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="256" height="256" rx="20" fill="url(#bg)" />
+  
+  <!-- Analytics Dashboard -->
+  <rect x="30" y="40" width="180" height="120" rx="12" fill="#1f2937" stroke="#374151" stroke-width="2" />
+  
+  <!-- Chart Area -->
+  <rect x="50" y="60" width="140" height="80" rx="8" fill="#111827" />
+  
+  <!-- Low Views Chart -->
+  <rect x="60" y="120" width="15" height="20" fill="url(#chart)" />
+  <rect x="80" y="115" width="15" height="25" fill="url(#chart)" />
+  <rect x="100" y="125" width="15" height="15" fill="url(#chart)" />
+  <rect x="120" y="110" width="15" height="30" fill="url(#chart)" />
+  <rect x="140" y="130" width="15" height="10" fill="url(#chart)" />
+  <rect x="160" y="125" width="15" height="15" fill="url(#chart)" />
+  
+  <!-- Chart Line (Low) -->
+  <path d="M 67 130 L 87 125 L 107 135 L 127 120 L 147 140 L 167 135" stroke="#ef4444" stroke-width="3" fill="none" />
+  
+  <!-- Sad Face -->
+  <circle cx="200" cy="100" r="25" fill="#fbbf24" />
+  <path d="M 190 95 Q 200 90 210 95" stroke="#1f2937" stroke-width="2" fill="none" />
+  <path d="M 195 110 Q 200 115 205 110" stroke="#1f2937" stroke-width="2" fill="none" />
+  
+  <!-- Views Counter -->
+  <rect x="50" y="150" width="80" height="25" rx="12" fill="#ef4444" />
+  <text x="90" y="167" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">200 Views</text>
+  
+  <!-- Text -->
+  <text x="128" y="200" text-anchor="middle" fill="#fbbf24" font-family="Arial, sans-serif" font-size="14" font-weight="bold">Low Views Problem</text>
+</svg>
+
+
+
+
+
+

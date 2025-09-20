@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Email System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0F0A2A;
+            color: white;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #DAFF00;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #4A3F7A;
+            border-radius: 5px;
+            background: #1A0F3C;
+            color: white;
+        }
+        button {
+            background: linear-gradient(45deg, #DAFF00, #B8E600);
+            color: #1A0F3C;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .success {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00FF00;
+            color: #00FF00;
+        }
+        .error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #FF0000;
+            color: #FF0000;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test VidScriptHub Email System</h1>
+    <p>Test your Resend.com integration with different email types.</p>
+
+    <form id="emailTestForm">
+        <div class="form-group">
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" name="email" required placeholder="test@example.com">
+        </div>
+
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required placeholder="John Doe">
+        </div>
+
+        <div class="form-group">
+            <label for="emailType">Email Type:</label>
+            <select id="emailType" name="emailType" required>
+                <option value="welcome">Welcome Email</option>
+                <option value="nurture1">Nurture Email #1</option>
+                <option value="abandonedCart">Abandoned Cart</option>
+            </select>
+        </div>
+
+        <button type="submit">📧 Send Test Email</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('emailTestForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value;
+            const emailType = document.getElementById('emailType').value;
+            const resultDiv = document.getElementById('result');
+            
+            resultDiv.innerHTML = '<p>⏳ Sending email...</p>';
+            
+            try {
+                const response = await fetch('/.netlify/functions/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        name: name,
+                        type: emailType
+                    }),
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    resultDiv.innerHTML = `
+                        <div class="result success">
+                            <h3>✅ Email Sent Successfully!</h3>
+                            <p><strong>Type:</strong> ${emailType}</p>
+                            <p><strong>To:</strong> ${email}</p>
+                            <p><strong>Name:</strong> ${name}</p>
+                            <p><strong>Resend ID:</strong> ${result.data?.id || 'N/A'}</p>
+                            <p>Check your email inbox!</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="result error">
+                            <h3>❌ Error Sending Email</h3>
+                            <p><strong>Error:</strong> ${result.error || 'Unknown error'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <h3>❌ Network Error</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+

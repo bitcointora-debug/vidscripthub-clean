@@ -4,14 +4,15 @@ import { AuthContext, AuthProvider } from './context/AuthContext';
 import { UIProvider } from './context/UIContext';
 import { DataProvider } from './context/DataContext';
 import type { Plan, Client } from './types';
-import { SalesPage } from './components/SalesPage';
+import { WorldClassSalesPage } from './components/WorldClassSalesPage';
 import { Oto1Page } from './components/Oto1Page';
 import { Oto2Page } from './components/Oto2Page';
 import { Oto3Page } from './components/Oto3Page';
 import { AuthPage } from './components/AuthPage';
 import { Dashboard } from './components/Dashboard';
+import { TermsOfService, PrivacyPolicy, RefundPolicy } from './components/LegalPages';
 
-type FlowState = 'sales' | 'oto1' | 'oto2' | 'oto3' | 'app' | 'auth';
+type FlowState = 'sales' | 'oto1' | 'oto2' | 'oto3' | 'app' | 'auth' | 'terms' | 'privacy' | 'refund';
 type PostAuthAction = { plan: Plan; next: FlowState };
 
 const AppRouterContent: React.FC = () => {
@@ -107,7 +108,7 @@ const AppRouterContent: React.FC = () => {
         // --- LOGGED-OUT USER FLOW ---
         switch (flowState) {
             case 'sales':
-                return <SalesPage onPurchaseClick={() => setFlowState('oto1')} onDashboardClick={() => setFlowState('auth')} />;
+                return <WorldClassSalesPage onPurchaseClick={() => setFlowState('oto1')} onDashboardClick={() => setFlowState('auth')} onNavigate={setFlowState} />;
             case 'oto1':
                 return <Oto1Page onUpgrade={() => handleUpgradeAndAuth('unlimited', 'oto2')} onDecline={() => setFlowState('oto2')} />;
             case 'oto2':
@@ -116,6 +117,12 @@ const AppRouterContent: React.FC = () => {
                 return <Oto3Page onUpgrade={() => handleUpgradeAndAuth('agency', 'app')} onDecline={handleGuestDeclineOto3} />;
             case 'auth':
                 return <AuthPage />;
+            case 'terms':
+                return <TermsOfService />;
+            case 'privacy':
+                return <PrivacyPolicy />;
+            case 'refund':
+                return <RefundPolicy />;
             case 'app':
             default:
                 // User is not logged in, show auth page

@@ -3,6 +3,7 @@ import React, { createContext, useReducer, useEffect, ReactNode, useCallback } f
 import type { Session, User, Plan } from '../types.ts';
 import { supabase } from '../services/supabaseClient.ts';
 import { fetchUser, createUser, updateUser, profileRowToUser } from '../services/supabaseService.ts';
+import { redirectToWarriorPlus } from '../services/paymentService.ts';
 import type { Database } from '../services/database.types.ts';
 
 // --- STATE AND INITIAL VALUES ---
@@ -229,9 +230,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, session, g
             }
             case 'UPGRADE_PLAN_REQUEST': {
                 const newPlan = action.payload;
-                const { error } = await supabase.from('profiles').update({ plan: newPlan }).eq('id', state.user.id);
-                if (error) console.error("Error upgrading plan:", error.message);
-                else dispatch({ type: 'UPGRADE_PLAN_SUCCESS', payload: newPlan });
+                try {
+                    // Redirect to Warrior Plus product page instead of updating plan directly
+                    const { checkoutUrl } = await redirectToWarriorPlus(newPlan);
+                    window.location.href = checkoutUrl;
+                } catch (error) {
+                    console.error("Error redirecting to Warrior Plus:", error);
+                    // Fallback: still update the plan in database for testing
+                    const { error: dbError } = await supabase.from('profiles').update({ plan: newPlan }).eq('id', state.user.id);
+                    if (dbError) console.error("Error upgrading plan:", dbError.message);
+                    else dispatch({ type: 'UPGRADE_PLAN_SUCCESS', payload: newPlan });
+                }
                 break;
             }
         }

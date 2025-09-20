@@ -1,0 +1,39 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#daff00;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#daff00;stop-opacity:0.1" />
+    </linearGradient>
+    <linearGradient id="brain" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#daff00;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#b8e600;stop-opacity:0.9" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="64" cy="64" r="60" fill="url(#bg)" stroke="#daff00" stroke-width="2" />
+  
+  <!-- Brain -->
+  <path d="M 40 60 Q 30 50 40 40 Q 50 30 64 30 Q 78 30 88 40 Q 98 50 88 60 Q 78 70 64 70 Q 50 70 40 60" fill="url(#brain)" />
+  
+  <!-- Brain Details -->
+  <circle cx="50" cy="45" r="3" fill="#1a0f3c" />
+  <circle cx="78" cy="45" r="3" fill="#1a0f3c" />
+  <path d="M 45 55 Q 64 50 83 55" stroke="#1a0f3c" stroke-width="2" fill="none" />
+  
+  <!-- Data Processing Lines -->
+  <path d="M 20 80 L 30 75 L 40 85 L 50 70 L 60 90 L 70 75 L 80 85 L 90 70 L 100 80" stroke="url(#brain)" stroke-width="2" fill="none" />
+  
+  <!-- Step Number -->
+  <circle cx="90" cy="30" r="15" fill="#daff00" />
+  <text x="90" y="36" text-anchor="middle" fill="#1a0f3c" font-family="Arial, sans-serif" font-size="12" font-weight="bold">2</text>
+  
+  <!-- Text -->
+  <text x="64" y="100" text-anchor="middle" fill="#daff00" font-family="Arial, sans-serif" font-size="10" font-weight="bold">AI Analysis</text>
+</svg>
+
+
+
+
+
+

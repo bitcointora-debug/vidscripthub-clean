@@ -1,0 +1,41 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#daff00;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#daff00;stop-opacity:0.1" />
+    </linearGradient>
+    <linearGradient id="document" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#daff00;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#b8e600;stop-opacity:0.9" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="64" cy="64" r="60" fill="url(#bg)" stroke="#daff00" stroke-width="2" />
+  
+  <!-- Document -->
+  <rect x="40" y="30" width="48" height="60" rx="4" fill="url(#document)" stroke="#1a0f3c" stroke-width="2" />
+  
+  <!-- Document Lines -->
+  <line x1="50" y1="45" x2="75" y2="45" stroke="#1a0f3c" stroke-width="2" />
+  <line x1="50" y1="55" x2="70" y2="55" stroke="#1a0f3c" stroke-width="2" />
+  <line x1="50" y1="65" x2="75" y2="65" stroke="#1a0f3c" stroke-width="2" />
+  <line x1="50" y1="75" x2="65" y2="75" stroke="#1a0f3c" stroke-width="2" />
+  
+  <!-- Checkmark -->
+  <circle cx="80" cy="50" r="12" fill="#10b981" />
+  <path d="M 75 50 L 78 53 L 85 46" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Step Number -->
+  <circle cx="90" cy="30" r="15" fill="#daff00" />
+  <text x="90" y="36" text-anchor="middle" fill="#1a0f3c" font-family="Arial, sans-serif" font-size="12" font-weight="bold">3</text>
+  
+  <!-- Text -->
+  <text x="64" y="100" text-anchor="middle" fill="#daff00" font-family="Arial, sans-serif" font-size="10" font-weight="bold">Generate Script</text>
+</svg>
+
+
+
+
+
+

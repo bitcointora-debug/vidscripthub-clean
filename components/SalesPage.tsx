@@ -16,11 +16,12 @@ const CountdownUnit = ({ value, label }: { value: string; label: string }) => (
 interface SalesPageProps {
     onPurchaseClick: () => void;
     onDashboardClick: () => void;
+    onNavigate?: (page: 'terms' | 'privacy' | 'refund') => void;
 }
 
 const locations = ["Cancún, Mexico", "London, UK", "Sydney, Australia", "Tokyo, Japan", "New York, USA", "Berlin, Germany", "Singapore"];
 
-export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboardClick }) => {
+export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboardClick, onNavigate }) => {
     const getInitialSeconds = () => {
         const storedEndDate = localStorage.getItem('vidscripthub_timer_end');
         if (storedEndDate) {
@@ -98,23 +99,23 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
     
     const painPoints = [
         {
-            image: "/images/pain-graveyard.png",
-            alt: "A graveyard for videos with low views.",
-            title: "The Content Graveyard",
+            image: "/images/zero-views-hero-3d.png",
+            alt: "Content creator struggling with zero views.",
+            title: "Zero Views?",
             text: "You spend hours on what you think is a brilliant video... only to see it die a quiet death with less than 200 views. Another masterpiece, buried.",
             imagePosition: 'left' as const
         },
         {
-            image: "/images/pain-maze.png",
-            alt: "A person lost in a maze representing the algorithm.",
-            title: "Lost in the Algorithm Maze",
+            image: "/images/hours-research-3d.png",
+            alt: "Creator spending hours researching for minimal views.",
+            title: "Hours of Research, Minutes of Views",
             text: "You see what works for others but can't replicate it. You're lost, just throwing content at the wall, completely guessing what the mysterious algorithm wants to see.",
             imagePosition: 'right' as const
         },
         {
-            image: "/images/pain-jail.png",
-            alt: "A video post trapped behind bars.",
-            title: "Trapped in the '100-View Jail'",
+            image: "/images/creators-block-3d.png",
+            alt: "Creator experiencing creative block and lost momentum.",
+            title: "Creator's Block is Killing Your Momentum",
             text: "It feels like you're permanently stuck. No matter how good your content is, you can't break out and reach a real audience. It's the most frustrating feeling in the world.",
             imagePosition: 'left' as const
         }
@@ -123,22 +124,22 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
     const steps = [
         {
             label: "STEP 1",
-            icon: "/images/step-icon-01-niche.png",
-            alt: "Target icon",
+            icon: "/images/enter-your-niche-3d.jpg",
+            alt: "Enter Your Niche - 3D Cartoon",
             title: "Enter Your Niche",
             text: "Simply tell the AI what your channel is about. It can be anything from \"Dog Training\" to \"Crypto Investing\" or \"Weight Loss for Moms.\""
         },
         {
             label: "STEP 2",
-            icon: "/images/step-icon-02-analyze.png",
-            alt: "AI Brain icon",
+            icon: "/images/ai-analyzes-winners-3d.jpg",
+            alt: "AI Analyzes The Winners - 3D Cartoon",
             title: "AI Analyzes The Winners",
             text: "Our Google-powered AI instantly scans YouTube for the top-performing videos in your niche, reverse-engineering what's already proven to go viral."
         },
         {
             label: "STEP 3",
-            icon: "/images/step-icon-03-scripts.png",
-            alt: "Script icon",
+            icon: "/images/get-perfect-script-3d.jpg",
+            alt: "Get Your Perfect Script - 3D Cartoon",
             title: "Get Your Perfect Script",
             text: "Watch as our AI crafts and perfects a single, high-virality script for you in real-time, taking it from a rough idea to a 100% optimized masterpiece."
         }
@@ -308,14 +309,129 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
                             Watch us turn one simple keyword into a perfectly optimized, ready-to-shoot viral video script in under 60 seconds.
                         </p>
                         <div className="mt-12 max-w-4xl mx-auto">
-                            {/* Video Player Placeholder */}
-                            <div className="aspect-video bg-black rounded-xl shadow-2xl shadow-[#DAFF00]/10 overflow-hidden border-2 border-[#4A3F7A] flex items-center justify-center relative group cursor-pointer">
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                                <div className="relative z-10 flex flex-col items-center">
-                                    <div className="w-20 h-20 md:w-24 md:h-24 bg-white/10 rounded-full flex items-center justify-center border-2 border-white/20 backdrop-blur-sm group-hover:scale-110 group-hover:bg-white/20 transition-transform duration-300">
-                                        <i className="fas fa-play text-4xl md:text-5xl text-white ml-2"></i>
-                                    </div>
+                            {/* Video Player */}
+                            <div className="aspect-video bg-black rounded-xl shadow-2xl shadow-[#DAFF00]/10 overflow-hidden border-2 border-[#4A3F7A]">
+                                <video 
+                                    className="w-full h-full object-cover"
+                                    controls
+                                    poster="/videos/thumbnail-3d.jpg?v=4"
+                                    preload="metadata"
+                                >
+                                    <source src="/videos/vidscripthub promo.mp4?v=2" type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                </video>
                                     <p className="mt-4 text-white font-bold text-lg tracking-wider">WATCH THE DEMO</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* WALL OF PROOF - Testimonials Section */}
+                <section className="py-16 md:py-20 bg-gradient-to-b from-[#0F0A2A] to-[#1A0F3C]">
+                    <div className="container mx-auto max-w-6xl px-4">
+                        <div className="text-center mb-12">
+                            <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                                Real Results From <span className="text-[#DAFF00]">Real Creators</span>
+                            </h2>
+                            <p className="text-lg md:text-xl text-purple-200/80 max-w-3xl mx-auto">
+                                Don't just take our word for it. See what actual users are saying about their viral success with VidScriptHub.
+                            </p>
+                        </div>
+                        
+                        <div className="bg-gradient-to-r from-[#2A1A5E] to-[#1A0F3C] rounded-2xl p-8 md:p-12 border border-[#4A3F7A] shadow-2xl">
+                            <div className="text-center mb-8">
+                                <h3 className="text-2xl md:text-3xl font-bold text-[#DAFF00] mb-2">
+                                    🚀 Wall of Proof
+                                </h3>
+                                <p className="text-purple-200/80">
+                                    Real testimonials from creators who went viral using VidScriptHub
+                                </p>
+                            </div>
+                            
+                            <div className="max-w-5xl mx-auto">
+                                <img 
+                                    src="/images/wall-of-proof.png?v=5" 
+                                    alt="Real user testimonials showing viral success with VidScriptHub" 
+                                    className="w-full h-auto rounded-xl shadow-lg border border-[#4A3F7A]"
+                                />
+                            </div>
+                            
+                            <div className="mt-8 text-center">
+                                <div className="inline-flex items-center space-x-2 bg-[#DAFF00]/10 text-[#DAFF00] text-sm px-4 py-2 rounded-full border border-[#DAFF00]/20">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                                    </svg>
+                                    <span className="font-semibold">100% Authentic Testimonials</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* INCOME PROOF - Earning Results Section */}
+                <section className="py-20 md:py-24 bg-gradient-to-b from-[#1A0F3C] to-[#0F0A2A]">
+                    <div className="container mx-auto max-w-7xl px-4">
+                        <div className="text-center mb-16">
+                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-6" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                                From <span className="text-[#DAFF00]">Zero to 508K Views</span> in 90 Days
+                            </h2>
+                            <p className="text-xl md:text-2xl text-purple-200/90 max-w-4xl mx-auto leading-relaxed">
+                                See how one VidScriptHub user went from struggling to viral success with 11.9K new subscribers
+                            </p>
+                        </div>
+                        
+                        <div className="bg-gradient-to-r from-[#2A1A5E] via-[#1A0F3C] to-[#2A1A5E] rounded-3xl p-8 md:p-16 border-2 border-[#4A3F7A] shadow-2xl relative overflow-hidden">
+                            {/* Background Glow Effect */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-[#DAFF00]/5 via-transparent to-[#DAFF00]/5 rounded-3xl"></div>
+                            
+                            <div className="relative z-10">
+                                <div className="text-center mb-12">
+                                    <h3 className="text-3xl md:text-4xl font-bold text-[#DAFF00] mb-4">
+                                        💰 REAL EARNING PROOF
+                                    </h3>
+                                    <p className="text-lg text-purple-200/80">
+                                        Actual YouTube analytics: 508K views + 11.9K subscribers in 90 days
+                                    </p>
+                                </div>
+                                
+                                {/* Large Income Proof Display */}
+                                <div className="max-w-6xl mx-auto">
+                                    <div className="bg-black/50 rounded-2xl p-6 md:p-8 border border-[#4A3F7A]">
+                                        <img 
+                                            src="/images/income-proof.png?v=6" 
+                                            alt="Real YouTube analytics showing 508,084 views and 11.9K subscribers earning proof" 
+                                            className="w-full h-auto rounded-xl shadow-2xl border border-[#DAFF00]/20"
+                                        />
+                                    </div>
+                                </div>
+                                
+                                {/* Key Metrics Highlight */}
+                                <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                                    <div className="text-center bg-gradient-to-b from-[#DAFF00]/10 to-transparent rounded-xl p-6 border border-[#DAFF00]/30">
+                                        <div className="text-4xl md:text-5xl font-bold text-[#DAFF00] mb-2">508K+</div>
+                                        <div className="text-white font-semibold text-lg">Views in 90 Days</div>
+                                        <div className="text-purple-300 text-sm">Massive reach potential</div>
+                                    </div>
+                                    <div className="text-center bg-gradient-to-b from-[#DAFF00]/10 to-transparent rounded-xl p-6 border border-[#DAFF00]/30">
+                                        <div className="text-4xl md:text-5xl font-bold text-[#DAFF00] mb-2">11.9K</div>
+                                        <div className="text-white font-semibold text-lg">New Subscribers</div>
+                                        <div className="text-purple-300 text-sm">Rapid audience growth</div>
+                                    </div>
+                                    <div className="text-center bg-gradient-to-b from-[#DAFF00]/10 to-transparent rounded-xl p-6 border border-[#DAFF00]/30">
+                                        <div className="text-4xl md:text-5xl font-bold text-[#DAFF00] mb-2">$2K+</div>
+                                        <div className="text-white font-semibold text-lg">Monthly Revenue</div>
+                                        <div className="text-purple-300 text-sm">Consistent earnings</div>
+                                    </div>
+                                </div>
+                                
+                                <div className="mt-12 text-center">
+                                    <div className="inline-flex items-center space-x-3 bg-[#DAFF00]/10 text-[#DAFF00] text-lg px-6 py-3 rounded-full border border-[#DAFF00]/30">
+                                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                                        </svg>
+                                        <span className="font-bold">This Could Be YOU With Viral Scripts</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -658,7 +774,31 @@ export const SalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick, onDashboa
             </main>
 
             <footer className="text-center py-8 bg-[#1A0F3C] border-t border-[#4A3F7A]/30">
-                 <p className="text-purple-300/60 text-sm">&copy; {new Date().getFullYear()} Vid Script Hub. All Rights Reserved.</p>
+                <div className="flex justify-center space-x-6 mb-4">
+                    {onNavigate && (
+                        <>
+                            <button 
+                                onClick={() => onNavigate('terms')}
+                                className="text-purple-300/60 hover:text-[#DAFF00] text-sm transition-colors duration-200"
+                            >
+                                Terms of Service
+                            </button>
+                            <button 
+                                onClick={() => onNavigate('privacy')}
+                                className="text-purple-300/60 hover:text-[#DAFF00] text-sm transition-colors duration-200"
+                            >
+                                Privacy Policy
+                            </button>
+                            <button 
+                                onClick={() => onNavigate('refund')}
+                                className="text-purple-300/60 hover:text-[#DAFF00] text-sm transition-colors duration-200"
+                            >
+                                Refund Policy
+                            </button>
+                        </>
+                    )}
+                </div>
+                <p className="text-purple-300/60 text-sm">&copy; {new Date().getFullYear()} Vid Script Hub. All Rights Reserved.</p>
             </footer>
         </div>
     );

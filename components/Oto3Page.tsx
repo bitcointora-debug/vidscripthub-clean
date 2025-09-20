@@ -28,6 +28,17 @@ export const Oto3Page: React.FC<Oto3PageProps> = ({ onUpgrade, onDecline }) => {
 
             <div className="w-full max-w-5xl mx-auto text-center relative z-10">
 
+                {/* Urgency Banner */}
+                <div className="bg-red-600 text-white py-3 px-6 rounded-lg mb-8 animate-pulse">
+                    <p className="text-lg font-bold">🚨 FINAL OFFER: This License Will NEVER Be Available Again!</p>
+                    <div className="text-2xl font-mono mt-2">
+                        <span className="bg-black px-2 py-1 rounded">00</span> DAYS : 
+                        <span className="bg-black px-2 py-1 rounded ml-2">02</span> HOURS : 
+                        <span className="bg-black px-2 py-1 rounded ml-2">15</span> MINS : 
+                        <span className="bg-black px-2 py-1 rounded ml-2">33</span> SECS
+                    </div>
+                </div>
+
                 {/* Headline */}
                 <h1 className="text-3xl md:text-4xl font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>
                     FINAL UPGRADE: Don't Just Use VidScriptHub...
@@ -38,6 +49,20 @@ export const Oto3Page: React.FC<Oto3PageProps> = ({ onUpgrade, onDecline }) => {
                 <p className="text-2xl md:text-3xl font-bold">And Keep 100% Of The Profits!</p>
                 
                 <div className="w-24 h-1 bg-[#DAFF00]/50 mx-auto my-12 rounded-full"></div>
+
+                {/* Social Proof */}
+                <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-4 px-6 rounded-lg mb-8">
+                    <div className="flex justify-between items-center">
+                        <span className="text-lg font-bold">💰 847+ Resellers Already Earning $1,000+/Month</span>
+                        <span className="text-sm bg-green-500 px-3 py-1 rounded-full">Last license sold: London, UK (12 minutes ago)</span>
+                    </div>
+                </div>
+
+                {/* Income Potential Highlight */}
+                <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white py-6 px-8 rounded-xl mb-8 shadow-lg">
+                    <h2 className="text-3xl font-bold mb-2">💎 Limited to Only 100 Reseller Licenses Ever</h2>
+                    <p className="text-lg">Once these 100 licenses are sold, we will NEVER offer reseller rights again. You're one of the lucky few who gets to own this profit machine.</p>
+                </div>
 
                 {/* Core Offer */}
                 <div className="bg-[#2A1A5E] rounded-2xl p-8 md:p-12 shadow-2xl shadow-[#DAFF00]/5 border border-[#4A3F7A]/50">
@@ -84,9 +109,9 @@ export const Oto3Page: React.FC<Oto3PageProps> = ({ onUpgrade, onDecline }) => {
 
                     {/* Call to Action (CTA) Block */}
                     <div className="max-w-xl mx-auto mt-12">
-                        <button onClick={onUpgrade} className="block w-full bg-[#DAFF00] text-[#1A0F3C] font-bold text-xl md:text-2xl uppercase py-5 px-6 rounded-lg shadow-[0_5px_0px_0px_#a8c400] hover:translate-y-1 hover:shadow-[0_4px_0px_0px_#a8c400] transition-all duration-150 ease-in-out">
+                        <a href="https://warriorplus.com/o2/buy/kyd6mp/t4bzcf/cn135b" className="block w-full bg-[#DAFF00] text-[#1A0F3C] font-bold text-xl md:text-2xl uppercase py-5 px-6 rounded-lg shadow-[0_5px_0px_0px_#a8c400] hover:translate-y-1 hover:shadow-[0_4px_0px_0px_#a8c400] transition-all duration-150 ease-in-out text-center">
                             YES! I Want The Agency & Reseller License To VidScriptHub!
-                        </button>
+                        </a>
                         <button onClick={onDecline} className="block mt-6 text-purple-300/70 hover:text-white transition-colors duration-200 text-sm underline">
                            No thanks, I understand this is my only chance to get a reseller license and I'm happy to pass on keeping 100% of the profits.
                         </button>

@@ -229,7 +229,7 @@
 
 ### 19. Quick Home Decorating
 - **Competition Level:** High
-- **Viral Potential:** 8/10
+- **Viral Potentiral:** 8/10
 - **Target Audience:** 12M+ home decor enthusiasts
 - **Monetization:** High (decor products, courses, affiliate)
 - **Trending Keywords:** "home decor", "interior design", "room makeover"

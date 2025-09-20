@@ -3,7 +3,7 @@ import React, { useState, useContext, useEffect, Dispatch, SetStateAction } from
 import { Dashboard } from './Dashboard.tsx';
 import type { Client, Plan } from '../types.ts';
 import { AuthContext } from '../context/AuthContext.tsx';
-import { SalesPage } from './SalesPage.tsx';
+import { WorldClassSalesPage } from './WorldClassSalesPage.tsx';
 import { Oto1Page } from './Oto1Page.tsx';
 import { Oto2Page } from './Oto2Page.tsx';
 import { Oto3Page } from './Oto3Page.tsx';
@@ -17,7 +17,49 @@ export const AppRouter: React.FC = () => {
     const { state, dispatch: authDispatch } = useContext(AuthContext);
     const { user, isLoading } = state;
     
-    const [flowState, setFlowState] = useState<FlowState>(user ? 'app' : 'sales');
+    // Simple function to get current page from URL
+    const getCurrentPage = (): FlowState => {
+        const hash = window.location.hash;
+        const pathname = window.location.pathname;
+        
+        console.log('🔍 getCurrentPage - Hash:', hash, 'Pathname:', pathname);
+        
+        // Direct hash check
+        if (hash === '#oto1') {
+            console.log('✅ Returning oto1 from hash');
+            return 'oto1';
+        }
+        if (hash === '#oto2') {
+            console.log('✅ Returning oto2 from hash');
+            return 'oto2';
+        }
+        if (hash === '#oto3') {
+            console.log('✅ Returning oto3 from hash');
+            return 'oto3';
+        }
+        if (hash === '#app') return 'app';
+        if (hash === '#sales') return 'sales';
+        
+        // Direct path check
+        if (pathname.includes('/oto1')) {
+            console.log('✅ Returning oto1 from path');
+            return 'oto1';
+        }
+        if (pathname.includes('/oto2')) {
+            console.log('✅ Returning oto2 from path');
+            return 'oto2';
+        }
+        if (pathname.includes('/oto3')) {
+            console.log('✅ Returning oto3 from path');
+            return 'oto3';
+        }
+        
+        // Default behavior
+        console.log('⚠️ Returning default:', user ? 'app' : 'sales');
+        return user ? 'app' : 'sales';
+    };
+    
+    const [flowState, setFlowState] = useState<FlowState>(getCurrentPage());
     const [postAuthAction, setPostAuthAction] = useState<PostAuthAction | null>(null);
     const [impersonatingClient, setImpersonatingClient] = useState<Client | null>(null);
 
@@ -29,6 +71,38 @@ export const AppRouter: React.FC = () => {
             setPostAuthAction(null); // Clear the action
         }
     }, [user, postAuthAction, authDispatch]);
+
+    // Listen for URL changes
+    useEffect(() => {
+        const handleUrlChange = () => {
+            const newPage = getCurrentPage();
+            setFlowState(newPage);
+        };
+
+        // Check on page load
+        handleUrlChange();
+
+        window.addEventListener('hashchange', handleUrlChange);
+        window.addEventListener('popstate', handleUrlChange);
+        return () => {
+            window.removeEventListener('hashchange', handleUrlChange);
+            window.removeEventListener('popstate', handleUrlChange);
+        };
+    }, [user]);
+
+    // Re-evaluate flow state when user state changes
+    useEffect(() => {
+        const hash = window.location.hash;
+        if (hash === '#oto1' || hash === '#oto2' || hash === '#oto3') {
+            // Keep OTO pages regardless of user state
+            return;
+        }
+        if (hash === '#app') {
+            setFlowState('app');
+        } else if (hash === '#sales' || hash === '') {
+            setFlowState(user ? 'app' : 'sales');
+        }
+    }, [user]);
 
     const handleRequireAuth = (action: PostAuthAction) => {
         setPostAuthAction(action);
@@ -55,21 +129,33 @@ export const AppRouter: React.FC = () => {
         );
     }
     
+    // Simple direct routing based on current state
+    console.log('🎯 AppRouter Render - flowState:', flowState, 'user:', !!user);
+    
     if (!user) {
         // --- USER IS LOGGED OUT ---
         switch (flowState) {
-            case 'sales':
-                return <SalesPage onPurchaseClick={() => setFlowState('oto1')} onDashboardClick={() => setFlowState('auth')} />;
             case 'oto1':
-                return <Oto1Page onUpgrade={() => handleRequireAuth({ planToUpgrade: 'unlimited', nextFlowState: 'oto2' })} onDecline={() => setFlowState('oto2')} />;
+                console.log('🚀 Redirecting to OTO1 HTML page');
+                window.location.href = '/oto1.html';
+                return <div>Redirecting to OTO1...</div>;
             case 'oto2':
-                 return <Oto2Page onUpgrade={() => handleRequireAuth({ planToUpgrade: 'dfy', nextFlowState: 'oto3' })} onDecline={() => setFlowState('oto3')} />;
+                console.log('🚀 Redirecting to OTO2 HTML page');
+                window.location.href = '/oto2.html';
+                return <div>Redirecting to OTO2...</div>;
             case 'oto3':
-                 return <Oto3Page onUpgrade={() => handleRequireAuth({ planToUpgrade: 'agency', nextFlowState: 'app' })} onDecline={() => setFlowState('app')} />;
+                console.log('🚀 Redirecting to OTO3 HTML page');
+                window.location.href = '/oto3.html';
+                return <div>Redirecting to OTO3...</div>;
+            case 'sales':
+                console.log('🚀 Rendering WorldClassSalesPage');
+                return <WorldClassSalesPage onPurchaseClick={() => setFlowState('oto1')} onDashboardClick={() => setFlowState('auth')} />;
             case 'auth':
+                console.log('🚀 Rendering AuthPage');
                 return <AuthPage />;
             case 'app': // User tried to access dashboard while logged out
             default:
+                console.log('🚀 Rendering AuthPage (default)');
                 return <AuthPage />;
         }
     } else {
@@ -83,11 +169,14 @@ export const AppRouter: React.FC = () => {
                 setFlowState('app');
                 return dashboard;
             case 'oto1':
-                return <Oto1Page onUpgrade={() => { authDispatch({ type: 'UPGRADE_PLAN_REQUEST', payload: 'unlimited' }); setFlowState('oto2'); }} onDecline={() => setFlowState('oto2')} />;
+                window.location.href = '/oto1.html';
+                return <div>Redirecting to OTO1...</div>;
             case 'oto2':
-                return <Oto2Page onUpgrade={() => { authDispatch({ type: 'UPGRADE_PLAN_REQUEST', payload: 'dfy' }); setFlowState('oto3'); }} onDecline={() => setFlowState('oto3')} />;
+                window.location.href = '/oto2.html';
+                return <div>Redirecting to OTO2...</div>;
             case 'oto3':
-                return <Oto3Page onUpgrade={() => { authDispatch({ type: 'UPGRADE_PLAN_REQUEST', payload: 'agency' }); setFlowState('app'); }} onDecline={() => setFlowState('app')} />;
+                window.location.href = '/oto3.html';
+                return <div>Redirecting to OTO3...</div>;
             case 'app':
             default:
                 return dashboard;

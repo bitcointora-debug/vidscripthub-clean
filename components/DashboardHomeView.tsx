@@ -172,8 +172,11 @@ export const DashboardHomeView: React.FC<DashboardHomeViewProps> = ({
                                 <SkeletonTrendCard />
                             </>
                         ) : trendError ? (
-                             <div className="bg-red-900/20 border border-red-500/50 text-red-300 px-4 py-3 rounded-lg text-center" role="alert">
-                                <p className="text-sm font-semibold">{trendError}</p>
+                            <div className="text-center py-8">
+                                <div className="text-purple-300/60 text-sm">
+                                    <i className="fa-solid fa-info-circle mr-2"></i>
+                                    {trendError}
+                                </div>
                             </div>
                         ) : (
                             trendingTopics.map((trend) => (
