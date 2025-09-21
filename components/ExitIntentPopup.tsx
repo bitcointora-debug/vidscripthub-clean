@@ -53,10 +53,10 @@ export const ExitIntentPopup: React.FC<ExitIntentPopupProps> = ({ onClose, onPur
                         </div>
                     </div>
 
-                    <a href="https://warriorplus.com/o2/buy/kyd6mp/lk95h4/cn135b">
-                        <img src="https://warriorplus.com/o2/btn/fn060011001/kyd6mp/lk95h4/445947?ct2=GET%20INSTANT%20ACCESS%20NOW&v=1" 
-                             onClick={() => trackCTAClick('exit_intent_popup_purchase_button', 'exit_intent_popup', 27)}
-                             className="w-full mb-4" />
+                    <a href="https://warriorplus.com/o2/buy/kyd6mp/lk95h4/cn135b"
+                       onClick={() => trackCTAClick('exit_intent_popup_purchase_button', 'exit_intent_popup', 27)}
+                       className="block w-full bg-gradient-to-r from-[#DAFF00] to-[#B8E600] text-[#1A0F3C] font-bold text-xl uppercase py-5 px-8 rounded-xl shadow-[0_8px_0px_0px_#8BC34A] hover:translate-y-1 hover:shadow-[0_6px_0px_0px_#8BC34A] transition-all duration-200 ease-in-out text-center transform hover:scale-105 mb-4">
+                        🚨 LAST CHANCE - GET ACCESS NOW! 🚨
                     </a>
 
                     <p className="text-xs text-purple-300/70">

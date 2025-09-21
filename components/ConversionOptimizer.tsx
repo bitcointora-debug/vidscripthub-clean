@@ -62,10 +62,10 @@ export const ConversionOptimizer: React.FC<ConversionOptimizerProps> = ({ onPurc
                                 {formatTime(timeOnPage)} on page
                             </div>
                         </div>
-                        <a href="https://warriorplus.com/o2/buy/kyd6mp/lk95h4/cn135b">
-                            <img src="https://warriorplus.com/o2/btn/fn060011001/kyd6mp/lk95h4/445947?ct2=GET%20INSTANT%20ACCESS%20NOW&v=1" 
-                                 onClick={() => trackCTAClick('sticky_cta_purchase_button', 'sticky_cta', 27)}
-                                 className="w-full" />
+                        <a href="https://warriorplus.com/o2/buy/kyd6mp/lk95h4/cn135b"
+                           onClick={() => trackCTAClick('sticky_cta_purchase_button', 'sticky_cta', 27)}
+                           className="block w-full bg-gradient-to-r from-[#DAFF00] to-[#B8E600] text-[#1A0F3C] font-bold text-lg uppercase py-4 px-6 rounded-lg shadow-[0_6px_0px_0px_#8BC34A] hover:translate-y-1 hover:shadow-[0_4px_0px_0px_#8BC34A] transition-all duration-200 ease-in-out text-center transform hover:scale-105">
+                            ⚡ GET ACCESS NOW - $27! ⚡
                         </a>
                         <div className="text-xs text-center text-purple-300/70 mt-2">
                             🔒 Secure • 💯 30-Day Guarantee
