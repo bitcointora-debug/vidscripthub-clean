@@ -256,20 +256,22 @@ export const WorldClassSalesPage: React.FC<SalesPageProps> = ({ onPurchaseClick,
             </button>
 
             {/* Top Scarcity Bar with Warrior+Plus Timer */}
-            <div className="bg-gradient-to-r from-red-600 to-red-700 text-white py-3 text-center sticky top-0 z-40 shadow-lg">
-                <div className="container mx-auto flex flex-col md:flex-row justify-center items-center font-bold text-sm md:text-base">
-                    <p className="uppercase tracking-wide mb-2 md:mb-0 md:mr-6 text-yellow-200">
-                        ⚠️ ATTENTION: PRICE DOUBLES PERMANENTLY WHEN THE TIMER HITS ZERO!
+            <div className="bg-gradient-to-r from-red-500 to-red-600 text-white py-2 text-center sticky top-0 z-40 shadow-lg">
+                <div className="max-w-6xl mx-auto px-4 flex flex-col lg:flex-row justify-center items-center gap-4">
+                    <p className="text-sm lg:text-base font-bold uppercase tracking-wide text-yellow-100">
+                        ⚠️ ATTENTION: PRICE DOUBLES WHEN TIMER HITS ZERO!
                     </p>
                     {/* Warrior+Plus Countdown Timer */}
-                    <div className="bg-black/20 backdrop-blur-sm px-6 py-2 rounded-lg border border-white/20">
+                    <div className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/30 min-w-[300px]">
+                        <div className="text-center text-xs text-yellow-100 mb-1">Time Remaining:</div>
                         <iframe 
                             src="https://warriorplus.com/o2/cntdwn/kyd6mp/lk95h4/445947"
                             frameBorder="0"
                             width="100%"
-                            height="135"
+                            height="60"
                             scrolling="no"
-                            className="w-full h-auto rounded"
+                            className="rounded"
+                            style={{ border: 'none', minHeight: '60px' }}
                         />
                     </div>
                 </div>
